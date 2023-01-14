@@ -449,7 +449,7 @@ char *yytext;
  #include <stdio.h>
  #include "y.tab.h"
  #include "exprtree.h"
-
+ int yyerror(char const*);
  int number;
 
 #line 456 "lex.yy.c"

@@ -79,7 +79,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "exprtree.y"
+#line 11 "exprtree.y"
 
  struct tnode *no;
 

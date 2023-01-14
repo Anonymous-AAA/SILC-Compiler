@@ -69,14 +69,15 @@
 /* First part of user prologue.  */
 #line 1 "exprtree.y"
 
+ int yyerror(char const *s);
+ int yylex(void);
  #include <stdlib.h>
  #include <stdio.h>
  #include "exprtree.h"
  #include "exprtree.c"
  #include "codegen.c"
- int yylex(void);
 
-#line 80 "y.tab.c"
+#line 81 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -145,12 +146,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "exprtree.y"
+#line 11 "exprtree.y"
 
  struct tnode *no;
 
 
-#line 154 "y.tab.c"
+#line 155 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -570,7 +571,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    21,    21,    29,    30,    31,    32,    33,    34
+       0,    22,    22,    30,    31,    32,    33,    34,    35
 };
 #endif
 
@@ -1134,54 +1135,54 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: expr END  */
-#line 21 "exprtree.y"
+#line 22 "exprtree.y"
                    {
     (yyval.no) = (yyvsp[0].no);
     code((yyvsp[-1].no));    
     exit(1);
 
    }
-#line 1145 "y.tab.c"
+#line 1146 "y.tab.c"
     break;
 
   case 3: /* expr: expr PLUS expr  */
-#line 29 "exprtree.y"
+#line 30 "exprtree.y"
                        {(yyval.no) = makeOperatorNode('+',(yyvsp[-2].no),(yyvsp[0].no));}
-#line 1151 "y.tab.c"
+#line 1152 "y.tab.c"
     break;
 
   case 4: /* expr: expr MINUS expr  */
-#line 30 "exprtree.y"
+#line 31 "exprtree.y"
                       {(yyval.no) = makeOperatorNode('-',(yyvsp[-2].no),(yyvsp[0].no));}
-#line 1157 "y.tab.c"
+#line 1158 "y.tab.c"
     break;
 
   case 5: /* expr: expr MUL expr  */
-#line 31 "exprtree.y"
+#line 32 "exprtree.y"
                   {(yyval.no) = makeOperatorNode('*',(yyvsp[-2].no),(yyvsp[0].no));}
-#line 1163 "y.tab.c"
+#line 1164 "y.tab.c"
     break;
 
   case 6: /* expr: expr DIV expr  */
-#line 32 "exprtree.y"
+#line 33 "exprtree.y"
                   {(yyval.no) = makeOperatorNode('/',(yyvsp[-2].no),(yyvsp[0].no));}
-#line 1169 "y.tab.c"
+#line 1170 "y.tab.c"
     break;
 
   case 7: /* expr: '(' expr ')'  */
-#line 33 "exprtree.y"
+#line 34 "exprtree.y"
                   {(yyval.no) = (yyvsp[-1].no);}
-#line 1175 "y.tab.c"
+#line 1176 "y.tab.c"
     break;
 
   case 8: /* expr: NUM  */
-#line 34 "exprtree.y"
+#line 35 "exprtree.y"
           {(yyval.no) = (yyvsp[0].no);}
-#line 1181 "y.tab.c"
+#line 1182 "y.tab.c"
     break;
 
 
-#line 1185 "y.tab.c"
+#line 1186 "y.tab.c"
 
       default: break;
     }
@@ -1374,10 +1375,10 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 37 "exprtree.y"
+#line 38 "exprtree.y"
 
 
-yyerror(char const *s)
+int yyerror(char const *s)
 {
     printf("yyerror: %s",s);
 }

@@ -12,20 +12,27 @@
  struct tnode *no;
 
 }
-%type <no> expr NUM program END
-%token NUM PLUS MINUS MUL DIV END
+%type <no> expr NUM  
+%token NUM PLUS MINUS MUL DIV END BEGIN READ WRITE ID
 %left PLUS MINUS
 %left MUL DIV
 
 %%
 
 program : expr END {
-    $$ = $2;
     code($1);    
-    exit(1);
+    exit(0);
 
    }
   ;
+
+
+program : BEGIN Slist END | BEGIN END
+Slist : Slist Stmt | Stmt
+Stmt : InputStmt | OutputStmt | AsgStmt
+InputStmt : READ '(' ID ')' ';'  
+OutputStmt : WRITE '(' expr ')' ';'
+AsgStmt : ID EQUAL expr ';'
 
 expr : expr PLUS expr  {$$ = makeOperatorNode('+',$1,$3);}
   | expr MINUS expr   {$$ = makeOperatorNode('-',$1,$3);}
@@ -33,6 +40,7 @@ expr : expr PLUS expr  {$$ = makeOperatorNode('+',$1,$3);}
   | expr DIV expr {$$ = makeOperatorNode('/',$1,$3);}
   | '(' expr ')'  {$$ = $2;}
   | NUM   {$$ = $1;}
+  | ID
   ;
 
 %%

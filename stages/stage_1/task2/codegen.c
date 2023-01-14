@@ -7,8 +7,10 @@ FILE *fptr;
 
 int getReg(){
   
-    if(reg>=MAX_REG)
+    if(reg>=MAX_REG){
         yyerror("Out of registers");
+        exit(1);
+    }
 
     reg++;
     return reg-1;
