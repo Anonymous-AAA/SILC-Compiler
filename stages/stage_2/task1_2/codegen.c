@@ -96,11 +96,26 @@ int codeGen(struct tnode *t){
         break;
         case 'w':
         r=getReg();
-        int t1=getReg();        
         if(t->left->varname){   //allocate register if writing a variable
-                fprintf(fptr,"MOV R%d, [%d]\n",t1,r1);
-                r1=t1;
-            }
+        fprintf(fptr,
+                "MOV R%1$d, \"Write\"\n"
+                "PUSH R%1$d\n"
+                "MOV R%1$d, -2\n"
+                "PUSH R%1$d\n"
+                "MOV R%1$d, [%2$d]\n"
+                "PUSH R%1$d\n"
+                "PUSH R2\n"
+                "PUSH R2\n"
+                "CALL 0\n"
+                "POP R%1$d\n"
+                "POP R%1$d\n"
+                "POP R%1$d\n"
+                "POP R%1$d\n"
+                "POP R%1$d\n",
+                r,
+                r1);
+            }else{
+
         fprintf(fptr,
                 "MOV R%1$d, \"Write\"\n"
                 "PUSH R%1$d\n"
@@ -118,11 +133,9 @@ int codeGen(struct tnode *t){
                 "POP R%1$d\n",
                 r,
                 r1);
+            }
 
         freeReg();
-        if(t->left->varname){ //release the register
-                freeReg();
-            }
         break;
         case '=':
         fprintf(fptr,
