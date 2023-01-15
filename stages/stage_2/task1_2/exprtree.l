@@ -10,8 +10,8 @@
 
 %%
 
-[0-9]+ {number = atoi(yytext); yylval.no = makeLeafNode(number); return NUM;}
-[a-z] {return ID;}
+[0-9]+ {number = atoi(yytext); yylval.no = makeConstantLeafNode(number); return NUM;}
+[a-z] {yylval.no = makeVariableLeafNode(*yytext);  return ID;}
 "+" {return PLUS;}
 "-" {return MINUS;}
 "*" {return MUL;}
@@ -20,7 +20,7 @@
 [ \t\n] {}
 [();] {return *yytext;}
 "end" {return END;}
-"begin" {return BEGIN;}
+"begin" {return BEG;}
 "read" {return READ;}
 "write" {return WRITE;}
 . {yyerror("unknown character\n");exit(1);}
@@ -30,3 +30,5 @@
 int yywrap(void) {
  return 1;
 }
+
+
