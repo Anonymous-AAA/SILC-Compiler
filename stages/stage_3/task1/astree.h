@@ -2,6 +2,8 @@
 #define booltype 0
 #define notype -1
 #define CONNECTOR 'C'
+#define TRUE 1
+#define FALSE 0
 // nodevalue 'r' for read and 'w' for write
 
 typedef struct tnode{

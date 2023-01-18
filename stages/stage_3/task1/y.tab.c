@@ -75,7 +75,7 @@
  #include <stdio.h>
  #include "astree.h"
  #include "astree.c"
- #include "codegen.c"
+ #include "evaluate.c"
  extern FILE *yyin;   //yyin is declared in the lex file
 
 #line 82 "y.tab.c"
@@ -1258,7 +1258,7 @@ yyreduce:
   case 2: /* program: BEG Slist END  */
 #line 26 "astree.y"
                         {
-           // code($2);
+            evaluate((yyvsp[-1].no));
             exit(0);
         }
 #line 1265 "y.tab.c"

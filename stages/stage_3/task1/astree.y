@@ -5,7 +5,7 @@
  #include <stdio.h>
  #include "astree.h"
  #include "astree.c"
- #include "codegen.c"
+ #include "evaluate.c"
  extern FILE *yyin;   //yyin is declared in the lex file
 %}
 
@@ -24,7 +24,7 @@
 
 
 program : BEG Slist END {
-           // code($2);
+            evaluate($2);
             exit(0);
         }
         | BEG END
