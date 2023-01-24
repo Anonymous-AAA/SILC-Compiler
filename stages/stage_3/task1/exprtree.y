@@ -3,8 +3,10 @@
  int yylex(void);
  #include <stdlib.h>
  #include <stdio.h>
- #include "astree.h"
- #include "astree.c"
+ #include "exprtree.h"
+ #include "exprtree.c"
+// #include "codegen.c"
+// #include "test.c"
  #include "evaluate.c"
  extern FILE *yyin;   //yyin is declared in the lex file
 %}
@@ -14,10 +16,10 @@
 
 }
 %type <no> expr NUM  ID Slist Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt
-%token NUM PLUS MINUS MUL DIV END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE EE NE
+%token NUM PLUS MINUS MUL DIV END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EE
+%nonassoc LT GT LE GE NE EE
 %left PLUS MINUS
 %left MUL DIV
-%nonassoc LT GT LE GE EE NE
 
 %%
 
@@ -25,6 +27,12 @@
 
 program : BEG Slist END {
             evaluate($2);
+           // printf("Prefix: ");
+           // prefix($2);
+           // printf("\n");
+           // printf("Postfix: ");
+           // postfix($2);
+           // printf("\n");
             exit(0);
         }
         | BEG END
@@ -45,31 +53,27 @@ OutputStmt : WRITE '(' expr ')' ';' {$$ = makeSingleNode(WRITE,$3);}
 AsgStmt : ID EQUAL expr ';' {$$ = makeOperatorNode(EQUAL,$1,$3);}
         ;
 
-IfStmt : IF '(' expr ')' THEN Slist ELSE Slist ENDIF {$$ = makeCondLoopNode(IF,$3,$6,$8);}
-       | IF '(' expr ')' THEN Slist ENDIF {$$ = makeCondLoopNode(IF,$3,$6,NULL);}
+IfStmt : IF '(' expr ')' THEN Slist ELSE Slist ENDIF {$$ = makeTriplets(IF,$3,$6,$8);}
+       | IF '(' expr ')' THEN Slist ENDIF {$$ = makeTriplets(IF,$3,$6,NULL);}
        ;
 
-WhileStmt : WHILE '(' expr ')' DO Slist ENDWHILE {$$ = makeCondLoopNode(WHILE,$3,$6,NULL);}
+WhileStmt : WHILE '(' expr ')' DO Slist ENDWHILE {$$ = makeTriplets(WHILE,$3,$6,NULL);}
           ;
-
-
-
-
 
 
 expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | expr MINUS expr   {$$ = makeOperatorNode(MINUS,$1,$3);}
   | expr MUL expr {$$ = makeOperatorNode(MUL,$1,$3);}
   | expr DIV expr {$$ = makeOperatorNode(DIV,$1,$3);}
+  | expr LT expr  {$$ = makeOperatorNode(LT,$1,$3);}
+  | expr GT expr  {$$ = makeOperatorNode(GT,$1,$3);}
+  | expr LE expr  {$$ = makeOperatorNode(LE,$1,$3);}
+  | expr GE expr  {$$ = makeOperatorNode(GE,$1,$3);}
+  | expr NE expr  {$$ = makeOperatorNode(NE,$1,$3);}
+  | expr EE expr  {$$ = makeOperatorNode(EE,$1,$3);}
   | '(' expr ')'  {$$ = $2;}
   | NUM   {$$ = $1;}
   | ID {$$ = $1;}
-  | expr LT expr {$$ = makeOperatorNode(LT,$1,$3);}
-  | expr GT expr {$$ = makeOperatorNode(GT,$1,$3);}
-  | expr LE expr {$$ = makeOperatorNode(LE,$1,$3);}
-  | expr GE expr {$$ = makeOperatorNode(GE,$1,$3);}
-  | expr NE expr {$$ = makeOperatorNode(NE,$1,$3);}
-  | expr EE expr {$$ = makeOperatorNode(EE,$1,$3);}
   ;
 
 %%

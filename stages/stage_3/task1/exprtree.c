@@ -4,56 +4,58 @@ struct tnode* makeConstantLeafNode(int n)
 {
     struct tnode *temp;
     temp = (struct tnode*)malloc(sizeof(struct tnode));
-    temp->type=inttype;
     temp->val = n;
     temp->left = NULL;
     temp->right = NULL;
+    temp->mid = NULL;
     temp->varname=NULL;
+    temp->type= inttype;
     return temp;
 }
 struct tnode* makeVariableLeafNode(char s)
 {
     struct tnode *temp;
     temp = (struct tnode*)malloc(sizeof(struct tnode));
-    temp->type=inttype;
     temp->varname= (char *) malloc(sizeof(char));
     *(temp->varname) = s;
     temp->left = NULL;
     temp->right = NULL;
+    temp->mid = NULL;
+    temp->type= inttype;
     return temp;
 }
 
 struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
-    struct tnode *temp;
-    int root_type=notype;
     
-    if(c==PLUS || c==MINUS || c==MUL || c==DIV)
-        root_type=inttype;
-    else if (c!=EQUAL)
-        root_type=booltype;
+    if(r->type!=inttype && l->type!=inttype){
+        yyerror("Type Mismatch");
+        exit(1);
+    }
 
-
-    if(l->type==r->type && (l->type==root_type || root_type==notype)){
-
+    struct tnode *temp;
     temp = (struct tnode*)malloc(sizeof(struct tnode));
-    temp->nodetype = c;
+    temp->nodetype=c;
     temp->left = l;
     temp->right = r;
+    temp->mid= NULL;
     temp->varname=NULL;
-    temp->type=l->type;
+
+    
+    if(c==PLUS || c==MINUS || c==MUL ||  c==DIV)
+        temp->type=inttype;
+    else if(c!=EQUAL)
+        temp->type=booltype;
+
     return temp;
-    }else{
-        yyerror("Type Mismatch");
-        exit(0);
-    }
 }
 
 struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r){
     struct tnode *temp;
     temp = (struct tnode*)malloc(sizeof(struct tnode));
-    temp->nodetype = CONNECTOR;
+    temp->nodetype=CONNECTOR;
     temp->left = l;
     temp->right = r;
+    temp->mid = NULL;
     temp->varname=NULL;
     return temp;
 }
@@ -62,31 +64,33 @@ struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r){
 struct tnode* makeSingleNode(int c,struct tnode* node){
     struct tnode *temp;
     temp=(struct tnode *) malloc(sizeof(struct tnode));
-    temp->nodetype = c;
+    temp->nodetype=c;
     temp->left = node;
     temp->right = NULL;
+    temp->mid = NULL;
     temp->varname = NULL;
     return temp;
 }
 
-struct tnode* makeCondLoopNode(int c,struct tnode *cond, struct tnode *st1, struct tnode *st2){
+
+struct tnode* makeTriplets(int c,struct tnode* l,struct tnode* r,struct tnode* m){
     
-    struct tnode *temp;
-    temp = (struct tnode*) malloc(sizeof(struct tnode));
-    temp->nodetype = c;
-    temp->left = cond;
-    temp->mid = st1;
-    temp->right = st2;
+    if(l->type!=booltype){
+       yyerror("Condition is not boolean");
+       exit(1);
+    }
+
+
+    struct tnode* temp;
+    temp=(struct tnode *) malloc (sizeof(struct tnode));
+    temp->nodetype=c;
+    temp->left=l;
+    temp->right=r;
+    temp->mid=m;
+    temp->varname=NULL;
     return temp;
+
+
 }
-
-
-
-
-
-
-
-
-
 
 

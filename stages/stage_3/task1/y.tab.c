@@ -67,18 +67,20 @@
 
 
 /* First part of user prologue.  */
-#line 1 "astree.y"
+#line 1 "exprtree.y"
 
  int yyerror(char const *s);
  int yylex(void);
  #include <stdlib.h>
  #include <stdio.h>
- #include "astree.h"
- #include "astree.c"
+ #include "exprtree.h"
+ #include "exprtree.c"
+// #include "codegen.c"
+// #include "test.c"
  #include "evaluate.c"
  extern FILE *yyin;   //yyin is declared in the lex file
 
-#line 82 "y.tab.c"
+#line 84 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -144,8 +146,8 @@ extern int yydebug;
     GT = 277,                      /* GT  */
     LE = 278,                      /* LE  */
     GE = 279,                      /* GE  */
-    EE = 280,                      /* EE  */
-    NE = 281                       /* NE  */
+    NE = 280,                      /* NE  */
+    EE = 281                       /* EE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -176,19 +178,19 @@ extern int yydebug;
 #define GT 277
 #define LE 278
 #define GE 279
-#define EE 280
-#define NE 281
+#define NE 280
+#define EE 281
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 12 "astree.y"
+#line 14 "exprtree.y"
 
  struct tnode *no;
 
 
-#line 192 "y.tab.c"
+#line 194 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -233,8 +235,8 @@ enum yysymbol_kind_t
   YYSYMBOL_GT = 22,                        /* GT  */
   YYSYMBOL_LE = 23,                        /* LE  */
   YYSYMBOL_GE = 24,                        /* GE  */
-  YYSYMBOL_EE = 25,                        /* EE  */
-  YYSYMBOL_NE = 26,                        /* NE  */
+  YYSYMBOL_NE = 25,                        /* NE  */
+  YYSYMBOL_EE = 26,                        /* EE  */
   YYSYMBOL_27_ = 27,                       /* '('  */
   YYSYMBOL_28_ = 28,                       /* ')'  */
   YYSYMBOL_29_ = 29,                       /* ';'  */
@@ -575,7 +577,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  16
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   181
+#define YYLAST   171
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  30
@@ -636,9 +638,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    26,    26,    30,    32,    33,    35,    36,    37,    38,
-      39,    41,    43,    45,    48,    49,    52,    60,    61,    62,
-      63,    64,    65,    66,    67,    68,    69,    70,    71,    72
+       0,    28,    28,    38,    40,    41,    43,    44,    45,    46,
+      47,    49,    51,    53,    56,    57,    60,    64,    65,    66,
+      67,    68,    69,    70,    71,    72,    73,    74,    75,    76
 };
 #endif
 
@@ -656,8 +658,8 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "NUM", "PLUS", "MINUS",
   "MUL", "DIV", "END", "BEG", "READ", "WRITE", "ID", "EQUAL", "IF", "THEN",
-  "ELSE", "ENDIF", "WHILE", "DO", "ENDWHILE", "LT", "GT", "LE", "GE", "EE",
-  "NE", "'('", "')'", "';'", "$accept", "program", "Slist", "Stmt",
+  "ELSE", "ENDIF", "WHILE", "DO", "ENDWHILE", "LT", "GT", "LE", "GE", "NE",
+  "EE", "'('", "')'", "';'", "$accept", "program", "Slist", "Stmt",
   "InputStmt", "OutputStmt", "AsgStmt", "IfStmt", "WhileStmt", "expr", YY_NULLPTR
 };
 
@@ -682,13 +684,13 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      -4,    -1,    12,   -20,   -19,   -13,    18,   -11,    -2,   121,
-     -20,   -20,   -20,   -20,   -20,   -20,   -20,    25,     3,     3,
-       3,     3,   -20,   -20,    13,   -20,   -20,     3,    56,    -3,
-      64,    89,    -5,    97,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,    23,   -20,    38,    37,   -20,   -20,
-     120,   120,   149,   149,   155,   155,   155,   155,   155,   155,
-     -20,   151,   151,    22,   137,   151,   -20,   -20,   142,   -20
+      -4,    -1,    12,   -20,   -19,   -13,    24,   -11,     4,   123,
+     -20,   -20,   -20,   -20,   -20,   -20,   -20,    29,     3,     3,
+       3,     3,   -20,   -20,    25,   -20,   -20,     3,    56,    -3,
+      64,    89,    23,    97,     3,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,    27,   -20,    42,    39,   -20,   -20,
+      18,    18,   -20,   -20,   122,   122,   122,   122,   122,   122,
+     -20,   153,   153,    22,   139,   153,   -20,   -20,   144,   -20
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -698,10 +700,10 @@ static const yytype_int8 yydefact[] =
 {
        0,     0,     0,     3,     0,     0,     0,     0,     0,     0,
        5,     6,     7,     8,     9,    10,     1,     0,     0,     0,
-       0,     0,     2,     4,     0,    22,    23,     0,     0,     0,
+       0,     0,     2,     4,     0,    28,    29,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    13,     0,     0,    11,    21,
-      17,    18,    19,    20,    24,    25,    26,    27,    29,    28,
+       0,     0,     0,     0,     0,    13,     0,     0,    11,    27,
+      17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
       12,     0,     0,     0,     0,     0,    15,    16,     0,    14
 };
 
@@ -724,46 +726,44 @@ static const yytype_int8 yytable[] =
 {
       23,    34,    35,    36,    37,     1,    25,     3,    17,     4,
        5,     6,    16,     7,    18,    26,    20,     8,    38,    39,
-      40,    41,    42,    43,    48,    21,    45,    29,    30,    31,
-      27,    19,     4,     5,     6,    33,     7,    24,    65,    66,
-       8,    32,    50,    51,    52,    53,    54,    55,    56,    57,
-      58,    59,    60,    61,    23,    23,    62,     0,     0,    23,
+      40,    41,    42,    43,    36,    37,    45,    29,    30,    31,
+      27,    21,     4,     5,     6,    33,     7,    19,    65,    66,
+       8,    24,    50,    51,    52,    53,    54,    55,    56,    57,
+      58,    59,    48,    32,    23,    23,    60,    61,    62,    23,
       34,    35,    36,    37,     0,     0,     0,     0,    34,    35,
       36,    37,    63,    64,     0,     0,    68,    38,    39,    40,
       41,    42,    43,     0,    44,    38,    39,    40,    41,    42,
       43,     0,    46,    34,    35,    36,    37,     0,     0,     0,
        0,    34,    35,    36,    37,     0,     0,     0,     0,     0,
       38,    39,    40,    41,    42,    43,     0,    47,    38,    39,
-      40,    41,    42,    43,     0,    49,    36,    37,     0,    22,
-       0,     4,     5,     6,     0,     7,     0,     0,     0,     8,
-       0,    38,    39,    40,    41,    42,    43,     4,     5,     6,
-       0,     7,     4,     5,     6,     8,     7,    67,     0,    69,
-       8,     4,     5,     6,     0,     7,     0,     0,     0,     8,
-      38,    39,    40,    41,    42,    43,    -1,    -1,    -1,    -1,
-      -1,    -1
+      40,    41,    42,    43,     0,    49,    34,    35,    36,    37,
+       0,    22,     0,     4,     5,     6,     0,     7,     0,     0,
+       0,     8,     0,    -1,    -1,    -1,    -1,    -1,    -1,     4,
+       5,     6,     0,     7,     4,     5,     6,     8,     7,    67,
+       0,    69,     8,     4,     5,     6,     0,     7,     0,     0,
+       0,     8
 };
 
 static const yytype_int8 yycheck[] =
 {
        9,     4,     5,     6,     7,     9,     3,     8,    27,    10,
       11,    12,     0,    14,    27,    12,    27,    18,    21,    22,
-      23,    24,    25,    26,    29,    27,    29,    19,    20,    21,
-      27,    13,    10,    11,    12,    27,    14,    12,    16,    17,
-      18,    28,    34,    35,    36,    37,    38,    39,    40,    41,
-      42,    43,    29,    15,    63,    64,    19,    -1,    -1,    68,
+      23,    24,    25,    26,     6,     7,    29,    19,    20,    21,
+      27,    27,    10,    11,    12,    27,    14,    13,    16,    17,
+      18,    12,    34,    35,    36,    37,    38,    39,    40,    41,
+      42,    43,    29,    28,    63,    64,    29,    15,    19,    68,
        4,     5,     6,     7,    -1,    -1,    -1,    -1,     4,     5,
        6,     7,    61,    62,    -1,    -1,    65,    21,    22,    23,
       24,    25,    26,    -1,    28,    21,    22,    23,    24,    25,
       26,    -1,    28,     4,     5,     6,     7,    -1,    -1,    -1,
       -1,     4,     5,     6,     7,    -1,    -1,    -1,    -1,    -1,
       21,    22,    23,    24,    25,    26,    -1,    28,    21,    22,
-      23,    24,    25,    26,    -1,    28,     6,     7,    -1,     8,
-      -1,    10,    11,    12,    -1,    14,    -1,    -1,    -1,    18,
-      -1,    21,    22,    23,    24,    25,    26,    10,    11,    12,
-      -1,    14,    10,    11,    12,    18,    14,    20,    -1,    17,
-      18,    10,    11,    12,    -1,    14,    -1,    -1,    -1,    18,
-      21,    22,    23,    24,    25,    26,    21,    22,    23,    24,
-      25,    26
+      23,    24,    25,    26,    -1,    28,     4,     5,     6,     7,
+      -1,     8,    -1,    10,    11,    12,    -1,    14,    -1,    -1,
+      -1,    18,    -1,    21,    22,    23,    24,    25,    26,    10,
+      11,    12,    -1,    14,    10,    11,    12,    18,    14,    20,
+      -1,    17,    18,    10,    11,    12,    -1,    14,    -1,    -1,
+      -1,    18
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -792,7 +792,7 @@ static const yytype_int8 yyr2[] =
 {
        0,     2,     3,     2,     2,     1,     1,     1,     1,     1,
        1,     5,     5,     4,     9,     7,     7,     3,     3,     3,
-       3,     3,     1,     1,     3,     3,     3,     3,     3,     3
+       3,     3,     3,     3,     3,     3,     3,     3,     1,     1
 };
 
 
@@ -1256,172 +1256,178 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: BEG Slist END  */
-#line 26 "astree.y"
+#line 28 "exprtree.y"
                         {
             evaluate((yyvsp[-1].no));
+           // printf("Prefix: ");
+           // prefix($2);
+           // printf("\n");
+           // printf("Postfix: ");
+           // postfix($2);
+           // printf("\n");
             exit(0);
         }
-#line 1265 "y.tab.c"
-    break;
-
-  case 4: /* Slist: Slist Stmt  */
-#line 32 "astree.y"
-                   {(yyval.no) = makeConnectorNode((yyvsp[-1].no),(yyvsp[0].no));}
 #line 1271 "y.tab.c"
     break;
 
-  case 5: /* Slist: Stmt  */
-#line 33 "astree.y"
-             {(yyval.no) = (yyvsp[0].no);}
+  case 4: /* Slist: Slist Stmt  */
+#line 40 "exprtree.y"
+                   {(yyval.no) = makeConnectorNode((yyvsp[-1].no),(yyvsp[0].no));}
 #line 1277 "y.tab.c"
     break;
 
-  case 6: /* Stmt: InputStmt  */
-#line 35 "astree.y"
-                 {(yyval.no) = (yyvsp[0].no);}
+  case 5: /* Slist: Stmt  */
+#line 41 "exprtree.y"
+             {(yyval.no) = (yyvsp[0].no);}
 #line 1283 "y.tab.c"
     break;
 
-  case 7: /* Stmt: OutputStmt  */
-#line 36 "astree.y"
-                  {(yyval.no) = (yyvsp[0].no);}
+  case 6: /* Stmt: InputStmt  */
+#line 43 "exprtree.y"
+                 {(yyval.no) = (yyvsp[0].no);}
 #line 1289 "y.tab.c"
     break;
 
-  case 8: /* Stmt: AsgStmt  */
-#line 37 "astree.y"
-               {(yyval.no) = (yyvsp[0].no);}
+  case 7: /* Stmt: OutputStmt  */
+#line 44 "exprtree.y"
+                  {(yyval.no) = (yyvsp[0].no);}
 #line 1295 "y.tab.c"
     break;
 
-  case 9: /* Stmt: IfStmt  */
-#line 38 "astree.y"
-              {(yyval.no) = (yyvsp[0].no);}
+  case 8: /* Stmt: AsgStmt  */
+#line 45 "exprtree.y"
+               {(yyval.no) = (yyvsp[0].no);}
 #line 1301 "y.tab.c"
     break;
 
-  case 10: /* Stmt: WhileStmt  */
-#line 39 "astree.y"
-                 {(yyval.no) = (yyvsp[0].no);}
+  case 9: /* Stmt: IfStmt  */
+#line 46 "exprtree.y"
+              {(yyval.no) = (yyvsp[0].no);}
 #line 1307 "y.tab.c"
     break;
 
-  case 11: /* InputStmt: READ '(' ID ')' ';'  */
-#line 41 "astree.y"
-                                {(yyval.no) = makeSingleNode(READ,(yyvsp[-2].no));}
+  case 10: /* Stmt: WhileStmt  */
+#line 47 "exprtree.y"
+                 {(yyval.no) = (yyvsp[0].no);}
 #line 1313 "y.tab.c"
     break;
 
-  case 12: /* OutputStmt: WRITE '(' expr ')' ';'  */
-#line 43 "astree.y"
-                                    {(yyval.no) = makeSingleNode(WRITE,(yyvsp[-2].no));}
+  case 11: /* InputStmt: READ '(' ID ')' ';'  */
+#line 49 "exprtree.y"
+                                {(yyval.no) = makeSingleNode(READ,(yyvsp[-2].no));}
 #line 1319 "y.tab.c"
     break;
 
-  case 13: /* AsgStmt: ID EQUAL expr ';'  */
-#line 45 "astree.y"
-                            {(yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-3].no),(yyvsp[-1].no));}
+  case 12: /* OutputStmt: WRITE '(' expr ')' ';'  */
+#line 51 "exprtree.y"
+                                    {(yyval.no) = makeSingleNode(WRITE,(yyvsp[-2].no));}
 #line 1325 "y.tab.c"
     break;
 
-  case 14: /* IfStmt: IF '(' expr ')' THEN Slist ELSE Slist ENDIF  */
-#line 48 "astree.y"
-                                                     {(yyval.no) = makeCondLoopNode(IF,(yyvsp[-6].no),(yyvsp[-3].no),(yyvsp[-1].no));}
+  case 13: /* AsgStmt: ID EQUAL expr ';'  */
+#line 53 "exprtree.y"
+                            {(yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-3].no),(yyvsp[-1].no));}
 #line 1331 "y.tab.c"
     break;
 
-  case 15: /* IfStmt: IF '(' expr ')' THEN Slist ENDIF  */
-#line 49 "astree.y"
-                                          {(yyval.no) = makeCondLoopNode(IF,(yyvsp[-4].no),(yyvsp[-1].no),NULL);}
+  case 14: /* IfStmt: IF '(' expr ')' THEN Slist ELSE Slist ENDIF  */
+#line 56 "exprtree.y"
+                                                     {(yyval.no) = makeTriplets(IF,(yyvsp[-6].no),(yyvsp[-3].no),(yyvsp[-1].no));}
 #line 1337 "y.tab.c"
     break;
 
-  case 16: /* WhileStmt: WHILE '(' expr ')' DO Slist ENDWHILE  */
-#line 52 "astree.y"
-                                                 {(yyval.no) = makeCondLoopNode(WHILE,(yyvsp[-4].no),(yyvsp[-1].no),NULL);}
+  case 15: /* IfStmt: IF '(' expr ')' THEN Slist ENDIF  */
+#line 57 "exprtree.y"
+                                          {(yyval.no) = makeTriplets(IF,(yyvsp[-4].no),(yyvsp[-1].no),NULL);}
 #line 1343 "y.tab.c"
     break;
 
-  case 17: /* expr: expr PLUS expr  */
-#line 60 "astree.y"
-                       {(yyval.no) = makeOperatorNode(PLUS,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 16: /* WhileStmt: WHILE '(' expr ')' DO Slist ENDWHILE  */
+#line 60 "exprtree.y"
+                                                 {(yyval.no) = makeTriplets(WHILE,(yyvsp[-4].no),(yyvsp[-1].no),NULL);}
 #line 1349 "y.tab.c"
     break;
 
-  case 18: /* expr: expr MINUS expr  */
-#line 61 "astree.y"
-                      {(yyval.no) = makeOperatorNode(MINUS,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 17: /* expr: expr PLUS expr  */
+#line 64 "exprtree.y"
+                       {(yyval.no) = makeOperatorNode(PLUS,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1355 "y.tab.c"
     break;
 
-  case 19: /* expr: expr MUL expr  */
-#line 62 "astree.y"
-                  {(yyval.no) = makeOperatorNode(MUL,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 18: /* expr: expr MINUS expr  */
+#line 65 "exprtree.y"
+                      {(yyval.no) = makeOperatorNode(MINUS,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1361 "y.tab.c"
     break;
 
-  case 20: /* expr: expr DIV expr  */
-#line 63 "astree.y"
-                  {(yyval.no) = makeOperatorNode(DIV,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 19: /* expr: expr MUL expr  */
+#line 66 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(MUL,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1367 "y.tab.c"
     break;
 
-  case 21: /* expr: '(' expr ')'  */
-#line 64 "astree.y"
-                  {(yyval.no) = (yyvsp[-1].no);}
+  case 20: /* expr: expr DIV expr  */
+#line 67 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(DIV,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1373 "y.tab.c"
     break;
 
-  case 22: /* expr: NUM  */
-#line 65 "astree.y"
-          {(yyval.no) = (yyvsp[0].no);}
+  case 21: /* expr: expr LT expr  */
+#line 68 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(LT,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1379 "y.tab.c"
     break;
 
-  case 23: /* expr: ID  */
-#line 66 "astree.y"
-       {(yyval.no) = (yyvsp[0].no);}
+  case 22: /* expr: expr GT expr  */
+#line 69 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(GT,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1385 "y.tab.c"
     break;
 
-  case 24: /* expr: expr LT expr  */
-#line 67 "astree.y"
-                 {(yyval.no) = makeOperatorNode(LT,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 23: /* expr: expr LE expr  */
+#line 70 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(LE,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1391 "y.tab.c"
     break;
 
-  case 25: /* expr: expr GT expr  */
-#line 68 "astree.y"
-                 {(yyval.no) = makeOperatorNode(GT,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 24: /* expr: expr GE expr  */
+#line 71 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(GE,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1397 "y.tab.c"
     break;
 
-  case 26: /* expr: expr LE expr  */
-#line 69 "astree.y"
-                 {(yyval.no) = makeOperatorNode(LE,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 25: /* expr: expr NE expr  */
+#line 72 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(NE,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1403 "y.tab.c"
     break;
 
-  case 27: /* expr: expr GE expr  */
-#line 70 "astree.y"
-                 {(yyval.no) = makeOperatorNode(GE,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 26: /* expr: expr EE expr  */
+#line 73 "exprtree.y"
+                  {(yyval.no) = makeOperatorNode(EE,(yyvsp[-2].no),(yyvsp[0].no));}
 #line 1409 "y.tab.c"
     break;
 
-  case 28: /* expr: expr NE expr  */
-#line 71 "astree.y"
-                 {(yyval.no) = makeOperatorNode(NE,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 27: /* expr: '(' expr ')'  */
+#line 74 "exprtree.y"
+                  {(yyval.no) = (yyvsp[-1].no);}
 #line 1415 "y.tab.c"
     break;
 
-  case 29: /* expr: expr EE expr  */
-#line 72 "astree.y"
-                 {(yyval.no) = makeOperatorNode(EE,(yyvsp[-2].no),(yyvsp[0].no));}
+  case 28: /* expr: NUM  */
+#line 75 "exprtree.y"
+          {(yyval.no) = (yyvsp[0].no);}
 #line 1421 "y.tab.c"
     break;
 
+  case 29: /* expr: ID  */
+#line 76 "exprtree.y"
+       {(yyval.no) = (yyvsp[0].no);}
+#line 1427 "y.tab.c"
+    break;
 
-#line 1425 "y.tab.c"
+
+#line 1431 "y.tab.c"
 
       default: break;
     }
@@ -1614,7 +1620,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 75 "astree.y"
+#line 79 "exprtree.y"
 
 
 int yyerror(char const *s)

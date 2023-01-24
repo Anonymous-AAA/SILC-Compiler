@@ -76,8 +76,8 @@ extern int yydebug;
     GT = 277,                      /* GT  */
     LE = 278,                      /* LE  */
     GE = 279,                      /* GE  */
-    EE = 280,                      /* EE  */
-    NE = 281                       /* NE  */
+    NE = 280,                      /* NE  */
+    EE = 281                       /* EE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -108,14 +108,14 @@ extern int yydebug;
 #define GT 277
 #define LE 278
 #define GE 279
-#define EE 280
-#define NE 281
+#define NE 280
+#define EE 281
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 12 "astree.y"
+#line 14 "exprtree.y"
 
  struct tnode *no;
 

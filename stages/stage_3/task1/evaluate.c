@@ -14,69 +14,90 @@ int evaluate(struct tnode* t){
 
     }
 
-    int r1=evaluate(t->left);
-    int r2=0;
-    if(t->right && t->nodetype!=IF && t->nodetype!=WHILE)
-        r2=evaluate(t->right);
-    
-    if((t->nodetype!=READ || t->nodetype!=EQUAL) && t->left->varname)
-        r1=var[r1];
-    if(t->right && t->right->varname)
-        r2=var[r2];
-   
+    int r1,r2;
+
     switch (t->nodetype) {
 
 
         case READ:
+             r1=evaluate(t->left);
             scanf("%d",&var[r1]);
             break;
         case WRITE:
-            printf("%d\n",r1);
+             r1=evaluate(t->left);
+            if(t->left->varname)
+                printf("%d\n",var[r1]);
+            else
+                printf("%d\n",r1);
             break;
-
-        case IF:
-            if(r1==TRUE)
-                r2=evaluate(t->mid);
-            else if(t->right)
-                r2=evaluate(t->right);
-            break;
-        
-        case WHILE:
-            while(r1==TRUE){
-                r2=evaluate(t->mid);
-                r1=evaluate(t->left);
-            }
-            break;
-
-
-
         case PLUS:
+             r1=evaluate(t->left);
+             r2=evaluate(t->right);
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
         
             return r1+r2;
             break;
 
         case MINUS:
+             r1=evaluate(t->left);
+             r2=evaluate(t->right);
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
         
 
             return r1-r2;
             break;
 
         case MUL:
+             r1=evaluate(t->left);
+             r2=evaluate(t->right);
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
         
             return r1*r2;
             break;
 
         case DIV:
+             r1=evaluate(t->left);
+             r2=evaluate(t->right);
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
         
             return r1/r2;
             break;
 
         case EQUAL:
+             r1=evaluate(t->left);
+             r2=evaluate(t->right);
+            if(t->right->varname)
+                r2=var[r2];
             var[r1]=r2;
             break;
 
+        case CONNECTOR:
+            evaluate(t->left);
+            evaluate(t->right);
+            break;
 
         case LT:
+            r1=evaluate(t->left);
+            r2=evaluate(t->right);
+
+
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
+
             if(r1<r2)
                 return TRUE;
             else
@@ -84,46 +105,101 @@ int evaluate(struct tnode* t){
             break;
 
         case GT:
+            r1=evaluate(t->left);
+            r2=evaluate(t->right);
+
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
+
             if(r1>r2)
                 return TRUE;
             else
                 return FALSE;
             break;
 
+
         case LE:
+            r1=evaluate(t->left);
+            r2=evaluate(t->right);
+
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
+
             if(r1<=r2)
                 return TRUE;
             else
                 return FALSE;
             break;
-
+        
         case GE:
+            r1=evaluate(t->left);
+            r2=evaluate(t->right);
+
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
+
             if(r1>=r2)
                 return TRUE;
             else
                 return FALSE;
-            break;
 
-        case NE:
-            if(r1!=r2)
-                return TRUE;
-            else
-                return FALSE;
             break;
 
         case EE:
+            r1=evaluate(t->left);
+            r2=evaluate(t->right);
+
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
+
             if(r1==r2)
                 return TRUE;
             else
                 return FALSE;
-            break;
             
-
-        case CONNECTOR:
             break;
+
+        case NE:
+            r1=evaluate(t->left);
+            r2=evaluate(t->right);
+
+            if(t->left->varname)
+                r1=var[r1];
+            if(t->right->varname)
+                r2=var[r2];
+
+            if(r1!=r2)
+                return TRUE;
+            else
+                return FALSE;
+            
+            break;
+
+        
+        case IF:
+            r1=evaluate(t->left);
+            if(r1==TRUE)
+                evaluate(t->right);
+            else if(t->mid)  //if condition is false
+                evaluate(t->mid);
+            break;
+
+        case WHILE:
+            while(evaluate(t->left)==TRUE)
+                evaluate(t->right);
+            break;
+        
 
         default:
-            printf("Error %d",t->nodetype);
+            printf("Error, Unknown nodetype: %d",t->nodetype);
             exit(1);
 
     }

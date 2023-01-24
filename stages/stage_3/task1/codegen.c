@@ -1,4 +1,4 @@
-#define MAX_REG 20
+#include "y.tab.h"
 
 int reg=0;
 
@@ -27,6 +27,7 @@ int codeGen(struct tnode *t){
     if(t->left==NULL && t->right==NULL){
         if(t->varname){
             //It is a variable node
+            printf("%c\n",*t->varname);
             return 4096+(*(t->varname))-'a';
         }
         int r=getReg();
@@ -40,7 +41,7 @@ int codeGen(struct tnode *t){
     if(t->right)
         r2=codeGen(t->right);
     
-    if(t->nodetype==PLUS || t->nodetype==MINUS || t->nodetype==MUL || t->nodetype==DIV){
+    if(t->nodetype==PLUS || t->nodetype==MINUS || t->nodetype==DIV || t->nodetype==MUL){
 
         if(t->left->varname){
             r=getReg();
@@ -145,9 +146,10 @@ int codeGen(struct tnode *t){
         break;
         case CONNECTOR:
         break;
-        default:
-        printf("Error");
 
+        default:
+        printf("Error in Codegen %d\n",t->nodetype);
+        exit(0);
 
     }
 
