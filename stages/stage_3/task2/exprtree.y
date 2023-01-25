@@ -3,7 +3,7 @@
  int yylex(void);
  #include <stdlib.h>
  #include <stdio.h>
- #include "exprtree.h"
+// #include "exprtree.h"
  #include "exprtree.c"
  #include "codegen.c"
 // #include "test.c"

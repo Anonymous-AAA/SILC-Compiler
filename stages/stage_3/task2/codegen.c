@@ -329,7 +329,7 @@ int codeGen(struct tnode *t){
         case WHILE:
             label_1=getLabel();
             label_2=getLabel();
-            fprintf(fptr,"L%d\n",label_1);
+            fprintf(fptr,"L%d:\n",label_1);
             
             //Generate code for the guard expression.
             r1=codeGen(t->left);   //r1 contains the result
@@ -342,7 +342,7 @@ int codeGen(struct tnode *t){
             //Generate code for the body of the while loop.
             codeGen(t->right);
             fprintf(fptr, "JMP L%d\n", label_1);   // return to the beginning of the loop.
-            fprintf(fptr, "L%d\n", label_2);       // Place the second label here
+            fprintf(fptr, "L%d:\n", label_2);       // Place the second label here
 
             freeReg();  //freeing the register that stored the result
             break;
@@ -361,7 +361,7 @@ int codeGen(struct tnode *t){
 
             //body
             codeGen(t->right);
-            fprintf(fptr,"L%d\n",label_1);
+            fprintf(fptr,"L%d:\n",label_1);
             
             //else part
             if(t->mid)
@@ -396,6 +396,7 @@ void code(struct tnode *t){
     fprintf(fptr,"MOV R2, \"Exit\"\nPUSH R2\n");
     fprintf(fptr,"PUSH R1\nPUSH R1\nPUSH R1\nPUSH R1\n");
     fprintf(fptr,"CALL 0\n");
-
+    
+    fclose(fptr);
 
 }

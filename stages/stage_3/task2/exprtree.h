@@ -22,22 +22,22 @@ struct tnode* makeConstantLeafNode(int n);
 struct tnode* makeVariableLeafNode(char s);
 
 // Make a connector node
-struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r);
+//struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r);
 
 // Make a single node
-struct tnode* makeSingleNode(int c,struct tnode* node);
+//struct tnode* makeSingleNode(int c,struct tnode* node);
 
 /*Make a tnode with opertor, left and right branches set*/
-struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r);
+//struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r);
 
 
-struct tnode* makeTriplets(int c,struct tnode *l,struct tnode *r,struct tnode *m);
+//struct tnode* makeTriplets(int c,struct tnode *l,struct tnode *r,struct tnode *m);
 
 //Allocating and releasing registers
-int getReg();
-void freeReg();
-int codeGen(struct tnode *t);
-void code(struct tnode* t);
+//int getReg();
+//void freeReg();
+//int codeGen(struct tnode *t);
+//void code(struct tnode* t);
 
 //for testing
 //void prefix(struct tnode *t);
