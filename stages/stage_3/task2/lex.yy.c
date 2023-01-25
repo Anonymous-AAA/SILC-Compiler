@@ -351,8 +351,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 4
-#define YY_END_OF_BUFFER 5
+#define YY_NUM_RULES 5
+#define YY_END_OF_BUFFER 6
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -362,7 +362,7 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[11] =
     {   0,
-        0,    0,    5,    3,    2,    3,    0,    0,    1,    0
+        0,    0,    6,    4,    3,    2,    2,    0,    1,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -725,32 +725,64 @@ case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
 #line 7 "linker.l"
-{    
-                            printf("%s %d\n",yytext,address());
+{   
+                            //removing trailing :\n
+                            int len=yyleng-2;
+                            char* label= (char*) malloc(sizeof(char)*len);
+                            strncpy(label,yytext,len);
+                            
+                            node *newNode=createNode(label,address());
+                            if(prevNode)
+                                prevNode->next=newNode;
+                            else
+                                start=newNode;
+
+                            prevNode=newNode;
+
+                            //printf("%s %d\n",label,address());
                         }   
 	YY_BREAK
 case 2:
-/* rule 2 can match eol */
 YY_RULE_SETUP
-#line 10 "linker.l"
+#line 23 "linker.l"
+{
+                        //label detected
+                        node *temp= start;
+                        while(temp){
+                            if(strcmp(temp->label,yytext)==0){
+                                    fprintf(lfp,"%d",temp->address);
+                                    break;
+                                }
+                            temp=temp->next;
+                        }
+
+                        if(temp==NULL)
+                            fprintf(lfp,"%s",yytext);
+
+    }
+	YY_BREAK
+case 3:
+/* rule 3 can match eol */
+YY_RULE_SETUP
+#line 40 "linker.l"
 {   
         line++;
         fprintf(lfp,"%s",yytext);
     }
 	YY_BREAK
-case 3:
+case 4:
 YY_RULE_SETUP
-#line 14 "linker.l"
+#line 44 "linker.l"
 { 
     fprintf(lfp,"%s",yytext);
     }
 	YY_BREAK
-case 4:
+case 5:
 YY_RULE_SETUP
-#line 18 "linker.l"
+#line 48 "linker.l"
 ECHO;
 	YY_BREAK
-#line 754 "lex.yy.c"
+#line 786 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1755,11 +1787,47 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 18 "linker.l"
+#line 48 "linker.l"
+
+
+
+node* createNode(char* label,int address){
+    
+    node *n=(node *) malloc(sizeof(node));
+    n->label=label;
+    n->address=address;
+    n->next=NULL;
+    return n;
+}
+
 
 
 int yywrap(void) {
- return 1;
+    
+    //close files after use
+    fclose(lfp);
+    if(strcmp(currfile,"target_label.xsm")==0){
+            
+            currfile="target_linked.xsm";
+            FILE *fp= fopen(currfile,"r");
+            if(fp){
+
+                //set the file pointer afrer the header
+                fseek(fp,19,SEEK_SET);
+                yyin=fp;
+                lfp= fopen("target.xsm","w");
+                fprintf(lfp,"0\n2056\n0\n0\n0\n0\n0\n0\n");
+                
+                return 0;
+
+            }else{
+                    printf("target_linked.xsm not found\n");
+            }
+
+
+        }
+
+    return 1;
 }
 
 int address(){
@@ -1769,8 +1837,8 @@ int address(){
 
 int main(){
 
-
-    FILE *fp= fopen("target.xsm","r");
+    currfile="target_label.xsm";
+    FILE *fp= fopen(currfile,"r");
     if(fp){
 
         //set the file pointer afrer the header
@@ -1780,9 +1848,6 @@ int main(){
         fprintf(lfp,"0\n2056\n0\n0\n0\n0\n0\n0\n");
         yylex();
 
-        //close files after use
-        fclose(fp);
-        fclose(lfp);
     }else
     {
             printf("Target file not found\n");

@@ -3,3 +3,5 @@ xsm_expl.tar.gz
 a.out
 *.xsm
 *.expl
+frontend
+linker

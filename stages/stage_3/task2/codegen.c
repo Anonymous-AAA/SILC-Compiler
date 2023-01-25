@@ -385,7 +385,7 @@ int codeGen(struct tnode *t){
 
 
 void code(struct tnode *t){
-    fptr=fopen("target.xsm","w");
+    fptr=fopen("target_label.xsm","w");
     fprintf(fptr,"0\n2056\n0\n0\n0\n0\n0\n0\n");
 
     fprintf(fptr,"MOV SP, 4121\n");  //Initializing SP after a-z allocation
