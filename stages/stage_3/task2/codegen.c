@@ -350,6 +350,9 @@ int codeGen(struct tnode *t){
 
         case IF:
             label_1=getLabel();
+
+            if(t->mid)  //only if else part exists
+                label_2=getLabel();
             
             //generate code for guard
             r1=codeGen(t->left);
@@ -361,11 +364,23 @@ int codeGen(struct tnode *t){
 
             //body
             codeGen(t->right);
-            fprintf(fptr,"L%d:\n",label_1);
+
+            if(t->mid)  //only if else part exists
+                fprintf(fptr,
+                        "JMP L%d\n",
+                        label_2);
+
+            fprintf(fptr,
+                    "L%d:\n",
+                    label_1);
             
             //else part
-            if(t->mid)
+            if(t->mid){
                 codeGen(t->mid);
+                fprintf(fptr,
+                        "L%d:\n",
+                        label_2);
+            }
 
             freeReg();
             break;
