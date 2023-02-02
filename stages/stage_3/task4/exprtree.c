@@ -27,7 +27,7 @@ struct tnode* makeVariableLeafNode(char s)
 
 struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     
-    if(r->type!=inttype && l->type!=inttype){
+    if(r->type!=inttype || l->type!=inttype){
         yyerror("Type Mismatch");
         exit(1);
     }
