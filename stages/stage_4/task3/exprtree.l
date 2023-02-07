@@ -15,6 +15,7 @@
 "-" {return MINUS;}
 "*" {return MUL;}
 "/" {return DIV;}
+"%" {return MOD;}
 "=" {return EQUAL;}
 "<" {return LT;}
 ">" {return GT;}

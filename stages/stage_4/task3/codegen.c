@@ -153,6 +153,20 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             freeReg();
             break;
         
+        case MOD:
+            r1=codeGen(t->left,while_label_1,while_label_2);
+            r2=codeGen(t->right,while_label_1,while_label_2);
+            if(t->left->varname){
+                fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
+            }
+
+            if(t->right->varname){
+                fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
+            }
+            fprintf(fptr,"MOD R%d, R%d\n",r1,r2);
+            freeReg();
+            break;
+
         case READ:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r=getReg();

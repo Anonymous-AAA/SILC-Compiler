@@ -20,10 +20,10 @@
 %type <sym> VarList DeclList Decl
 %type <integer> Type
 %type <no> expr NUM STRCON ID Slist Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt
-%token NUM PLUS MINUS MUL DIV END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON
+%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON
 %nonassoc LT GT LE GE NE EQ
 %left PLUS MINUS
-%left MUL DIV
+%left MUL DIV MOD
 
 %%
 
@@ -109,6 +109,7 @@ expr : expr PLUS expr  {$<no>$ = makeOperatorNode(PLUS,$<no>1,$<no>3);}
   | expr MINUS expr   {$<no>$ = makeOperatorNode(MINUS,$<no>1,$<no>3);}
   | expr MUL expr {$<no>$ = makeOperatorNode(MUL,$<no>1,$<no>3);}
   | expr DIV expr {$<no>$ = makeOperatorNode(DIV,$<no>1,$<no>3);}
+  | expr MOD expr {$<no>$ = makeOperatorNode(MOD,$<no>1,$<no>3);}
   | expr LT expr  {$<no>$ = makeOperatorNode(LT,$<no>1,$<no>3);}
   | expr GT expr  {$<no>$ = makeOperatorNode(GT,$<no>1,$<no>3);}
   | expr LE expr  {$<no>$ = makeOperatorNode(LE,$<no>1,$<no>3);}

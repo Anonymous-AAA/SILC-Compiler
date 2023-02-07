@@ -64,7 +64,7 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
 
 
     if(r->type!=l->type || r->type==booltype || l->type==booltype){
-        printf("Type Mismatch %d : %d\n",l->type,r->type);
+        printf("Type Mismatch %d : %d , Operator: %d \n",l->type,r->type,c);
         exit(1);
     }
 
@@ -86,7 +86,7 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     temp->strval=NULL;
 
     
-    if(c==PLUS || c==MINUS || c==MUL ||  c==DIV)
+    if(c==PLUS || c==MINUS || c==MUL ||  c==DIV || c==MOD)
         temp->type=inttype;
     else if(c==EQUAL)
         temp->type=voidtype;
