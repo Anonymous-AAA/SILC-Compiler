@@ -34,7 +34,7 @@ typedef struct Paramstruct{
 //Global
 Gsymbol *Gstart= NULL;
 Gsymbol *Gcurr = NULL;
-int nextBinding=4096;
+int nextGBinding=4096;
 int Flabel=0;   //For funtion label purpose
 
 
@@ -43,6 +43,8 @@ Paramstruct *PCurr = NULL; //For storing current pointer to the parameter list
 //Local
 Lsymbol *Lstart= NULL;
 Lsymbol *Lcurr= NULL;
+int nextArgLBinding = -3;   //Stores next binding for function arguments
+int nextLocLBinding = 1;    //Stores next binding for local variables
 
 //For storing types in return statements
 int returnType=voidtype;

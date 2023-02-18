@@ -109,14 +109,15 @@ Gid : ID {$$=GInstallVar($1->varname,voidtype,1);}
 
 //Main Block
 MainBlock : INT MAIN '(' ')' '{' LDeclBlock BEG Body END '}' {
-             //codegen($8);       //Generating code
+            checkMain();
+            codeFunction($8,NULL);       //Generating code
             printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST($8);  //deallocating the AST
           }
           | INT MAIN '(' ')' '{' BEG Body END '}' {
-            
-             //codegen($7);       //Generating code
+            checkMain();
+            codeFunction($7,NULL);       //Generating code
             printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST($7);  //deallocating the AST
@@ -135,7 +136,7 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body END '}' {
 
         checkFn($1,$2->varname,$4);  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
-        //codegen($9);       //Generating code
+        codeFunction($9,$2->varname);       //Generating code
         printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST($9);  //deallocating the AST
@@ -144,7 +145,7 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body END '}' {
       
         checkFn($1,$2->varname,$4);  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
-        //codegen($8);       //Generating code
+        codeFunction($8,$2->varname);       //Generating code
         printLSymbolTable($2->varname); //printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST($8);  //deallocating the AST
@@ -176,8 +177,8 @@ LDecList  : LDecList LDecl
 LDecl : Type IdList ';'{ setLType($2,$1);}
       ;
 
-IdList  : IdList ',' ID {$$=$1; LInstallVar($3->varname,voidtype);}
-        | ID {$$=LInstallVar($1->varname,voidtype);}
+IdList  : IdList ',' ID {$$=$1; LInstallVar($3->varname,voidtype,FALSE);}  //False becuse they are local variables
+        | ID {$$=LInstallVar($1->varname,voidtype,FALSE);}
 
 
 Body : Body Stmt {$$ = makeConnectorNode($1,$2);}
@@ -254,7 +255,7 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | ID '(' ArgList ')' {$$=makeFnNode($1->varname,$3);}
   ;
 
-ArgList : ArgList ',' expr {$$=$1; attachArg($$,$3);}
+ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
         | expr {$$ = $1;}
 
 

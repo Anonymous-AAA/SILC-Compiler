@@ -334,25 +334,32 @@ void setArrayNode(tnode* node,tnode* indexnode){
 }
 
 
-//Attaching to arglist is done in a conventional way to avoid problems due to functions in functions
+//Attaching to arglist is done in a reverse fashion
 void attachArg(tnode* arglist,tnode* arg){
     
-    //arglist is guaranteed to be not null, by the way its called
-    if(arglist==NULL){
-        printf("DevError: attachArg got a null call\n");
+    arg->mid=arglist;
+
+}
+
+
+void checkMain(){
+
+    //Check whether return statement exists or not
+    if(returnType==voidtype){
+
+        printf("Error: Return statement missing in function main.\n");
         exit(1);
     }
 
-    tnode *temp=arglist;
-    while(temp && temp->mid){
+    if(returnType!=inttype){
         
-        temp=temp->mid;
+        printf("Error: Return type of function main should be int.\n");
+        exit(1);
+
 
     }
 
-    temp->mid=arg;
 }
-
 
 
 
@@ -400,6 +407,17 @@ void checkFn(int type, char *name, Paramstruct *list){
             printf("Error: Number of parameters of function '%s' does not match in declaration and definiton.\n",name);
             exit(1);
         }
+
+
+        //Check whether return statement exists or not
+        if(returnType==voidtype){
+
+            printf("Error: Return statement missing in function %s\n",name);
+            exit(1);
+        }
+
+
+
 
         //checking whether the value returned by the return statement is same as the return type
         if(returnType!=type){

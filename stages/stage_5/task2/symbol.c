@@ -1,11 +1,27 @@
 //#include "symbol.h"
 #include <string.h>
 
-int getBinding(int size){
+int getGBinding(int size){
    
-    int prevBinding=nextBinding;
-    nextBinding+=size;
-    return prevBinding;
+    int prevGBinding=nextGBinding;
+    nextGBinding+=size;
+    return prevGBinding;
+
+}
+
+int getArgLBinding(){   //Get binding for arguments of the function
+   
+    int prevLBinding=nextArgLBinding;
+    nextArgLBinding--;
+    return prevLBinding;
+
+}
+
+int getLocLBinding(){   //Get binding for local variables of the function
+   
+    int prevLBinding=nextLocLBinding;
+    nextLocLBinding++;
+    return prevLBinding;
 
 }
 
@@ -60,7 +76,7 @@ Gsymbol *GInstallVar (char *name, int type, int size){
     temp->name=name;
     temp->type=type;
     temp->size=size;
-    temp->binding=getBinding(size);
+    temp->binding=getGBinding(size);
     temp->flabel=NIL;
     temp->next=NULL;
     temp->paramlist=NULL;
@@ -93,6 +109,8 @@ void deallocateLST(){
 
     Lstart=NULL;
     Lcurr=NULL;
+    nextArgLBinding= -3;     //resetting the binding
+    nextLocLBinding= 1;     //resetting the binding
 
 }
 
@@ -147,7 +165,7 @@ Lsymbol *LLookup(char *name){
 } 
 
 
-Lsymbol *LInstallVar (char *name, int type){
+Lsymbol *LInstallVar (char *name, int type, int isArg){
 
     //check whether name already exists, if so throw error
     if(LLookup(name)!=NULL){
@@ -161,7 +179,10 @@ Lsymbol *LInstallVar (char *name, int type){
     Lsymbol *temp= (Lsymbol*) malloc(sizeof(Lsymbol));
     temp->name=name;
     temp->type=type;
-    temp->binding=getBinding(1); //will have to  change here  , size is set to 1
+    if(isArg==TRUE)
+        temp->binding=getArgLBinding(); //will have to  change here  , size is set to 1
+    else
+        temp->binding=getLocLBinding();
     temp->next=NULL;
 
     if(Lstart==NULL){
@@ -194,7 +215,7 @@ Paramstruct *createParams(int type, char *name){
     temp->next=NULL;
 
     //Adding parameters to the symbol table 
-    LInstallVar(name,type);
+    LInstallVar(name,type,TRUE);  //True because they are the args
 
     return temp;
 
