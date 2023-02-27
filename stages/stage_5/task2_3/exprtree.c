@@ -368,12 +368,22 @@ void checkMain(){
 void checkFn(int type, char *name, Paramstruct *list){
 
     Gsymbol *entry= GLookup(name);
+
+
     
     if(entry){
+    
+
+        if(entry->size==DEFINED){
+            printf("Error : Function '%s' is redefined\n",name);
+            exit(1);
+        }
+
+        entry->size=DEFINED;  //Setting that the function is defined(using size attribute to store whether the function is already defined)
         
-        //Checking if it is a variable
-        if(entry->size!=NIL){
-            printf("Error : Variable '%s found instead of function\n",name);
+        //Checking if it is a variable  by checking whether binding exists
+        if(entry->binding!=NIL){
+            printf("Error : Variable '%s' found instead of function\n",name);
             exit(1);
         }
 
@@ -412,7 +422,7 @@ void checkFn(int type, char *name, Paramstruct *list){
         //Check whether return statement exists or not
         if(returnType==voidtype){
 
-            printf("Error: Return statement missing in function %s\n",name);
+            printf("Error: Return statement missing in function '%s'\n",name);
             exit(1);
         }
 

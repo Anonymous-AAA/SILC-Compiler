@@ -10,6 +10,10 @@
 //for nil
 #define NIL -9997
 
+//When a function is defined the size field in global symbol table is set to DEFINED
+#define DEFINED -9996
+
+
 #define CONNECTOR -1 
 #define CONSTNUM -2
 #define CONSTSTR -3
