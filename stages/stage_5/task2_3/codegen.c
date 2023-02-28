@@ -520,14 +520,15 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             
             //Pop out arguments from the stack.
             temp=t->arglist;
-            r2=getReg();
+            r2=GARBAGE_REG;   //GARBAGE_REG is used because value is discarded
+//            r2=getReg();
             while(temp){
                 fprintf(fptr,
                         "POP R%d\n",
                         r2);
                 temp=temp->mid;
             }
-            freeReg();
+//            freeReg();
 
            //Restore the registers in the right order (Reverse of PUSH) 
             for(int i=0;i<=usedReg-1;i++){      // usedReg-1 to not  overwrite the return register
