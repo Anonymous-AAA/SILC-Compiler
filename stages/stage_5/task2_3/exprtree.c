@@ -152,6 +152,17 @@ struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r){
 
 //For read() ,write() , return
 struct tnode* makeSingleNode(int c,struct tnode* node){
+    
+    //type checking if it is a MINUS node
+    if(c==MINUS){
+        if(node->type!=inttype){
+            printf("Error: int type expected for '-', Found: %d",node->type);
+            exit(1);
+        }
+    }
+
+
+
     struct tnode *temp;
     temp=(struct tnode *) malloc(sizeof(struct tnode));
     temp->nodetype=c;
@@ -159,7 +170,11 @@ struct tnode* makeSingleNode(int c,struct tnode* node){
     temp->right = NULL;
     temp->mid = NULL;
     temp->varname = NULL;
-    temp->type=voidtype;
+    if(c==MINUS){
+        temp->type=inttype;    
+    }else {
+        temp->type=voidtype;
+    }
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->val=NIL;

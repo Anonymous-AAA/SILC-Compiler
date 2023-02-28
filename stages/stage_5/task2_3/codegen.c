@@ -126,15 +126,31 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             break;
 
         case MINUS:
-            r1=codeGen(t->left,while_label_1,while_label_2);
-            r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
-                fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
+            
+            if(t->right){  //if binary minus
+                r1=codeGen(t->left,while_label_1,while_label_2);
+                r2=codeGen(t->right,while_label_1,while_label_2);
+
+                if(t->left->nodetype==VAR){
+                    fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
+                }
+
+                if(t->right->nodetype==VAR){  
+                    fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
+                }
+            }   
+            else{  //if unary minus
+                r1=getReg();
+                fprintf(fptr,"MOV R%d, 0\n",r1);
+                r2=codeGen(t->left,while_label_1,while_label_2);
+
+                if(t->left->nodetype==VAR){
+                    fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
+                }
             }
 
-            if(t->right->nodetype==VAR){
-                fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
-            }
+
+
             fprintf(fptr,"SUB R%d, R%d\n",r1,r2);
             freeReg();
             break;

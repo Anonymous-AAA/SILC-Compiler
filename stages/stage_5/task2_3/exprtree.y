@@ -246,6 +246,7 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | expr EQ expr  {$$ = makeOperatorNode(EQ,$1,$3);}
   | expr OR expr  {$$ = makeOperatorNode(OR,$1,$3);}
   | expr AND expr {$$ = makeOperatorNode(AND,$1,$3);}
+  | MINUS expr {$$ = makeSingleNode(MINUS,$2);}
   | '(' expr ')'  {$$ = $2;}
   | NUM   {$$ = $1;}
   | STRCON {$$ = $1;}
