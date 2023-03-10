@@ -13,7 +13,7 @@
 
 %union{
  struct tnode *no;
- int integer;
+ struct TypeTable *type;
  struct Gsymbol *gsym;
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
@@ -21,10 +21,10 @@
 
 %type <gsym> GidList Gid
 %type <lsym> IdList
-%type <integer> Type
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt AllocStmt FreeStmt Field
+%type <type> Type
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt AllocStmt FreeStmt Field InitStmt
 %type <param> ParamList Param
-%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE
+%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT
 
 %left OR
 %left AND
@@ -63,10 +63,10 @@ TypeDef : ID '{' FieldDeclList '}'
         ;
 
 FieldDeclList : FieldDeclList FieldDecl
-              | FieldDecl
+              | FieldDecl {$$ = $1;}
               ;
 
-FieldDecl : Type ID ';'
+FieldDecl : Type ID ';' {$$ = createField($2->varname,$1);}
 
 
 
@@ -160,9 +160,9 @@ Param : Type ID {$$=createParams($1,$2->varname);}
       ;
 
 
-Type : INT {$$ = inttype;} 
-     | STR {$$ = strtype;}
-     | ID
+Type : INT {$$ = TLookup("int");} 
+     | STR {$$ = TLookup("str");}
+     | ID  {$$ = Tlookup($1->varname);}
      ;
 
 
@@ -196,6 +196,7 @@ Stmt : InputStmt {$$ = $1;}
      | ContinueStmt {$$ = $1;}
      | AllocStmt 
      | FreeStmt
+     | InitStmt
 //     | ReturnStmt {$$ = $1;}
      ;
 
@@ -206,6 +207,9 @@ FreeStmt : FREE '(' ID ')' ';'
 AllocStmt : ID EQUAL ALLOC '(' ')' ';'
           | Field EQUAL ALLOC '(' ')' ';'
           ;
+
+InitStmt : ID EQUAL INIT '(' ')' ';'
+         ;
 
 InputStmt : READ '(' ID ')' ';' {setEntry($3);
                                 $$ = makeSingleNode(READ,$3);
@@ -298,7 +302,9 @@ int main(int argc, char* argv[]) {
       yyin = fp;
     
   }   
-  
+
+  //Creating type table with default entries
+  TypeTableCreate();
 
   yyparse();
 

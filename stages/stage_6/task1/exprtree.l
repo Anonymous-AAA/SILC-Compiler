@@ -46,6 +46,7 @@
 "str" {return STR;}
 "main" {return MAIN;}
 "return" {return RET;}
+"initialize" {return INIT;}
 "alloc" {return ALLOC;}
 "free" {return FREE;}
 "type" {return TYPE;}
