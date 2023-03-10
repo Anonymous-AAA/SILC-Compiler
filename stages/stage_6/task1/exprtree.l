@@ -46,6 +46,10 @@
 "str" {return STR;}
 "main" {return MAIN;}
 "return" {return RET;}
+"alloc" {return ALLOC;}
+"free" {return FREE;}
+"type" {return TYPE;}
+"endtype" {return ENDTYPE;}
 [a-zA-Z][a-zA-Z0-9]* {yylval.no = makeVariableLeafNode(yytext,yyleng);  return ID;}
 \"[^\"\n]*\" {yylval.no = makeConstantStringNode(yytext,yyleng); return STRCON;}
 . {yyerror("unknown character ");printf("%s\n",yytext);exit(1);}

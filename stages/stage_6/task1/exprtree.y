@@ -22,9 +22,9 @@
 %type <gsym> GidList Gid
 %type <lsym> IdList
 %type <integer> Type
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt AllocStmt FreeStmt Field
 %type <param> ParamList Param
-%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR
+%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE
 
 %left OR
 %left AND
@@ -38,7 +38,7 @@
 
 
 //use evaluate() test() for testing
-Program : GDeclBlock FDefBlock MainBlock {
+Program : TypeDefBlock GDeclBlock FDefBlock MainBlock {
           //code($3);
           //evaluate($3)
           //test($3)
@@ -104,7 +104,7 @@ Gid : ID {$$=GInstallVar($1->varname,voidtype,1);}
 //Main Block
 MainBlock : INT MAIN '(' ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
             $8 = makeConnectorNode($8,$9);  //Attaching the return statement
-            checkMain();
+            checkMain($9->left->type);
             codeFunction($8,NULL);       //Generating code
            // printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
@@ -125,14 +125,14 @@ MainBlock : INT MAIN '(' ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
 //Function
 
 FDefBlock : FDefBlock Fdef
-          | Fdef
+          //| Fdef
           |               //can be empty
           ;
 
 Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
 
         $9 = makeConnectorNode($9,$10);  //Attaching the return statement
-        checkFn($1,$2->varname,$4);  //to check definition with declaration
+        checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
         codeFunction($9,$2->varname);       //Generating code
         //printLSymbolTable($2->varname); //Printing the local symbol table
@@ -183,8 +183,8 @@ IdList  : IdList ',' ID {$$=$1; LInstallVar($3->varname,voidtype,FALSE);}  //Fal
 
 
 Body    : Body Stmt {$$ = makeConnectorNode($1,$2);}
-        | Stmt {$$ = $1;}
-        |       //can be empty
+//        | Stmt {$$ = $1;}
+        |  {$$ = NULL;}   //can be empty
         ;
 
 Stmt : InputStmt {$$ = $1;}
@@ -194,8 +194,18 @@ Stmt : InputStmt {$$ = $1;}
      | WhileStmt {$$ = $1;}
      | BreakStmt {$$ = $1;}
      | ContinueStmt {$$ = $1;}
+     | AllocStmt 
+     | FreeStmt
 //     | ReturnStmt {$$ = $1;}
      ;
+
+FreeStmt : FREE '(' ID ')' ';'
+         | FREE '(' Field ')' ';'
+         ;
+
+AllocStmt : ID EQUAL ALLOC '(' ')' ';'
+          | Field EQUAL ALLOC '(' ')' ';'
+          ;
 
 InputStmt : READ '(' ID ')' ';' {setEntry($3);
                                 $$ = makeSingleNode(READ,$3);
@@ -203,7 +213,9 @@ InputStmt : READ '(' ID ')' ';' {setEntry($3);
           | READ '(' ID '[' expr ']' ')' ';' { setArrayNode($3,$5);
                                             $$ = makeSingleNode(READ,$3);
                                             }
+          | READ '(' Field ')'  ';'
           ;
+
 OutputStmt : WRITE '(' expr ')' ';' {$$ = makeSingleNode(WRITE,$3);}
            ;
 AsgStmt : ID EQUAL expr ';' {setEntry($1); 
@@ -257,14 +269,14 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | ID '[' expr ']'{setArrayNode($1,$3);$$=$1;}
   | ID '('')' {$$=makeFnNode($1->varname,NULL);}
   | ID '(' ArgList ')' {$$=makeFnNode($1->varname,$3);}
-  | FIELD
+  | Field
   ;
 
 ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
         | expr {$$ = $1;}
 
-FIELD : ID '.' ID
-      | FIELD '.' ID
+Field : ID '.' ID
+      | Field '.' ID
       ;
 
 

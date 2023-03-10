@@ -133,6 +133,10 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
 }
 
 struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r){
+
+    if(l==NULL)     //connector node not required if  left node is null
+        return r;
+
     struct tnode *temp;
     temp = (struct tnode*)malloc(sizeof(struct tnode));
     temp->nodetype=CONNECTOR;
@@ -357,7 +361,7 @@ void attachArg(tnode* arglist,tnode* arg){
 }
 
 
-void checkMain(){
+void checkMain(int returnType){
 
 //    //Check whether return statement exists or not
 //    if(returnType==voidtype){
@@ -382,7 +386,7 @@ void checkMain(){
 
 
 
-void checkFn(int type, char *name, Paramstruct *list){
+void checkFn(int type,int returnType,char *name, Paramstruct *list){
 
     Gsymbol *entry= GLookup(name);
 
@@ -461,7 +465,7 @@ void checkFn(int type, char *name, Paramstruct *list){
 
     }
 
-    returnType=voidtype;
+//    returnType=voidtype;
 
 }
 

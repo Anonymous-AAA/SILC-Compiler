@@ -89,7 +89,11 @@ extern int yydebug;
     MAIN = 290,                    /* MAIN  */
     RET = 291,                     /* RET  */
     AND = 292,                     /* AND  */
-    OR = 293                       /* OR  */
+    OR = 293,                      /* OR  */
+    FREE = 294,                    /* FREE  */
+    ALLOC = 295,                   /* ALLOC  */
+    TYPE = 296,                    /* TYPE  */
+    ENDTYPE = 297                  /* ENDTYPE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -134,6 +138,10 @@ extern int yydebug;
 #define RET 291
 #define AND 292
 #define OR 293
+#define FREE 294
+#define ALLOC 295
+#define TYPE 296
+#define ENDTYPE 297
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -147,7 +155,7 @@ union YYSTYPE
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
 
-#line 151 "y.tab.h"
+#line 159 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
