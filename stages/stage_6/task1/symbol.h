@@ -1,8 +1,8 @@
 //Datatypes
-#define inttype 1
-#define booltype 2
-#define voidtype 3
-#define strtype 4
+//#define inttype 1
+//#define booltype 2
+//#define voidtype 3
+//#define strtype 4
 
 typedef struct Gsymbol {
   char *name;       // name of the variable

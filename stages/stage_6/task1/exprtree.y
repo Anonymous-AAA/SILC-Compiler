@@ -13,7 +13,8 @@
 
 %union{
  struct tnode *no;
- struct TypeTable *type;
+ struct Typetable *type;
+ struct Fieldlist *flist;
  struct Gsymbol *gsym;
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
@@ -22,6 +23,7 @@
 %type <gsym> GidList Gid
 %type <lsym> IdList
 %type <type> Type
+%type <flist> FieldDeclList FieldDecl
 %type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt AllocStmt FreeStmt Field InitStmt
 %type <param> ParamList Param
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT
@@ -42,7 +44,8 @@ Program : TypeDefBlock GDeclBlock FDefBlock MainBlock {
           //code($3);
           //evaluate($3)
           //test($3)
-          //printGSymbolTable();
+          printTypeTable();
+          printGSymbolTable();
           exit(0);
           }
         ;
@@ -55,15 +58,15 @@ TypeDefBlock : TYPE TypeDefList ENDTYPE
              |      //can be empty
              ;
 
-TypeDefList : TypeDefList TypeDef
-            | TypeDef
+TypeDefList : TypeDefList TypeDef 
+            | TypeDef 
             ;
 
-TypeDef : ID '{' FieldDeclList '}'
+TypeDef : ID '{' FieldDeclList '}' {TInstall($1->varname,$3);}  
         ;
 
-FieldDeclList : FieldDeclList FieldDecl
-              | FieldDecl {$$ = $1;}
+FieldDeclList : FieldDeclList FieldDecl {$$ = $1; attachField($2);}
+              | FieldDecl {$$ = $1; Fcurr=$1;}
               ;
 
 FieldDecl : Type ID ';' {$$ = createField($2->varname,$1);}
@@ -106,7 +109,7 @@ MainBlock : INT MAIN '(' ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
             $8 = makeConnectorNode($8,$9);  //Attaching the return statement
             checkMain($9->left->type);
             codeFunction($8,NULL);       //Generating code
-           // printLSymbolTable("main"); //Printing the local symbol table
+            printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST($8);  //deallocating the AST
           }
@@ -135,7 +138,7 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
         checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
         codeFunction($9,$2->varname);       //Generating code
-        //printLSymbolTable($2->varname); //Printing the local symbol table
+        printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST($9);  //deallocating the AST
       }
@@ -160,9 +163,9 @@ Param : Type ID {$$=createParams($1,$2->varname);}
       ;
 
 
-Type : INT {$$ = TLookup("int");} 
-     | STR {$$ = TLookup("str");}
-     | ID  {$$ = Tlookup($1->varname);}
+Type : INT {$$ = inttype;} 
+     | STR {$$ = strtype;}
+     | ID  {$$ = TLookup($1->varname);}
      ;
 
 

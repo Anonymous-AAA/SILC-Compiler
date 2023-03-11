@@ -22,5 +22,12 @@ Typetable *Tcurr = NULL;
 int fieldIndex=-1;
 
 //FieldList variables
-Fieldlist *Fstart = NULL;
 Fieldlist *Fcurr = NULL;
+
+
+//pointers to typetable entry for common datatypes
+Typetable *inttype = NULL;
+Typetable *booltype = NULL;
+Typetable *voidtype = NULL;
+Typetable *strtype = NULL;
+Typetable *nulltype = NULL;

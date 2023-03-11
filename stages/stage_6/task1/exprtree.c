@@ -1,7 +1,9 @@
 #include "y.tab.h"
+#include "type.h"
 #include "exprtree.h"
 #include "symbol.h"
 #include "symbol.c"
+#include "type.c"
 #include "string.h"
 
 //Constant NUM node
@@ -72,7 +74,7 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
 
 
     if(r->type!=l->type){
-        printf("Error :Type Mismatch %d : %d , Operator: %d \n",l->type,r->type,c);
+        printf("Error :Type Mismatch %s : %s , Operator: %d \n",l->type->name,r->type->name,c);
         exit(1);
     }
 
@@ -160,7 +162,7 @@ struct tnode* makeSingleNode(int c,struct tnode* node){
     //type checking if it is a MINUS node
     if(c==MINUS){
         if(node->type!=inttype){
-            printf("Error: int type expected for '-', Found: %d",node->type);
+            printf("Error: int type expected for '-', Found: %s",node->type->name);
             exit(1);
         }
     }
@@ -253,7 +255,7 @@ struct tnode* makeFnNode(char *name, tnode *arglist){
     while(Plist && Alist){
 
         if(Plist->type!=Alist->type){
-            printf("Error: Type mismatch of argument %s in function call with function definition.(%d : %d)",Alist->varname,Alist->type,Plist->type);
+            printf("Error: Type mismatch of argument %s in function call with function definition.(%s : %s)",Alist->varname,Alist->type->name,Plist->type->name);
             exit(1);
         }
 
@@ -361,7 +363,7 @@ void attachArg(tnode* arglist,tnode* arg){
 }
 
 
-void checkMain(int returnType){
+void checkMain(Typetable *returnType){
 
 //    //Check whether return statement exists or not
 //    if(returnType==voidtype){
@@ -386,7 +388,7 @@ void checkMain(int returnType){
 
 
 
-void checkFn(int type,int returnType,char *name, Paramstruct *list){
+void checkFn(Typetable *type,Typetable *returnType,char *name, Paramstruct *list){
 
     Gsymbol *entry= GLookup(name);
 
@@ -409,7 +411,7 @@ void checkFn(int type,int returnType,char *name, Paramstruct *list){
         }
 
         if(entry->type!=type){
-            printf("Error: Conflicting types for function '%s' in declaration and definition (%d:%d)\n",name,entry->type,type);
+            printf("Error: Conflicting types for function '%s' in declaration and definition (%s:%s)\n",name,entry->type->name,type->name);
             exit(1);
         }
 
@@ -424,7 +426,7 @@ void checkFn(int type,int returnType,char *name, Paramstruct *list){
             }
 
             if(decl->type!=def->type){
-                printf("Error: Parameter '%s' of function '%s' have different types in declaration and definiton (%d : %d)\n",decl->name,name,decl->type,def->type);
+                printf("Error: Parameter '%s' of function '%s' have different types in declaration and definiton (%s : %s)\n",decl->name,name,decl->type->name,def->type->name);
                 exit(1);
             }
 
@@ -453,7 +455,7 @@ void checkFn(int type,int returnType,char *name, Paramstruct *list){
         //checking whether the value returned by the return statement is same as the return type
         if(returnType!=type){
 
-            printf("Error: The type of value returned by the function '%s' does not match with the return type (%d : %d)\n",name,returnType,type);
+            printf("Error: The type of value returned by the function '%s' does not match with the return type (%s : %s)\n",name,returnType->name,type->name);
             exit(1);
         }
 

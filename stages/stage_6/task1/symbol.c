@@ -33,7 +33,7 @@ int getLocLBinding(){   //Get binding for local variables of the function
 
 
 
-void setGType(Gsymbol* node, int type){
+void setGType(Gsymbol* node, Typetable *type){
     
     Gsymbol* temp=node;
 
@@ -61,7 +61,7 @@ Gsymbol *GLookup(char *name){
     return NULL;
 } 
 
-Gsymbol *GInstallVar (char *name, int type, int size){
+Gsymbol *GInstallVar (char *name, Typetable *type, int size){
 
     //check whether name already exists, if so throw error
     if(GLookup(name)!=NULL){
@@ -114,7 +114,7 @@ void deallocateLST(){
 
 }
 
-Gsymbol *GInstallFn(char *name,int type,Paramstruct *paramList){
+Gsymbol *GInstallFn(char *name,Typetable *type,Paramstruct *paramList){
     
     //Deallocating the unwanted LST generated (is there a better way?)
     deallocateLST();
@@ -165,7 +165,7 @@ Lsymbol *LLookup(char *name){
 } 
 
 
-Lsymbol *LInstallVar (char *name, int type, int isArg){
+Lsymbol *LInstallVar (char *name, Typetable *type, int isArg){
 
     //check whether name already exists, if so throw error
     if(LLookup(name)!=NULL){
@@ -196,7 +196,7 @@ Lsymbol *LInstallVar (char *name, int type, int isArg){
 }
 
 
-void setLType(Lsymbol* node, int type){
+void setLType(Lsymbol* node, Typetable *type){
     
     Lsymbol* temp=node;
 
@@ -207,7 +207,7 @@ void setLType(Lsymbol* node, int type){
 
 }
 
-Paramstruct *createParams(int type, char *name){
+Paramstruct *createParams(Typetable *type, char *name){
 
     Paramstruct *temp= (Paramstruct*) malloc(sizeof(Paramstruct));
     temp->name=name;
@@ -249,7 +249,7 @@ void printLSymbolTable(char *fname){
     printf("Name Type Binding\n");
 
     while(temp){
-        printf("%s %d %d\n",temp->name,temp->type,temp->binding);
+        printf("%s %s %d\n",temp->name,temp->type->name,temp->binding);
         temp=temp->next;
     }
     printf("\n");
@@ -265,12 +265,12 @@ void printGSymbolTable(){
     printf("Name Type Size Binding Flabel\n");
 
     while(temp){
-        printf("%s %d %d %d %d  ",temp->name,temp->type,temp->size,temp->binding,temp->flabel);
+        printf("%s %s %d %d %d  ",temp->name,temp->type->name,temp->size,temp->binding,temp->flabel);
         if(temp->paramlist){
             printf("ParamList : ");
             Paramstruct *p=temp->paramlist;
             while(p){
-                printf("%d->%s ",p->type,p->name);
+                printf("%s->%s ",p->type->name,p->name);
                 p=p->next;
             }
         }

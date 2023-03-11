@@ -152,12 +152,13 @@ union YYSTYPE
 #line 14 "exprtree.y"
 
  struct tnode *no;
- int integer;
+ struct Typetable *type;
+ struct Fieldlist *flist;
  struct Gsymbol *gsym;
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
 
-#line 161 "y.tab.h"
+#line 162 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

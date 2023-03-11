@@ -10,6 +10,7 @@ void TypeTableCreate(){
     strcpy(entry->name,"int");
     entry->size=1;
     entry->fields=NULL;
+    inttype=entry;
 
     entry->next=(Typetable*) malloc(sizeof(Typetable));
     entry=entry->next;
@@ -19,6 +20,7 @@ void TypeTableCreate(){
     strcpy(entry->name,"str");
     entry->size=1;
     entry->fields=NULL;
+    strtype=entry;
 
 
     entry->next=(Typetable*) malloc(sizeof(Typetable));
@@ -29,6 +31,7 @@ void TypeTableCreate(){
     strcpy(entry->name,"bool");
     entry->size=1;
     entry->fields=NULL;
+    booltype=entry;
 
 
     entry->next=(Typetable*) malloc(sizeof(Typetable));
@@ -39,6 +42,7 @@ void TypeTableCreate(){
     strcpy(entry->name,"null");
     entry->size=1;
     entry->fields=NULL;
+    nulltype=entry;
 
 
     entry->next=(Typetable*) malloc(sizeof(Typetable));
@@ -49,10 +53,36 @@ void TypeTableCreate(){
     strcpy(entry->name,"void");
     entry->size=1;
     entry->fields=NULL;
+    voidtype=entry;
 
     Tcurr=entry;    //setting the current entry
 }
 
+
+void printTypeTable(){
+
+    printf("TypeTable\n");
+    Typetable *temp=Tstart;
+
+    while(temp){
+        printf("%s  %d  fields: ",temp->name,temp->size);
+        Fieldlist *ftemp=temp->fields;
+
+        while(ftemp){
+            printf("%s-->%d  %s, ",ftemp->name,ftemp->fieldIndex,ftemp->type->name);
+            ftemp=ftemp->next;
+        }
+
+        printf("\n");
+
+        temp=temp->next;
+    }
+
+    printf("\n");
+
+
+
+}
 
 //Search through the type table and return pointer to type table entry of type 'name'. Returns NULL if entry is not found.
 Typetable* TLookup(char* name){
@@ -68,25 +98,34 @@ Typetable* TLookup(char* name){
 
     }
      
-    printf("Error : Type '%s is not declared\n",name);
-    exit(1);
+    //printf("Error : Type '%s' is not declared\n",name);
+    //exit(1);
 
     //return null if entry not found
-    //return NULL;
+    return NULL;
 
 }
 
 
-Typetable* TInstall(char *name,int size, Fieldlist *fields){
+Typetable* TInstall(char *name,Fieldlist *fields){
 
     Typetable* temp= (Typetable*) malloc(sizeof(Typetable));
     temp->name=name;
-    temp->size=size;
+    temp->size=fieldIndex+1;   //fieldIndex+1 gives the size
     temp->fields=fields;
     temp->next=NULL;
 
+    //Tcurr cannot be null as there are predefined types
     Tcurr->next=temp;
     Tcurr=temp;
+
+
+    //Reset fcurr
+    Fcurr=NULL;
+
+    //Reset fieldIndex
+    fieldIndex=-1;
+    
 
     return temp;
 
@@ -135,10 +174,7 @@ Fieldlist* createField(char *name, Typetable *type){
 
 void attachField(Fieldlist *field){
     
-
-
-
-
-
+    Fcurr->next=field;
+    Fcurr=Fcurr->next;
 }
 

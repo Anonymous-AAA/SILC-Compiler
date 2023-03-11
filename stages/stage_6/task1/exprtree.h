@@ -1,3 +1,4 @@
+
 #define MAX_REG 19
 #define GARBAGE_REG 19 //R19 will be the garbage register to pop out from stack and all
 //#define inttype 1
@@ -24,7 +25,7 @@
 
 typedef struct tnode{
  int val;   // value of a number for NUM nodes.
- int type;  // type of a variable
+struct Typetable *type;  // type of a variable
  char* varname; // name of a variable for ID nodes
  char* strval; //to store string constants
  int nodetype;  //indicates the opertor or info on  nodes
