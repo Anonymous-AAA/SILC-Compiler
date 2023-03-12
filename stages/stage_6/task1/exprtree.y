@@ -26,7 +26,7 @@
 %type <flist> FieldDeclList FieldDecl
 %type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt AllocStmt FreeStmt Field InitStmt
 %type <param> ParamList Param
-%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT
+%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL
 
 %left OR
 %left AND
@@ -86,7 +86,7 @@ GDeclList : GDeclList GDecl
           | GDecl 
           ;
 
-GDecl : Type GidList ';' { setGType($2,$1);}
+GDecl : Type GidList ';' {checkType($1);setGType($2,$1);}
       ;
 
 
@@ -134,6 +134,8 @@ FDefBlock : FDefBlock Fdef
 
 Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
 
+        checkType($1);
+
         $9 = makeConnectorNode($9,$10);  //Attaching the return statement
         checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
@@ -159,7 +161,7 @@ ParamList : ParamList ',' Param {$$=$1; createParamList($3);}
           | {$$=NULL;}
           ;
 
-Param : Type ID {$$=createParams($1,$2->varname);}
+Param : Type ID {checkType($1);$$=createParams($1,$2->varname);}
       ;
 
 
@@ -178,7 +180,7 @@ LDecList  : LDecList LDecl
           | LDecl
           ;
 
-LDecl : Type IdList ';'{ setLType($2,$1);}
+LDecl : Type IdList ';'{checkType($1);setLType($2,$1);}
       ;
 
 IdList  : IdList ',' ID {$$=$1; LInstallVar($3->varname,voidtype,FALSE);}  //False becuse they are local variables

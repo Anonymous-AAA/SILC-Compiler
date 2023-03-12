@@ -15,6 +15,9 @@
 //When a function is defined the size field in global symbol table is set to DEFINED
 #define DEFINED -9996
 
+//Used in the size field when type is not declared before
+#define UNDEFINED -9995
+
 
 #define CONNECTOR -1 
 #define CONSTNUM -2

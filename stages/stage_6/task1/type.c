@@ -102,7 +102,16 @@ Typetable* TLookup(char* name){
     //exit(1);
 
     //return null if entry not found
-    return NULL;
+    //return NULL;
+
+    //return a temp type if type not found
+    temp= (Typetable*) malloc(sizeof(Typetable));
+    temp->name=name;
+    temp->size=UNDEFINED;   //as a marker for an undefined type (this is done to allow recursive defintion of types)
+    temp->fields=NULL;
+    temp->next=NULL;
+
+    return temp;
 
 }
 
@@ -110,6 +119,30 @@ Typetable* TLookup(char* name){
 Typetable* TInstall(char *name,Fieldlist *fields){
 
     Typetable* temp= (Typetable*) malloc(sizeof(Typetable));
+
+    //Checking for undefined fields 
+    Fieldlist *ftemp=fields;
+
+    while(ftemp){
+        
+        if(ftemp->type->size==UNDEFINED){
+
+            if(strcmp(ftemp->type->name,name)==0){
+                free(ftemp->type);   //freeing the temp type
+                ftemp->type=temp;
+            }else{
+                printf("Error : Type '%s' is not defined\n",ftemp->type->name);
+                exit(1);
+            }
+        
+        }
+
+        ftemp=ftemp->next;
+    }
+
+
+
+
     temp->name=name;
     temp->size=fieldIndex+1;   //fieldIndex+1 gives the size
     temp->fields=fields;
@@ -178,3 +211,12 @@ void attachField(Fieldlist *field){
     Fcurr=Fcurr->next;
 }
 
+
+void checkType(Typetable *temp){
+
+    if(temp->size==UNDEFINED){
+        printf("Error : Type '%s' is not defined\n",temp->name);
+        exit(1);
+
+    }
+}

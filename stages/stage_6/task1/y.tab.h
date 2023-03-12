@@ -94,7 +94,8 @@ extern int yydebug;
     ALLOC = 295,                   /* ALLOC  */
     TYPE = 296,                    /* TYPE  */
     ENDTYPE = 297,                 /* ENDTYPE  */
-    INIT = 298                     /* INIT  */
+    INIT = 298,                    /* INIT  */
+    NUL = 299                      /* NUL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -144,6 +145,7 @@ extern int yydebug;
 #define TYPE 296
 #define ENDTYPE 297
 #define INIT 298
+#define NUL 299
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -158,7 +160,7 @@ union YYSTYPE
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
 
-#line 162 "y.tab.h"
+#line 164 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

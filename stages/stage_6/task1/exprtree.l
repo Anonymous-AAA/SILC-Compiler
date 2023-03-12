@@ -26,7 +26,7 @@
 "||" {return OR;}
 "&&" {return AND;}
 [ \t\n] {}
-[();,\[\]{}] {return *yytext;}
+[();,\[\]{}\.] {return *yytext;}
 "end" {return END;}
 "begin" {return BEG;}
 "read" {return READ;}
@@ -51,6 +51,7 @@
 "free" {return FREE;}
 "type" {return TYPE;}
 "endtype" {return ENDTYPE;}
+"null" {return NUL;}
 [a-zA-Z][a-zA-Z0-9]* {yylval.no = makeVariableLeafNode(yytext,yyleng);  return ID;}
 \"[^\"\n]*\" {yylval.no = makeConstantStringNode(yytext,yyleng); return STRCON;}
 . {yyerror("unknown character ");printf("%s\n",yytext);exit(1);}
