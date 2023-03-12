@@ -1920,8 +1920,14 @@ yyreduce:
 #line 1921 "y.tab.c"
     break;
 
+  case 92: /* Field: ID '.' ID  */
+#line 287 "exprtree.y"
+                  {setEntry((yyvsp[-2].no));}
+#line 1927 "y.tab.c"
+    break;
 
-#line 1925 "y.tab.c"
+
+#line 1931 "y.tab.c"
 
       default: break;
     }

@@ -199,22 +199,24 @@ Stmt : InputStmt {$$ = $1;}
      | WhileStmt {$$ = $1;}
      | BreakStmt {$$ = $1;}
      | ContinueStmt {$$ = $1;}
-     | AllocStmt 
-     | FreeStmt
-     | InitStmt
+//     | AllocStmt {$$ = $1;} 
+     | FreeStmt {$$ = $1;}
+//     | InitStmt {$$ = $1;}
 //     | ReturnStmt {$$ = $1;}
      ;
 
-FreeStmt : FREE '(' ID ')' ';'
-         | FREE '(' Field ')' ';'
+FreeStmt : FREE '(' ID ')' ';' { setEntry($3); 
+                                 $$=makeSingleNode(FREE,$3);
+                                 }
+         | FREE '(' Field ')' ';'  //complete here
          ;
 
-AllocStmt : ID EQUAL ALLOC '(' ')' ';'
-          | Field EQUAL ALLOC '(' ')' ';'
-          ;
+//AllocStmt : ID EQUAL ALLOC '(' ')' ';'
+//          | Field EQUAL ALLOC '(' ')' ';'
+//          ;
 
-InitStmt : ID EQUAL INIT '(' ')' ';'
-         ;
+//InitStmt : ID EQUAL INIT '(' ')' ';'
+//         ;
 
 InputStmt : READ '(' ID ')' ';' {setEntry($3);
                                 $$ = makeSingleNode(READ,$3);
@@ -227,11 +229,21 @@ InputStmt : READ '(' ID ')' ';' {setEntry($3);
 
 OutputStmt : WRITE '(' expr ')' ';' {$$ = makeSingleNode(WRITE,$3);}
            ;
+
 AsgStmt : ID EQUAL expr ';' {setEntry($1); 
                               $$ = makeOperatorNode(EQUAL,$1,$3);
                               }
         | ID '[' expr ']' EQUAL expr ';' { setArrayNode($1,$3);
                                           $$ = makeOperatorNode(EQUAL,$1,$6);
+                                        }
+        | ID EQUAL ALLOC '(' ')' ';'{setEntry($1);
+                                        $3=makeNoChildNode(ALLOC);
+                                        $$ = makeOperatorNode(EQUAL,$1,$3);
+                                        }
+        | Field EQUAL ALLOC '(' ')' ';'  //complete here
+        | ID EQUAL INIT '(' ')' ';' {setEntry($1);
+                                        $3=makeNoChildNode(INIT);
+                                        $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
         ;
 

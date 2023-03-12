@@ -156,7 +156,7 @@ struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r){
 }
 
 
-//For read() ,write() , return
+//For read() ,write() , return, free()
 struct tnode* makeSingleNode(int c,struct tnode* node){
     
     //type checking if it is a MINUS node
@@ -216,7 +216,7 @@ struct tnode* makeTriplets(int c,struct tnode* l,struct tnode* r,struct tnode* m
 
 }
 
-//for 'break' and continue (they are leaf nodes)
+//for break,continue,initialize() and alloc (they are leaf nodes)
 struct tnode* makeNoChildNode(int c){
     
     struct tnode* temp;
@@ -495,5 +495,16 @@ void deallocateAST(tnode *node){
     deallocateAST(node->mid);
     free(node);
     }
+
+}
+
+tnode* setField(tnode *id1,tnode *id2){
+    
+    setEntry(id1);
+    Typetable *type=id1->type;
+
+
+
+
 
 }
