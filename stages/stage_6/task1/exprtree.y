@@ -284,7 +284,7 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
 ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
         | expr {$$ = $1;}
 
-Field : ID '.' ID
+Field : ID '.' ID {setEntry($1);}  //continue from here
       | Field '.' ID
       ;
 
