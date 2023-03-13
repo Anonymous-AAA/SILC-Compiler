@@ -24,6 +24,7 @@
 #define CONSTSTR -3
 #define VAR -4
 #define FUNCTION -5
+#define FIELD -6
 
 
 typedef struct tnode{

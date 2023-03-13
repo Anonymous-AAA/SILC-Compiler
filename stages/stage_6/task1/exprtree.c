@@ -289,6 +289,25 @@ struct tnode* makeFnNode(char *name, tnode *arglist){
 
 }
 
+struct tnode* makeFieldNode(int fieldIndex){
+
+
+    struct tnode *temp;
+    temp = (struct tnode*)malloc(sizeof(struct tnode));
+    temp->val = fieldIndex;
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->mid = NULL;
+    temp->varname=NULL;
+    temp->type= voidtype;
+    temp->Gentry=NULL;
+    temp->strval=NULL;
+    temp->nodetype=FIELD;
+    temp->arglist=NULL;
+    temp->Lentry=NULL;
+    return temp;
+
+}
 
 
 
@@ -498,13 +517,32 @@ void deallocateAST(tnode *node){
 
 }
 
-tnode* setField(tnode *id1,tnode *id2){
+void setField(tnode *var,tnode *id){
     
-    setEntry(id1);
-    Typetable *type=id1->type;
+    //setting gentry and/or lentry if not set
+    if(!(var->Lentry || var->Gentry))
+        setEntry(var);
+    
+    Typetable *type=var->type;
 
 
+    Fieldlist *field=FLookup(type,id->varname);
 
+    if(field==NULL){
+        printf("Error : '%s' is not a field in type '%s' of variable '%s'\n",id->varname,type->name,var->varname);
+        exit(1);
+    }
 
+    //setting the type
+    var->type=field->type;
+
+    //setting the field node at the end of the field node chain
+    while(var->left)
+        var=var->left;
+
+    var->left=makeFieldNode(field->fieldIndex);
+
+    
 
 }
+
