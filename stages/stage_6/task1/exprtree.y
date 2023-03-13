@@ -24,7 +24,7 @@
 %type <lsym> IdList
 %type <type> Type
 %type <flist> FieldDeclList FieldDecl
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt AllocStmt FreeStmt Field InitStmt
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field 
 %type <param> ParamList Param
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL
 
@@ -208,7 +208,7 @@ Stmt : InputStmt {$$ = $1;}
 FreeStmt : FREE '(' ID ')' ';' { setEntry($3); 
                                  $$=makeSingleNode(FREE,$3);
                                  }
-         | FREE '(' Field ')' ';'  //complete here
+         | FREE '(' Field ')' ';' { $$=makeSingleNode(FREE,$3);}
          ;
 
 //AllocStmt : ID EQUAL ALLOC '(' ')' ';'
@@ -224,7 +224,7 @@ InputStmt : READ '(' ID ')' ';' {setEntry($3);
           | READ '(' ID '[' expr ']' ')' ';' { setArrayNode($3,$5);
                                             $$ = makeSingleNode(READ,$3);
                                             }
-          | READ '(' Field ')'  ';'
+          | READ '(' Field ')'  ';' { $$=makeSingleNode(READ,$3);}
           ;
 
 OutputStmt : WRITE '(' expr ')' ';' {$$ = makeSingleNode(WRITE,$3);}
@@ -237,13 +237,13 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
                                           $$ = makeOperatorNode(EQUAL,$1,$6);
                                         }
         | ID EQUAL ALLOC '(' ')' ';'{setEntry($1);
-                                        $3=makeNoChildNode(ALLOC);
-                                        $$ = makeOperatorNode(EQUAL,$1,$3);
+                                        $$ = makeOperatorNode(EQUAL,$1,makeNoChildNode(ALLOC));
                                         }
-        | Field EQUAL ALLOC '(' ')' ';'  //complete here
+        | Field EQUAL ALLOC '(' ')' ';'  {
+                                                $$ = makeOperatorNode(EQUAL,$1,makeNoChildNode(ALLOC));
+                                        }
         | ID EQUAL INIT '(' ')' ';' {setEntry($1);
-                                        $3=makeNoChildNode(INIT);
-                                        $$ = makeOperatorNode(EQUAL,$1,$3);
+                                        $$ = makeOperatorNode(EQUAL,$1,makeNoChildNode(INIT));
                                         }
         ;
 
@@ -290,14 +290,14 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | ID '[' expr ']'{setArrayNode($1,$3);$$=$1;}
   | ID '('')' {$$=makeFnNode($1->varname,NULL);}
   | ID '(' ArgList ')' {$$=makeFnNode($1->varname,$3);}
-  | Field
+  | Field {$$ = $1;}
   ;
 
 ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
         | expr {$$ = $1;}
 
-Field : ID '.' ID {setField($1,$3); $$=$1;}  //continue from here
-      | Field '.' ID
+Field : ID '.' ID {setField($1,$3); $$=$1;}  
+      | Field '.' ID {setField($1,$3); $$=$1;}  
       ;
 
 

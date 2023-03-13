@@ -289,6 +289,7 @@ struct tnode* makeFnNode(char *name, tnode *arglist){
 
 }
 
+//field node for user defined variables
 struct tnode* makeFieldNode(int fieldIndex){
 
 
