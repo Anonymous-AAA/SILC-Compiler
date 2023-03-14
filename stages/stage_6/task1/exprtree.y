@@ -66,7 +66,7 @@ TypeDef : ID '{' FieldDeclList '}' {TInstall($1->varname,$3);}
         ;
 
 FieldDeclList : FieldDeclList FieldDecl {$$ = $1; attachField($2);}
-              | FieldDecl {$$ = $1; Fcurr=$1;}
+              | FieldDecl {$$ = $1; Fcurr=$1;Fstart=$1;}
               ;
 
 FieldDecl : Type ID ';' {$$ = createField($2->varname,$1);}
@@ -167,7 +167,7 @@ Param : Type ID {checkType($1);$$=createParams($1,$2->varname);}
 
 Type : INT {$$ = inttype;} 
      | STR {$$ = strtype;}
-     | ID  {$$ = TLookup($1->varname);}
+     | ID  {checkInvalidTypes($1);$$ = TLookup($1->varname);}
      ;
 
 
@@ -250,6 +250,7 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
                                         $3->type=inttype;   //initialize returns integer value
                                         $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
+        | Field EQUAL expr ';' { $$ = makeOperatorNode(EQUAL,$1,$3);}
         ;
 
 IfStmt : IF '(' expr ')' THEN Body ELSE Body ENDIF ';' {$$ = makeTriplets(IF,$3,$6,$8);}

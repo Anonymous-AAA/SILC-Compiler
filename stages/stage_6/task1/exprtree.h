@@ -1,6 +1,7 @@
 
 #define MAX_REG 19
 #define GARBAGE_REG 19 //R19 will be the garbage register to pop out from stack and all
+#define HB_SIZE 8
 //#define inttype 1
 //#define booltype 2
 //#define voidtype 3

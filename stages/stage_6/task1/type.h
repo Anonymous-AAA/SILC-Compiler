@@ -23,6 +23,7 @@ int fieldIndex=-1;
 
 //FieldList variables
 Fieldlist *Fcurr = NULL;
+Fieldlist *Fstart = NULL;
 
 
 //pointers to typetable entry for common datatypes

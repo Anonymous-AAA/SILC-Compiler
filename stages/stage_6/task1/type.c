@@ -118,6 +118,11 @@ Typetable* TLookup(char* name){
 
 Typetable* TInstall(char *name,Fieldlist *fields){
 
+    if(TLookup(name)->size!=UNDEFINED){
+        printf("Error : Type '%s' is already defined\n",name);
+        exit(1);
+    }
+
     Typetable* temp= (Typetable*) malloc(sizeof(Typetable));
 
     //Checking for undefined fields 
@@ -153,8 +158,9 @@ Typetable* TInstall(char *name,Fieldlist *fields){
     Tcurr=temp;
 
 
-    //Reset fcurr
+    //Reset fcurr and fstart
     Fcurr=NULL;
+    Fstart=NULL;
 
     //Reset fieldIndex
     fieldIndex=-1;
@@ -187,12 +193,36 @@ int GetSize(Typetable *type){
 int getfieldIndex(){
     
     fieldIndex++;
+    if(fieldIndex>=HB_SIZE){
+        printf("Error : Type cannot have more than %d fields\n",HB_SIZE);
+        exit(1);
+    }
     return fieldIndex;
     
 }
 
 
+void checkDuplicateField(char *name){
+
+    Fieldlist *temp=Fstart;
+
+    while(temp){
+        
+        if(strcmp(temp->name,name)==0){
+            printf("Error : Type cannot have multiple fields with the same name (%s).\n",name);
+            exit(1);
+        }
+
+        temp=temp->next;
+
+    }
+
+}
+
+
 Fieldlist* createField(char *name, Typetable *type){
+
+    checkDuplicateField(name);
 
     Fieldlist *temp=(Fieldlist*) malloc(sizeof(Fieldlist));
     temp->name=name;

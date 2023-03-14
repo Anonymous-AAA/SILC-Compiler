@@ -577,3 +577,10 @@ void setField(tnode *var,tnode *id){
 
 }
 
+void checkInvalidTypes(tnode* type){
+
+    if(strcmp(type->varname,"bool")==0 || strcmp(type->varname,"void")==0){
+        printf("Error : Invalid type '%s'\n",type->varname);
+        exit(1);
+    }
+}
