@@ -46,6 +46,24 @@ struct tnode* makeConstantStringNode(char *s,int len)
 }
 
 
+struct tnode* makeNullNode()
+{
+    struct tnode *temp;
+    temp = (struct tnode*)malloc(sizeof(struct tnode));
+    temp->val = NIL;
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->mid = NULL;
+    temp->varname=NULL;
+    temp->type= nulltype;
+    temp->Gentry=NULL;
+    temp->strval=NULL;
+    temp->nodetype=NUL;
+    temp->arglist=NULL;
+    temp->Lentry=NULL;
+    return temp;
+}
+
 struct tnode* makeVariableLeafNode(char *s,int len)
 {
     struct tnode *temp;
@@ -73,9 +91,21 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
    // }
 
 
-    if(r->type!=l->type){
-        printf("Error :Type Mismatch %s : %s , Operator: %d \n",l->type->name,r->type->name,c);
-        exit(1);
+    if(l->type!=r->type){
+
+        if(l->type==inttype || l->type==strtype || l->type==booltype || l->type==voidtype || l->type==nulltype){
+
+            printf("Error : Type Mismatch (%s : %s) , Operator: %d \n",l->type->name,r->type->name,c);
+            exit(1);
+
+        }
+
+        if(r->type!=nulltype){
+
+            printf("Error : Type Mismatch (%s : %s) , Operator: %d \n",l->type->name,r->type->name,c);
+            exit(1);
+
+        }
     }
 
     //Both nodes are of the same type

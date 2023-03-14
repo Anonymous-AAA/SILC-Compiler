@@ -24,7 +24,7 @@
 %type <lsym> IdList
 %type <type> Type
 %type <flist> FieldDeclList FieldDecl
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field 
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL
 %type <param> ParamList Param
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL
 
@@ -237,13 +237,18 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
                                           $$ = makeOperatorNode(EQUAL,$1,$6);
                                         }
         | ID EQUAL ALLOC '(' ')' ';'{setEntry($1);
-                                        $$ = makeOperatorNode(EQUAL,$1,makeNoChildNode(ALLOC));
+                                        $3=makeNoChildNode(ALLOC);
+                                        $3->type=inttype;
+                                        $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
-        | Field EQUAL ALLOC '(' ')' ';'  {
-                                                $$ = makeOperatorNode(EQUAL,$1,makeNoChildNode(ALLOC));
+        | Field EQUAL ALLOC '(' ')' ';'  {$3=makeNoChildNode(ALLOC);
+                                                $3->type=inttype;
+                                                $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
         | ID EQUAL INIT '(' ')' ';' {setEntry($1);
-                                        $$ = makeOperatorNode(EQUAL,$1,makeNoChildNode(INIT));
+                                        $3=makeNoChildNode(INIT);
+                                        $3->type=inttype;   //initialize returns integer value
+                                        $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
         ;
 
@@ -291,6 +296,7 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | ID '('')' {$$=makeFnNode($1->varname,NULL);}
   | ID '(' ArgList ')' {$$=makeFnNode($1->varname,$3);}
   | Field {$$ = $1;}
+  | NUL {$$ = makeNullNode();}
   ;
 
 ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
