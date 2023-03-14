@@ -1770,7 +1770,7 @@ yyreduce:
 #line 239 "exprtree.y"
                                     {setEntry((yyvsp[-5].no));
                                         (yyvsp[-3].no)=makeNoChildNode(ALLOC);
-                                        (yyvsp[-3].no)->type=inttype;
+                                        (yyvsp[-3].no)->type=nulltype;
                                         (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-5].no),(yyvsp[-3].no));
                                         }
 #line 1777 "y.tab.c"
@@ -1779,7 +1779,7 @@ yyreduce:
   case 58: /* AsgStmt: Field EQUAL ALLOC '(' ')' ';'  */
 #line 244 "exprtree.y"
                                          {(yyvsp[-3].no)=makeNoChildNode(ALLOC);
-                                                (yyvsp[-3].no)->type=inttype;
+                                                (yyvsp[-3].no)->type=nulltype;
                                                 (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-5].no),(yyvsp[-3].no));
                                         }
 #line 1786 "y.tab.c"

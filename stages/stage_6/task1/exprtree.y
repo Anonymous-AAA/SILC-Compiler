@@ -238,11 +238,11 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
                                         }
         | ID EQUAL ALLOC '(' ')' ';'{setEntry($1);
                                         $3=makeNoChildNode(ALLOC);
-                                        $3->type=inttype;
+                                        $3->type=nulltype;
                                         $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
         | Field EQUAL ALLOC '(' ')' ';'  {$3=makeNoChildNode(ALLOC);
-                                                $3->type=inttype;
+                                                $3->type=nulltype;
                                                 $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
         | ID EQUAL INIT '(' ')' ';' {setEntry($1);
