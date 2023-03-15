@@ -44,37 +44,8 @@ int regInUse(){  //returns highest register number in use
 
 int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
-    int r,r1,r2,label_1,label_2;
+    int r,r1,r2,label_1,label_2,usedReg;
     
-    // if while_label is -1 , it indicates that statment is not inside a while loop
-    //int while_label_1=-1;
-    //int while_label_2=-1;
-
-  //  if(t->left==NULL && t->right==NULL && t->mid==NULL && t->type!=voidtype){
-  //      
-  //      //It is a variable node, the address in memory is returned
-  //      if(t->varname){
-
-  //          //check if it is an array
-  //          if(t->index=nil)
-  //              return GLookup(t->varname)->binding;
-  //          else
-  //              return (GLookup(t->varname)->binding)+t->index;
-  //      }
-  //      
-  //      //if it is a constant
-  //      r=getReg();
-
-  //      if(t->strval)   //if it is a string constant
-  //          fprintf(fptr,"MOV R%d, \"%s\"\n",r,t->strval);
-  //      else        //if it is a num constant
-  //          fprintf(fptr,"MOV R%d, %d\n",r,t->val);
-  //      
-  //      return r;
-
-  //  }
-
-
 
     switch(t->nodetype) {
         case CONSTNUM:
@@ -487,7 +458,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             //Allot register for storing the  return value
             r1=getReg();
 
-            int usedReg=regInUse();
+            usedReg=regInUse();
 
             //Push registers in use to the stack
             //Registers are pushed in reverse order (observe that we are pushing the return register also)
@@ -537,14 +508,12 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             //Pop out arguments from the stack.
             temp=t->arglist;
             r2=GARBAGE_REG;   //GARBAGE_REG is used because value is discarded
-//            r2=getReg();
             while(temp){
                 fprintf(fptr,
                         "POP R%d\n",
                         r2);
                 temp=temp->mid;
             }
-//            freeReg();
 
            //Restore the registers in the right order (Reverse of PUSH) 
             for(int i=0;i<=usedReg-1;i++){      // usedReg-1 to not  overwrite the return register
@@ -554,13 +523,8 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             }
 
             
-            //Check for errors
-            r2=getReg();
-            if(r1!=r2){
-                printf("DevError: Unexpected Register for return value. Expected R%d but got R%d\n",r1,r2);
-                printf("Info: Function:%s usedReg:%d\n",t->varname,usedReg);
-                exit(1);
-            }
+            //r2 should be equal to r1
+            r2=getReg();    //to reserve back r1
 
 
             //Decrement SP by 1 to remove context of register alloted for return value
@@ -610,7 +574,145 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                     "RET\n");
 
             break;
+
+
+        case INIT:
+            //Allot register for storing the  return value
+            r1=getReg();
+
+
+            usedReg=regInUse();
+
+            //Push registers in use to the stack
+            //Registers are pushed in reverse order (observe that we are pushing the return register also)
+            for(int i=usedReg;i>=0;i--){
+                fprintf(fptr,
+                        "PUSH R%d\n",
+                        i);
+                freeReg();   //freeReg() happens in reverse order
+            }
+            
+            r=getReg();
+
+            
+            //invoke the library module
+            fprintf(fptr,
+                    "MOV R%1$d,\"Heapset\"\n"  
+                    "PUSH R%1$d\n"   // func code
+                    "PUSH R%1$d\n"    //arg1
+                    "PUSH R%1$d\n"    //arg2
+                    "PUSH R%1$d\n"    //arg3
+                    "PUSH R%1$d\n"    //empty space for return
+                    "CALL 0\n",
+                    r);
+
+            freeReg();
+
+            //Extract  the return value from the stack.
+            fprintf(fptr,
+                    "POP R%d\n",
+                    r1);
+
+
+            r2=GARBAGE_REG;   //GARBAGE_REG is used because value is discarded
+            fprintf(fptr,
+                    "POP R%1$d\n"
+                    "POP R%1$d\n"
+                    "POP R%1$d\n"
+                    "POP R%1$d\n",
+                    r2);
+           
+
+            //Restore the registers in the right order (Reverse of PUSH) 
+            for(int i=0;i<=usedReg-1;i++){      // usedReg-1 to not  overwrite the return register
+                fprintf(fptr,
+                        "POP R%d\n",
+                        getReg());
+            }
+
+            
+            //Check for errors
+            r2=getReg();
+            if(r1!=r2){
+                printf("DevError: Unexpected Register for return value. Expected R%d but got R%d\n",r1,r2);
+                printf("Info: Function:Init usedReg:%d\n",usedReg);
+                exit(1);
+            }
+
+
+            //Decrement SP by 1 to remove context of register alloted for return value
+            fprintf(fptr,"DCR SP\n");
+            break;
         
+
+        case ALLOC:
+            //Allot register for storing the  return value
+            r1=getReg();
+
+            usedReg=regInUse();
+
+            //Push registers in use to the stack
+            //Registers are pushed in reverse order (observe that we are pushing the return register also)
+            for(int i=usedReg;i>=0;i--){
+                fprintf(fptr,
+                        "PUSH R%d\n",
+                        i);
+                freeReg();   //freeReg() happens in reverse order
+            }
+            
+            r=getReg();
+            int size=GetSize(t->type);
+
+            //start from here 
+            //invoke the library module
+            fprintf(fptr,
+                    "MOV R%1$d,\"Alloc\"\n"  
+                    "PUSH R%1$d\n"   // func code
+                    "MOV R%1$d, %2$d\n"
+                    "PUSH R%1$d\n"    //arg1
+                    "PUSH R%1$d\n"    //arg2
+                    "PUSH R%1$d\n"    //arg3
+                    "PUSH R%1$d\n"    //empty space for return
+                    "CALL 0\n",
+                    r,size);
+
+            freeReg();
+
+            //Extract  the return value from the stack.
+            fprintf(fptr,
+                    "POP R%d\n",
+                    r1);
+
+
+            r2=GARBAGE_REG;   //GARBAGE_REG is used because value is discarded
+            fprintf(fptr,
+                    "POP R%1$d\n"
+                    "POP R%1$d\n"
+                    "POP R%1$d\n"
+                    "POP R%1$d\n",
+                    r2);
+           
+
+            //Restore the registers in the right order (Reverse of PUSH) 
+            for(int i=0;i<=usedReg-1;i++){      // usedReg-1 to not  overwrite the return register
+                fprintf(fptr,
+                        "POP R%d\n",
+                        getReg());
+            }
+
+            
+            //Check for errors
+            r2=getReg();
+            if(r1!=r2){
+                printf("DevError: Unexpected Register for return value. Expected R%d but got R%d\n",r1,r2);
+                printf("Info: Function: Alloc usedReg:%d\n",usedReg);
+                exit(1);
+            }
+
+
+            //Decrement SP by 1 to remove context of register alloted for return value
+            fprintf(fptr,"DCR SP\n");
+            break;
 
         default:
             printf("DevError: Unidentified nodetype in Codegen : %d\n",t->nodetype);
@@ -628,10 +730,8 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 void genHeader(){
 
     fprintf(fptr,"0\n2056\n0\n0\n0\n0\n0\n0\n");
-//    fprintf(fptr,"BRKP\n");  //for debug
     fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
     fprintf(fptr,"PUSH R0\n");  //Empty space in stack to store return value
-    //fprintf(fptr,"MOV BP, SP\n")    //BP initialization not necessary
     fprintf(fptr,"CALL MAIN\n");    //Calling main function
     
     //After return from main, exit the program
@@ -692,23 +792,3 @@ void codeFunction(struct tnode* body, char *name){
 }
 
 
-
-
-
-
-//void code(struct tnode *t){
-//    fptr=fopen("target_label.xsm","w");
-//    fprintf(fptr,"0\n2056\n0\n0\n0\n0\n0\n0\n");
-//
-//    fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
-//    int res=codeGen(t,-1,-1);      //-1 is the initial value for while labels
-//    
-//
-//    //exit
-//    fprintf(fptr,"MOV R2, \"Exit\"\nPUSH R2\n");
-//    fprintf(fptr,"PUSH R1\nPUSH R1\nPUSH R1\nPUSH R1\n");
-//    fprintf(fptr,"CALL 0\n");
-//    
-//    fclose(fptr);
-//
-//}

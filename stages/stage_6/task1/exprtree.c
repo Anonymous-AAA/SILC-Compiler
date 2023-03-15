@@ -106,6 +106,11 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
             exit(1);
 
         }
+
+        if(r->nodetype==ALLOC){
+            //Type inference
+            r->type=l->type;
+        }
     }
 
     //Both nodes are of the same type
@@ -572,7 +577,9 @@ void setField(tnode *var,tnode *id){
         var=var->left;
 
     var->left=makeFieldNode(field->fieldIndex);
-
+    
+    //freeing the unwanted id node
+    free(id);
     
 
 }
