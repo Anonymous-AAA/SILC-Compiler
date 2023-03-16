@@ -6,7 +6,7 @@
 //#define booltype 2
 //#define voidtype 3
 
-//for evaluator
+//for int functions to be used as boolean functions
 #define TRUE -9999
 #define FALSE -9998
 

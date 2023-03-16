@@ -83,6 +83,18 @@ struct tnode* makeVariableLeafNode(char *s,int len)
     return temp;
 }
 
+
+int isUserDefinedType(tnode *node){
+
+
+    if(node->type==inttype || node->type==strtype || node->type==booltype || node->type==voidtype || node->type==nulltype)
+        return FALSE;
+    else
+        return TRUE;
+
+
+}
+
 struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     
    // if(r->type!=inttype && l->type!=inttype){
@@ -113,7 +125,7 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
         }
     }
 
-    //Both nodes are of the same type
+    //Both nodes are of the same type (other than user defined)
     
    
     //check for void type (impossible)
@@ -141,6 +153,14 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
 
         printf("Error: Invalid operation (%d) on bool type.\n",c);
         exit(1);
+    }
+
+    //invalid operations on user defined types
+    if(isUserDefinedType(l)==TRUE && (c!=EQUAL && c!=EQ && c!=NE)){
+
+        printf("Error: Invalid operation (%d) on '%s' type.\n",c,l->type->name);
+        exit(1);
+
     }
 
 
