@@ -60,6 +60,12 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             return r;
             break;
 
+        case NUL:
+            r=getReg();
+            fprintf(fptr,"MOV R%d, \"null\"\n",r);
+            return r;
+            break;
+
         case VAR:   //returns register containing address of the var
             if(t->left){    //It is an array  variable
                 r1=codeGen(t->left,while_label_1,while_label_2);
@@ -678,6 +684,75 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
             freeReg();
 
+            //Extract  the return value from the stack.
+            fprintf(fptr,
+                    "POP R%d\n",
+                    r1);
+
+
+            r2=GARBAGE_REG;   //GARBAGE_REG is used because value is discarded
+            fprintf(fptr,
+                    "POP R%1$d\n"
+                    "POP R%1$d\n"
+                    "POP R%1$d\n"
+                    "POP R%1$d\n",
+                    r2);
+           
+
+            //Restore the registers in the right order (Reverse of PUSH) 
+            for(int i=0;i<=usedReg-1;i++){      // usedReg-1 to not  overwrite the return register
+                fprintf(fptr,
+                        "POP R%d\n",
+                        getReg());
+            }
+
+            
+            //Check for errors
+            r2=getReg();
+            if(r1!=r2){
+                printf("DevError: Unexpected Register for return value. Expected R%d but got R%d\n",r1,r2);
+                printf("Info: Function: Alloc usedReg:%d\n",usedReg);
+                exit(1);
+            }
+
+
+            //Decrement SP by 1 to remove context of register alloted for return value
+            fprintf(fptr,"DCR SP\n");
+            break;
+
+
+        case FREE:
+            //Allot register for storing the  return value
+            r1=getReg();
+
+            usedReg=regInUse();
+
+            //Push registers in use to the stack
+            //Registers are pushed in reverse order (observe that we are pushing the return register also)
+            for(int i=usedReg;i>=0;i--){
+                fprintf(fptr,
+                        "PUSH R%d\n",
+                        i);
+                freeReg();   //freeReg() happens in reverse order
+            }
+            
+            r=getReg();
+            r2=codeGen(t->left,while_label_1,while_label_2);
+
+
+            //invoke the library module
+            fprintf(fptr,
+                    "MOV R%1$d,\"Free\"\n"  
+                    "PUSH R%1$d\n"   // func code
+                    "PUSH R%2$d\n"    //arg1
+                    "PUSH R%1$d\n"    //arg2
+                    "PUSH R%1$d\n"    //arg3
+                    "PUSH R%1$d\n"    //empty space for return
+                    "CALL 0\n",
+                    r,r2);
+
+            freeReg();
+            freeReg();
             //Extract  the return value from the stack.
             fprintf(fptr,
                     "POP R%d\n",

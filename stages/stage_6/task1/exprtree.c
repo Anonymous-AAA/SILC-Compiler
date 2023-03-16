@@ -217,9 +217,26 @@ struct tnode* makeSingleNode(int c,struct tnode* node){
     //type checking if it is a MINUS node
     if(c==MINUS){
         if(node->type!=inttype){
-            printf("Error: int type expected for '-', Found: %s",node->type->name);
+            printf("Error: int type expected for '-', Found: %s\n",node->type->name);
             exit(1);
         }
+    }
+
+    if(c==READ || c==WRITE){
+
+        if(node->type!=inttype && node->type!=strtype){
+            printf("Error: Invalid type '%s' for read/write (%d)\n",node->type->name,c);
+            exit(1);
+        }
+    }
+
+    if(c==FREE){
+        
+        if(isUserDefinedType(node)==FALSE){
+            printf("Error: Invalid type '%s' for free. User defined type expected.\n",node->type->name);
+            exit(1);
+        }
+
     }
 
 
@@ -248,7 +265,7 @@ struct tnode* makeSingleNode(int c,struct tnode* node){
 struct tnode* makeTriplets(int c,struct tnode* l,struct tnode* r,struct tnode* m){
     
     if(l->type!=booltype){
-       yyerror("Condition is not boolean");
+       printf("Error : Condition is not boolean (%d)\n",c);
        exit(1);
     }
 
@@ -412,14 +429,14 @@ void setArrayNode(tnode* node,tnode* indexnode){
     if(indexnode->val>=0 && indexnode->val<entry->size)
         node->left=indexnode;
     else{
-            printf("Array index is out of bounds, %s[%d] size=%d\n",
+            printf("Error : Array index is out of bounds, %s[%d] size=%d\n",
                    node->varname,indexnode->val,entry->size);
             exit(1);
         }
     }else {
         
         if(indexnode->type!=inttype){
-            printf("Array index not int for %s\n",node->varname);
+            printf("Error : Array index not int for %s\n",node->varname);
             exit(1);
         }
 
