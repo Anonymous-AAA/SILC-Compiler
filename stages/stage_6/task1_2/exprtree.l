@@ -8,6 +8,8 @@
 
 %}
 
+%option yylineno
+
 %%
 
 [0-9]+ {number = atoi(yytext); yylval.no = makeConstantLeafNode(number); return NUM;}
