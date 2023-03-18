@@ -24,9 +24,9 @@
 %type <lsym> IdList
 %type <type> Type
 %type <flist> FieldDeclList FieldDecl
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt
 %type <param> ParamList Param
-%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL
+%token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL BRKP
 
 %left OR
 %left AND
@@ -199,6 +199,7 @@ Stmt : InputStmt {$$ = $1;}
      | WhileStmt {$$ = $1;}
      | BreakStmt {$$ = $1;}
      | ContinueStmt {$$ = $1;}
+     | BreakPointStmt {$$ = $1;}
 //     | AllocStmt {$$ = $1;} 
      | FreeStmt {$$ = $1;}
 //     | InitStmt {$$ = $1;}
@@ -266,6 +267,7 @@ BreakStmt : BREAK ';' {$$ = makeNoChildNode(BREAK);}
 ContinueStmt : CONTINUE ';' {$$ = makeNoChildNode(CONTINUE);}
              ;
 
+BreakPointStmt : BRKP ';' {$$ = makeNoChildNode(BRKP);}
 
 ReturnStmt : RET expr ';' {
 //                            checkReturnType($2->type);

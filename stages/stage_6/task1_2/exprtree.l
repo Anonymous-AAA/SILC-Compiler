@@ -54,6 +54,7 @@
 "type" {return TYPE;}
 "endtype" {return ENDTYPE;}
 "null" {return NUL;}
+"breakpoint" {return BRKP;}
 [a-zA-Z][a-zA-Z0-9]* {yylval.no = makeVariableLeafNode(yytext,yyleng);  return ID;}
 \"[^\"\n]*\" {yylval.no = makeConstantStringNode(yytext,yyleng); return STRCON;}
 \/\/.*  {}  //comments

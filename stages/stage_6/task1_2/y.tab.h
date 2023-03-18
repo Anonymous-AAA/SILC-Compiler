@@ -95,7 +95,8 @@ extern int yydebug;
     TYPE = 296,                    /* TYPE  */
     ENDTYPE = 297,                 /* ENDTYPE  */
     INIT = 298,                    /* INIT  */
-    NUL = 299                      /* NUL  */
+    NUL = 299,                     /* NUL  */
+    BRKP = 300                     /* BRKP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -146,6 +147,7 @@ extern int yydebug;
 #define ENDTYPE 297
 #define INIT 298
 #define NUL 299
+#define BRKP 300
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -160,7 +162,7 @@ union YYSTYPE
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
 
-#line 164 "y.tab.h"
+#line 166 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

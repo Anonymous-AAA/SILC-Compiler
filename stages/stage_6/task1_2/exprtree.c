@@ -288,7 +288,7 @@ struct tnode* makeTriplets(int c,struct tnode* l,struct tnode* r,struct tnode* m
 
 }
 
-//for break,continue,initialize() and alloc (they are leaf nodes)
+//for break,continue,breakpoint,initialize() and alloc (they are leaf nodes)
 struct tnode* makeNoChildNode(int c){
     
     struct tnode* temp;

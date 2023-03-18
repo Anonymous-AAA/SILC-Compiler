@@ -820,6 +820,10 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             fprintf(fptr,"DCR SP\n");
             break;
 
+        case BRKP:
+            fprintf(fptr,"BRKP\n");
+            break;
+
         default:
             printf("DevError: Unidentified nodetype in Codegen : %d\n",t->nodetype);
             exit(0);

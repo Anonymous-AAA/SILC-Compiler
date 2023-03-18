@@ -440,8 +440,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "library.l"
-#line 2 "library.l"
+#line 1 "linker.l"
+#line 2 "linker.l"
  #include "linker.h"
 #line 447 "lex.yy.c"
 #line 448 "lex.yy.c"
@@ -661,7 +661,7 @@ YY_DECL
 		}
 
 	{
-#line 5 "library.l"
+#line 5 "linker.l"
 
 
 #line 668 "lex.yy.c"
@@ -724,7 +724,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 7 "library.l"
+#line 7 "linker.l"
 {   
                             //removing trailing :\n
                             int len=yyleng-2;
@@ -744,7 +744,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 23 "library.l"
+#line 23 "linker.l"
 {
                         //label detected
                         node *temp= start;
@@ -764,7 +764,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 40 "library.l"
+#line 40 "linker.l"
 {   
         line++;
         fprintf(lfp,"%s",yytext);
@@ -772,14 +772,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 44 "library.l"
+#line 44 "linker.l"
 { 
     fprintf(lfp,"%s",yytext);
     }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 48 "library.l"
+#line 48 "linker.l"
 ECHO;
 	YY_BREAK
 #line 786 "lex.yy.c"
@@ -1787,7 +1787,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 48 "library.l"
+#line 48 "linker.l"
 
 
 
@@ -1806,19 +1806,22 @@ int yywrap(void) {
     
     //close files after use
     fclose(lfp);
-    if(strcmp(currfile,"library.temp")==0){
+    if(strcmp(currfile,"target_label.xsm")==0){
             
-            currfile="library_linked.xsm";
+            currfile="target_linked.xsm";
             FILE *fp= fopen(currfile,"r");
             if(fp){
 
+                //set the file pointer afrer the header
+                fseek(fp,19,SEEK_SET);
                 yyin=fp;
-                lfp= fopen("library.lib","w");
+                lfp= fopen("target.xsm","w");
+                fprintf(lfp,"0\n2056\n0\n0\n0\n0\n0\n0\n");
                 
                 return 0;
 
             }else{
-                    printf("library_linked.xsm not found\n");
+                    printf("target_linked.xsm not found\n");
             }
 
 
@@ -1828,23 +1831,26 @@ int yywrap(void) {
 }
 
 int address(){
-    return 2*(line-1);
+    return 2056+2*(line-1);
 }
 
 
 int main(){
 
-    currfile="library.temp";
+    currfile="target_label.xsm";
     FILE *fp= fopen(currfile,"r");
     if(fp){
 
+        //set the file pointer afrer the header
+        fseek(fp,19,SEEK_SET);
         yyin=fp;
-        lfp= fopen("library_linked.xsm","w");
+        lfp= fopen("target_linked.xsm","w");
+        fprintf(lfp,"0\n2056\n0\n0\n0\n0\n0\n0\n");
         yylex();
 
     }else
     {
-            printf("library file not found\n");
+            printf("Target file not found\n");
     }
     
 }
