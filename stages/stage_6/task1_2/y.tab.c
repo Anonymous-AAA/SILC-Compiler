@@ -1603,13 +1603,13 @@ yyreduce:
 
   case 25: /* ParamList: ParamList ',' Param  */
 #line 159 "exprtree.y"
-                                {(yyval.param)=(yyvsp[-2].param); createParamList((yyvsp[0].param));}
+                                {(yyval.param)=(yyvsp[0].param); createParamList((yyvsp[-2].param),(yyvsp[0].param));}
 #line 1608 "y.tab.c"
     break;
 
   case 26: /* ParamList: Param  */
 #line 160 "exprtree.y"
-                  {(yyval.param)=(yyvsp[0].param);PCurr=(yyvsp[0].param);}
+                  {(yyval.param)=(yyvsp[0].param);}
 #line 1614 "y.tab.c"
     break;
 

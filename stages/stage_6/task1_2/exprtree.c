@@ -269,6 +269,11 @@ struct tnode* makeTriplets(int c,struct tnode* l,struct tnode* r,struct tnode* m
        exit(1);
     }
 
+    if(r==NULL){
+       printf("Error : No statements inside IF/WHILE block\n");
+       exit(1);
+    }
+
 
     struct tnode* temp;
     temp=(struct tnode *) malloc (sizeof(struct tnode));
@@ -327,7 +332,7 @@ struct tnode* makeFnNode(char *name, tnode *arglist){
     while(Plist && Alist){
 
         if(Plist->type!=Alist->type){
-            printf("Error: Type mismatch of argument in the function call of '%s'  with arguments in function definition (%s : %s).\n",name,Alist->type->name,Plist->type->name);
+            printf("Error: Type mismatch of argument ('%s') in the function call of '%s'  with arguments in function definition (%s : %s).\n",Alist->varname?Alist->varname:"constant",name,Alist->type->name,Plist->type->name);
             exit(1);
         }
 

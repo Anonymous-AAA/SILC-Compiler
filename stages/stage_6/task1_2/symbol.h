@@ -38,7 +38,7 @@ int nextGBinding=4096;
 int Flabel=0;   //For funtion label purpose
 
 
-Paramstruct *PCurr = NULL; //For storing current pointer to the parameter list
+//Paramstruct *PCurr = NULL; //For storing current pointer to the parameter list
 
 //Local
 Lsymbol *Lstart= NULL;

@@ -221,10 +221,11 @@ Paramstruct *createParams(Typetable *type, char *name){
 
 }
 
-void createParamList(Paramstruct *param){
+void createParamList(Paramstruct *plist,Paramstruct *param){
 
-    PCurr->next=param;
-    PCurr=PCurr->next;
+//    PCurr->next=param;
+  //  PCurr=PCurr->next;
+    param->next=plist;
 }
 
 

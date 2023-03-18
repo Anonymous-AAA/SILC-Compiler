@@ -156,8 +156,8 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
 //      } 
       ;
 
-ParamList : ParamList ',' Param {$$=$1; createParamList($3);} 
-          | Param {$$=$1;PCurr=$1;} //Pcurr is maintained as end of the param list
+ParamList : ParamList ',' Param {$$=$3; createParamList($1,$3);} 
+          | Param {$$=$1;} //Pcurr is maintained as end of the param list
           | {$$=NULL;}
           ;
 

@@ -89,7 +89,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                 if(t->Lentry)
                     fprintf(fptr,"ADD R%d,BP\n",r);
 
-                fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
+                //fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
 
                 tnode *temp=t->left;
 
@@ -97,9 +97,9 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
                 while(temp){
                     
+                    fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
                     fprintf(fptr,"MOV R%d, %d\n",r1,temp->val);
                     fprintf(fptr,"ADD R%d, R%d\n",r,r1);
-                    fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
                 
                     temp=temp->left;
                 }
