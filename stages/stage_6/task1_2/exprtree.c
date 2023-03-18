@@ -327,7 +327,7 @@ struct tnode* makeFnNode(char *name, tnode *arglist){
     while(Plist && Alist){
 
         if(Plist->type!=Alist->type){
-            printf("Error: Type mismatch of argument %s in function call with function definition.(%s : %s)",Alist->varname,Alist->type->name,Plist->type->name);
+            printf("Error: Type mismatch of argument in the function call of '%s'  with arguments in function definition (%s : %s).\n",name,Alist->type->name,Plist->type->name);
             exit(1);
         }
 
