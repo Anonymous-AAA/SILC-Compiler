@@ -5,3 +5,4 @@ a.out
 *.expl
 frontend
 linker
+liblink
