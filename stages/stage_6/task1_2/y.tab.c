@@ -2227,7 +2227,7 @@ yyreturnlab:
 int yyerror(char const *s)
 {
     extern int yylineno;
-    printf("yyerror: %s at line %d\n",s,yylineno);
+    printf("Error: %s at line %d\n",s,yylineno);
 }
 
 
