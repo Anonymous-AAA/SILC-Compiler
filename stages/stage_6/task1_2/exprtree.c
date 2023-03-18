@@ -36,8 +36,9 @@ struct tnode* makeConstantStringNode(char *s,int len)
     temp->varname=NULL;
     temp->type= strtype;
     temp->Gentry=NULL;
-    temp->strval=(char *) malloc(sizeof(char)*len-2);
+    temp->strval=(char *) malloc(sizeof(char)*(len-1));     //reserve space for null terminator
     strncpy(temp->strval,s+1,len-2);    //remove the " at beginning and end
+    temp->strval[len-2]='\0';           //terminating the string with null char
     temp->nodetype=CONSTSTR;
     temp->val=NIL;
     temp->arglist=NULL;
