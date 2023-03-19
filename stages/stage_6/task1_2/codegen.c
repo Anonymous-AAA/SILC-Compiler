@@ -770,8 +770,14 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             r=getReg();
             r2=codeGen(t->left,while_label_1,while_label_2);
 
+            //Getting mempry location to set the memory location to null
+            fprintf(fptr,"MOV R%d, R%d\n",r,r2);
+
             //Getting the address of the variable in heap
             fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r2);
+
+            //setting memory location to null
+            fprintf(fptr,"MOV [R%d], \"null\"\n",r);
 
 
             //invoke the library module
