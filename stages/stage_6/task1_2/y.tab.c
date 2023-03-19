@@ -1504,8 +1504,8 @@ yyreduce:
           //code($3);
           //evaluate($3)
           //test($3)
-          printTypeTable();
-          printGSymbolTable();
+          //printTypeTable();
+          //printGSymbolTable();
           exit(0);
           }
 #line 1512 "y.tab.c"
@@ -1577,7 +1577,7 @@ yyreduce:
             (yyvsp[-3].no) = makeConnectorNode((yyvsp[-3].no),(yyvsp[-2].no));  //Attaching the return statement
             checkMain((yyvsp[-2].no)->left->type);
             codeFunction((yyvsp[-3].no),NULL);       //Generating code
-            printLSymbolTable("main"); //Printing the local symbol table
+            //printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST((yyvsp[-3].no));  //deallocating the AST
           }
@@ -1594,7 +1594,7 @@ yyreduce:
         checkFn((yyvsp[-11].type),(yyvsp[-2].no)->left->type,(yyvsp[-10].no)->varname,(yyvsp[-8].param));  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
         codeFunction((yyvsp[-3].no),(yyvsp[-10].no)->varname);       //Generating code
-        printLSymbolTable((yyvsp[-10].no)->varname); //Printing the local symbol table
+        //printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST((yyvsp[-3].no));  //deallocating the AST
       }
