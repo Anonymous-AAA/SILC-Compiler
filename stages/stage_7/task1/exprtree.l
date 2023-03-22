@@ -61,7 +61,7 @@
 "new" {return NEW;}
 "delete" {return DELETE;}
 "self" {return SELF;}
-[a-zA-Z][a-zA-Z0-9]* {yylval.no = makeVariableLeafNode(yytext,yyleng);  return ID;}
+[a-zA-Z][a-zA-Z0-9_]* {yylval.no = makeVariableLeafNode(yytext,yyleng);  return ID;}
 \"[^\"\n]*\" {yylval.no = makeConstantStringNode(yytext,yyleng); return STRCON;}
 \/\/.*  {}  //comments
 . {yyerror("unknown character ");printf("%s\n",yytext);exit(1);}

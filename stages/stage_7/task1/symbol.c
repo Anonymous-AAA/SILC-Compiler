@@ -65,7 +65,7 @@ Gsymbol *GInstallVar (char *name, Typetable *type, int size){
 
     //check whether name already exists, if so throw error
     if(GLookup(name)!=NULL){
-        printf("Error: Identifier '%s' already in use. Use a different identifier name.\n",name);
+        printf("Error: Global identifier '%s' already in use. Use a different identifier name for variable.\n",name);
         exit(1);
 
     }
@@ -121,7 +121,7 @@ Gsymbol *GInstallFn(char *name,Typetable *type,Paramstruct *paramList){
 
     //check whether name already exists, if so throw error
     if(GLookup(name)!=NULL){
-        printf("Error: Identifier '%s' already in use. Use a different identifier name.\n",name);
+        printf("Error: Global identifier '%s' already in use. Use a different identifier name for the function.\n",name);
         exit(1);
 
     }
@@ -169,7 +169,17 @@ Lsymbol *LInstallVar (char *name, Typetable *type, int isArg){
 
     //check whether name already exists, if so throw error
     if(LLookup(name)!=NULL){
-        printf("Error: Identifier '%s' already in use. Use a different identifier name.\n",name);
+
+        //for debug
+        //Lsymbol *temp=Lstart;
+        //while(temp){
+        //    printf("%s\n",temp->name);
+        //    temp=temp->next;
+        //}
+
+        //for debug
+
+        printf("Error: Local identifier '%s' already in use. Use a different identifier name for variable.\n",name);
         exit(1);
 
     }

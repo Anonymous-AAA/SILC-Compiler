@@ -44,8 +44,8 @@ Program : TypeDefBlock ClassDefBlock GDeclBlock FDefBlock MainBlock {
           //code($3);
           //evaluate($3)
           //test($3)
-          //printTypeTable();
-          //printGSymbolTable();
+          printTypeTable();
+          printGSymbolTable();
           exit(0);
           }
         ;
@@ -80,7 +80,7 @@ MethodDecl : MethodDecl MDecl
            | MDecl
            ;
 
-MDecl : Type ID '(' ParamList ')' ';'
+MDecl : Type ID '(' ParamList ')' ';' {deallocateLST();}
       ;
 
 
@@ -147,7 +147,7 @@ MainBlock : INT MAIN '(' ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
             $8 = makeConnectorNode($8,$9);  //Attaching the return statement
             checkMain($9->left->type);
             codeFunction($8,NULL);       //Generating code
-            //printLSymbolTable("main"); //Printing the local symbol table
+            printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST($8);  //deallocating the AST
           }
@@ -168,7 +168,7 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
         checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
         //addParamstoLST($4);   //Adding the parameters to LST
         codeFunction($9,$2->varname);       //Generating code
-        //printLSymbolTable($2->varname); //Printing the local symbol table
+        printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST($9);  //deallocating the AST
       }
@@ -337,7 +337,6 @@ int yyerror(char const *s)
 {
     extern int yylineno;
     printf("Error: %s at line %d\n",s,yylineno);
-    exit(1);
 }
 
 
