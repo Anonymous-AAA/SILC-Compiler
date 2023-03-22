@@ -73,14 +73,14 @@ Fieldlists : Fieldlists Fld
            |
            ;
 
-Fld : ID ID ';'
+Fld : Type ID ';'
     ;
 
 MethodDecl : MethodDecl MDecl
            | MDecl
            ;
 
-MDecl : ID ID '(' ParamList ')' ';'
+MDecl : Type ID '(' ParamList ')' ';'
       ;
 
 
@@ -337,6 +337,7 @@ int yyerror(char const *s)
 {
     extern int yylineno;
     printf("Error: %s at line %d\n",s,yylineno);
+    exit(1);
 }
 
 

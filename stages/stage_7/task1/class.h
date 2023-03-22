@@ -32,13 +32,13 @@ Classtable *Cstart=NULL;
 Classtable *Ccurr=NULL;
 
 //ClassFieldList start and current
-ClassFieldlist *Cfstart=NULL;
+//ClassFieldlist *Cfstart=NULL;
 ClassFieldlist *Cfcurr=NULL;
 
 //Memberfunclist start and current
-Memberfunclist *Cmstart=NULL;
+//Memberfunclist *Cmstart=NULL;
 Memberfunclist *Cmcurr=NULL;
 
 
 
-int classTableIndex=-1;
+//int classTableIndex=-1;
