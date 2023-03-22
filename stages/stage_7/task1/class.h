@@ -14,7 +14,7 @@ typedef struct ClassFieldlist{
  int fieldindex;   //position of the field
  struct Typetable *type;  //pointer to typetable
  struct Classtable *ctype; //pointer to the class containing the field
- struct Fieldlist *next;  //pointer to next fieldlist entry
+ struct ClassFieldlist *next;  //pointer to next fieldlist entry
 }ClassFieldlist;
 
 
@@ -35,6 +35,10 @@ Classtable *Ccurr=NULL;
 ClassFieldlist *Cfstart=NULL;
 ClassFieldlist *Cfcurr=NULL;
 
+//Memberfunclist start and current
+Memberfunclist *Cmstart=NULL;
+Memberfunclist *Cmcurr=NULL;
 
 
-int classFieldIndex=-1;
+
+int classTableIndex=-1;

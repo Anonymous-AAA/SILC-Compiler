@@ -49,31 +49,54 @@ Classtable *CInstall(char *name,char *parent_class_name){
     return temp;
 }
 
-int getClassFieldIndex(){
+int getClassTableIndex(){
     
-    classFieldIndex++;
+    classTableIndex++;
 
-    if(classFieldIndex>=HB_SIZE){
+    if(classTableIndex>=HB_SIZE){
         
         printf("Error : Class cannot have more than %d fields\n",HB_SIZE);
         exit(1);
     }
     
-    return classFieldIndex;
+    return classTableIndex;
 
 }
 
 
+void checkDuplicateClassField(char *name){
+
+    ClassFieldlist *temp=Cfstart;
+
+    while(temp){
+        if(strcmp(temp->name,name)==0){
+            printf("Error : Class cannot have multiple fields with the same name (%s).\n",name);
+            exit(1);
+        }
+        temp=temp->next;
+    }
+}
+
+
+void checkDuplicateMethod(char *name){
+
+    Memberfunclist *temp=Cmstart;
+
+    while(temp){
+        if(strcmp(temp->name,name)==0){
+            printf("Error : Class cannot have multiple methods with the same name (%s).\n",name);
+            exit(1);
+        }
+        temp=temp->next;
+    }
+}
 
 ClassFieldlist *createClassField(char *name, char *typename){
     
     checkDuplicateClassField(name);
 
     ClassFieldlist *temp=(ClassFieldlist*) malloc(sizeof(ClassFieldlist));
-
     temp->name=name;
-
-    temp->fieldindex=getClassFieldIndex();
 
     Typetable *type=TLookup(name);
 
@@ -91,6 +114,12 @@ ClassFieldlist *createClassField(char *name, char *typename){
         temp->ctype=NULL;
     }
 
+    if(type->size==UNDEFINED && ctype==NULL){
+        printf("Error : Type %s is not defined",typename);
+        exit(1);
+    }
+
+    temp->fieldindex=getClassTableIndex();
     temp->next=NULL;
 
     return temp;
@@ -99,16 +128,40 @@ ClassFieldlist *createClassField(char *name, char *typename){
 
 
 
-void Class_Finstall(struct Classtable *cptr,char *typename,char *name){
+void Class_Finstall(Classtable *cptr,char *typename,char *name){
 
+    ClassFieldlist field=createClassField(name, typename);
+
+    if(Cfstart==NULL){
+        Cfstart=field;
+    }else{
+        Cfcurr->next=field;
+    }
+    Cfcurr=field;
     
-    if(TLookup(typename)->size==UNDEFINED){    //checking whether the type is present in the type table
+}
 
 
-    }     
+Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paramlist){
 
+    checkDuplicateMethod(name);
+    Memberfunclist *temp=(Memberfunclist*)malloc(sizeof(Memberfunclist));
 
+    temp->name=name;
+    temp->type=type;
+    temp->paramlist=Paramlist;
+    temp->funcposition=getClassFieldIndex();
+    temp->next=NULL;
+    
+    return temp;
 
 }
 
 
+void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *Paramlist){
+
+    
+
+
+
+}
