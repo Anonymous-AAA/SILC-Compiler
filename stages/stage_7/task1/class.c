@@ -1,7 +1,9 @@
-#include "class.h"
 
 
 Classtable *CLookup(char *name){
+
+    if(name==NULL)
+        return NULL;
 
     Classtable *temp=Cstart;
 
@@ -15,6 +17,11 @@ Classtable *CLookup(char *name){
 }
 
 
+int getClassIndex(){
+    
+    classIndex++;
+    return classIndex;
+}
 
 Classtable *CInstall(char *name,char *parent_class_name){
 
@@ -29,6 +36,7 @@ Classtable *CInstall(char *name,char *parent_class_name){
 
     temp->name=name;
     temp->parentptr=CLookup(parent_class_name);
+    temp->class_index=getClassIndex();
     temp->memberfield=NULL;
     temp->vfuncptr=NULL;
     temp->fieldcount=0;
@@ -46,19 +54,6 @@ Classtable *CInstall(char *name,char *parent_class_name){
     return temp;
 }
 
-//int getClassTableIndex(){
-//    
-//    classTableIndex++;
-//
-//    if(classTableIndex>=HB_SIZE){
-//        
-//        printf("Error : Class cannot have more than %d fields\n",HB_SIZE);
-//        exit(1);
-//    }
-//    
-//    return classTableIndex;
-//
-//}
 
 
 Memberfunclist *Class_Mlookup(Classtable *Ctype,char *name){
@@ -146,7 +141,7 @@ void Class_Finstall(Classtable *cptr,char *typename,char *name){
             exit(1);
     }
     
-    ClassFieldlist field=createClassField(name, typename);
+    ClassFieldlist *field=createClassField(name, typename);
 
     if(cptr->memberfield==NULL){
         cptr->memberfield=field;
@@ -179,6 +174,15 @@ Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paraml
 
 void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *Paramlist){
 
+    deallocateLST();    //creation of ParamList leads to filling of LST, this deallocates that.
+
+    
+    if(type->size==UNDEFINED){
+        printf("Error : Return type %s is not defined for function %s",type->name,name);
+        exit(1);       
+    }
+
+
     if(cptr->methodcount==HB_SIZE){
         printf("Error : Class %s cannot have more than %d methods\n",cptr->name,HB_SIZE);
         exit(1);
@@ -190,7 +194,7 @@ void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *P
             exit(1);
     }
 
-    Memberfunclist method=createMemberFunc(name, type, Paramlist);
+    Memberfunclist *method=createMemberFunc(name, type, Paramlist);
 
     
     if(cptr->vfuncptr==NULL){
@@ -200,7 +204,56 @@ void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *P
     }
     Cmcurr=method;
 
-    method.funcposition=cptr->methodcount;
+    method->funcposition=cptr->methodcount;
     cptr->methodcount++;
+
+}
+
+void printClassTable(){
+
+    printf("Class Table\n");
+    Classtable *temp=Cstart;
+
+    while(temp){
+        
+        printf("Index : %d\n",temp->class_index);
+        printf("Name : %s\n\n",temp->name);
+
+        printf("Class Fields\n");
+        ClassFieldlist *field=temp->memberfield;
+        while(field){
+            printf("    Name : %s\n",field->name);
+            printf("    FieldIndex : %d\n",field->fieldindex);
+            printf("    Type : %s\n",field->type?field->type->name:"No type");
+            printf("    CType : %s\n\n",field->ctype?field->ctype->name:"No ctype");
+            field=field->next;
+        }
+
+        printf("Methods\n");
+        Memberfunclist *method=temp->vfuncptr;
+        while(method){
+            printf("    Name : %s\n",method->name);
+            printf("    Type : %s\n",method->type->name);
+            Paramstruct *param=method->paramlist;
+            printf("    Parameters:\n");
+            while(param){
+                printf("        %s  %s\n",param->type->name,param->name);        
+                param=param->next;
+            }
+            printf("    Funcposition : %d\n",method->funcposition);
+            printf("    Flabel : %d\n",method->flabel);
+            method=method->next;
+        }
+
+        printf("Parent Class : %s\n",temp->parentptr?temp->parentptr->name:"None");
+        printf("Field Count : %d\n",temp->fieldcount);
+        printf("Method Count : %d\n\n",temp->methodcount);
+
+        temp=temp->next;
+
+
+    }
+
+
 
 }

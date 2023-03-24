@@ -18,6 +18,7 @@
  struct Gsymbol *gsym;
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
+ struct Classtable *class;
 }
 
 %type <gsym> GidList Gid
@@ -26,6 +27,7 @@
 %type <flist> FieldDeclList FieldDecl
 %type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt
 %type <param> ParamList Param
+%type <class> Cname
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL BRKP CLASS ENDCLASS EXTENDS NEW DELETE SELF
 
 %left OR
@@ -46,6 +48,7 @@ Program : TypeDefBlock ClassDefBlock GDeclBlock FDefBlock MainBlock {
           //test($3)
           printTypeTable();
           printGSymbolTable();
+          printClassTable();
           exit(0);
           }
         ;
@@ -65,7 +68,7 @@ ClassDefList : ClassDefList ClassDef
 ClassDef : Cname '{' DECL Fieldlists MethodDecl ENDDECL MethodDefns '}'
          ;
 
-Cname : ID
+Cname : ID  {$$ = CInstall($1->varname,NULL);}
       | ID EXTENDS ID
       ;
 
@@ -73,14 +76,14 @@ Fieldlists : Fieldlists Fld
            |
            ;
 
-Fld : Type ID ';'
+Fld : Type ID ';' {Class_Finstall(Ccurr,$1->name,$2->varname);}
     ;
 
 MethodDecl : MethodDecl MDecl
            | MDecl
            ;
 
-MDecl : Type ID '(' ParamList ')' ';' {deallocateLST();}
+MDecl : Type ID '(' ParamList ')' ';' {Class_Minstall(Ccurr,$2->varname,$1,$4);}
       ;
 
 

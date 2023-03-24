@@ -41,4 +41,4 @@ Memberfunclist *Cmcurr=NULL;
 
 
 
-//int classTableIndex=-1;
+int classIndex=-1;

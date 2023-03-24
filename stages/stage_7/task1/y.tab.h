@@ -173,8 +173,9 @@ union YYSTYPE
  struct Gsymbol *gsym;
  struct Lsymbol *lsym;  
  struct Paramstruct *param;
+ struct Classtable *class;
 
-#line 178 "y.tab.h"
+#line 179 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

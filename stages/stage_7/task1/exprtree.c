@@ -1,9 +1,11 @@
 #include "y.tab.h"
 #include "type.h"
+#include "class.h"
 #include "exprtree.h"
 #include "symbol.h"
 #include "symbol.c"
 #include "type.c"
+#include "class.c"
 #include "string.h"
 
 //Constant NUM node
