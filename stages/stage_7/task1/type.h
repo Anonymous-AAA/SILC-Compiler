@@ -32,3 +32,4 @@ Typetable *booltype = NULL;
 Typetable *voidtype = NULL;
 Typetable *strtype = NULL;
 Typetable *nulltype = NULL;
+Typetable *selftype = NULL;  //for self vars

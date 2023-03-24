@@ -55,6 +55,16 @@ void TypeTableCreate(){
     entry->fields=NULL;
     voidtype=entry;
 
+    entry->next=(Typetable*) malloc(sizeof(Typetable));
+    entry=entry->next;
+
+    //self
+    entry->name=(char *) malloc(sizeof(char)*5);
+    strcpy(entry->name,"self");
+    entry->size=1;
+    entry->fields=NULL;
+    selftype=entry;
+
     Tcurr=entry;    //setting the current entry
 }
 

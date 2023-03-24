@@ -606,22 +606,40 @@ void setField(tnode *var,tnode *id){
     
     Typetable *type=var->type;
 
+    if(type==selftype){
 
-    Fieldlist *field=FLookup(type,id->varname);
+        ClassFieldlist *field=Class_Flookup(Ccurr,id->varname);
 
-    if(field==NULL){
-        printf("Error : '%s' is not a field in type '%s' of variable '%s'\n",id->varname,type->name,var->varname);
-        exit(1);
+        if(field==NULL){
+            printf("Error : '%s' is not a field in class '%s'used with self.\n",id->varname,Ccurr->name);
+            exit(1);
+        }
+
+        //setting the type
+        var->type=field->type;
+
+
+
+
+    }else{
+
+        Fieldlist *field=FLookup(type,id->varname);
+
+        if(field==NULL){
+            printf("Error : '%s' is not a field in type '%s' of variable '%s'\n",id->varname,type->name,var->varname);
+            exit(1);
+        }
+
+        //setting the type
+        var->type=field->type;
+
+        //setting the field node at the end of the field node chain
+        while(var->left)
+            var=var->left;
+
+        var->left=makeFieldNode(field->fieldIndex);
     }
 
-    //setting the type
-    var->type=field->type;
-
-    //setting the field node at the end of the field node chain
-    while(var->left)
-        var=var->left;
-
-    var->left=makeFieldNode(field->fieldIndex);
     
     //freeing the unwanted id node
     free(id);

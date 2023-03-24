@@ -31,6 +31,7 @@
 typedef struct tnode{
  int val;   // value of a number for NUM nodes.
 struct Typetable *type;  // type of a variable
+struct Classtable *ctype;  // ctype of a variable
  char* varname; // name of a variable for ID nodes
  char* strval; //to store string constants
  int nodetype;  //indicates the opertor or info on  nodes

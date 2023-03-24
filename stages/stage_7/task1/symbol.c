@@ -210,9 +210,17 @@ void LInstallSelf(Classtable *ctype){
     Lsymbol *temp= (Lsymbol*) malloc(sizeof(Lsymbol));
     temp->name=(char *) malloc(sizeof(char)*5);
     strcpy(temp->name,"self");
-    temp->name[4]='\0';  //null terminating string just to be sure
-    temp->type=type;
+    temp->type=selftype;
+    temp->binding=NIL;    //need to change this
+    temp->next=NULL;
 
+    if(Lstart==NULL){
+        Lstart=temp;
+    }else{
+       Lcurr->next=temp;
+    }
+
+    Lcurr=temp;
 }
 
 

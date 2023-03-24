@@ -25,7 +25,7 @@
 %type <lsym> IdList
 %type <type> Type
 %type <flist> FieldDeclList FieldDecl
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt SELF
 %type <param> ParamList Param
 %type <class> Cname
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL BRKP CLASS ENDCLASS EXTENDS NEW DELETE SELF
@@ -169,7 +169,6 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
 
         $9 = makeConnectorNode($9,$10);  //Attaching the return statement
         checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
-        //addParamstoLST($4);   //Adding the parameters to LST
         codeFunction($9,$2->varname);       //Generating code
         printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
@@ -192,8 +191,8 @@ Type : INT {$$ = inttype;}
      ;
 
 
-LDeclBlock  : DECL LDecList ENDDECL
-            | //can be empty
+LDeclBlock  : DECL LDecList ENDDECL {if(Ccurr){LInstallSelf(Ccurr);}} //install self to Lst if inside class 
+            | {if(Ccurr){LInstallSelf(Ccurr);}} //install self to Lst if inside class even if it is empty
             ;
 
 LDecList  : LDecList LDecl
@@ -325,7 +324,7 @@ ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
 
 Field : ID '.' ID {setField($1,$3); $$=$1;}  //will not occur inside class
       | Field '.' ID {setField($1,$3); $$=$1;}  
-      | SELF '.' ID 
+      | SELF '.' ID  {setField($1,$3); $$=$1;}
       ;
 
 FieldFunction : SELF '.' ID '(' ArgList ')'

@@ -7,6 +7,7 @@
 typedef struct Gsymbol {
   char *name;       // name of the variable
   Typetable *type;         // type of the variable
+  Classtable *ctype;
   int size;         // size of the type of the variable
   int binding;      // stores the static memory address allocated to the variable
   struct Paramstruct *paramlist; //pointer to the head of formal parameter list
