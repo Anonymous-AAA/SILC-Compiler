@@ -205,6 +205,16 @@ Lsymbol *LInstallVar (char *name, Typetable *type, int isArg){
     return temp;  //returning the node 
 }
 
+void LInstallSelf(Classtable *ctype){
+
+    Lsymbol *temp= (Lsymbol*) malloc(sizeof(Lsymbol));
+    temp->name=(char *) malloc(sizeof(char)*5);
+    strcpy(temp->name,"self");
+    temp->name[4]='\0';  //null terminating string just to be sure
+    temp->type=type;
+
+}
+
 
 void setLType(Lsymbol* node, Typetable *type){
     

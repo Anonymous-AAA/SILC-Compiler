@@ -98,7 +98,7 @@ ClassFieldlist *createClassField(char *name, char *typename){
     ClassFieldlist *temp=(ClassFieldlist*) malloc(sizeof(ClassFieldlist));
     temp->name=name;
 
-    Typetable *type=TLookup(name);
+    Typetable *type=TLookup(typename);
 
     if(type->size!=UNDEFINED){
         temp->type=type;

@@ -57,7 +57,7 @@ Program : TypeDefBlock ClassDefBlock GDeclBlock FDefBlock MainBlock {
 
 //Classdef block
 
-ClassDefBlock : CLASS ClassDefList ENDCLASS
+ClassDefBlock : CLASS ClassDefList ENDCLASS {Ccurr=NULL;}  //if Ccurr=NULL it indicates class definitions are over
               |
               ;
 
