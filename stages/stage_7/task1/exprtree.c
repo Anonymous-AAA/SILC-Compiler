@@ -806,6 +806,11 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
 
     obj->type=temp->type;
 
+    while(obj->left)
+        obj=obj->left;
+
+    obj->left=temp;
+
 }
 
 

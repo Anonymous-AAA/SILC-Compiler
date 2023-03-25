@@ -68,6 +68,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
         case SELF:  //self is same as var
         case VAR:   //returns register containing address of the var
+
             if(t->left && t->left->nodetype!=FIELD){    //It is an array  variable
                 r1=codeGen(t->left,while_label_1,while_label_2);
                 if(t->left->nodetype==VAR)
@@ -98,9 +99,14 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
                 while(temp){
                     
+                    if(temp->nodetype==FUNCTION){
+                        //do something here
+                    }
+                else{
                     fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
                     fprintf(fptr,"MOV R%d, %d\n",r1,temp->val);
                     fprintf(fptr,"ADD R%d, R%d\n",r,r1);
+                    }
                 
                     temp=temp->left;
                 }
@@ -109,7 +115,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                 return r;
             }
 
-            //If its not an array 
+            //If its not an array and field
             r=getReg();
             //setting binding according to whether it is local or global (Local overrides global)
             int binding=t->Lentry?t->Lentry->binding:t->Gentry->binding;
