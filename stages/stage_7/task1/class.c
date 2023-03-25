@@ -163,8 +163,8 @@ Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paraml
     temp->name=name;
     temp->type=type;
     temp->paramlist=Paramlist;
-//    temp->funcposition=getClassFieldIndex();
     temp->flabel=getFlabel();
+    temp->defined=NIL;
     temp->next=NULL;
     
     return temp;

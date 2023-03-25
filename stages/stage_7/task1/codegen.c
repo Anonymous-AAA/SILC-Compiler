@@ -879,9 +879,17 @@ void codeFunction(struct tnode* body, char *name){
 
     if(name){
         Gsymbol *entry=GLookup(name);
+        if(entry){
         fprintf(fptr,
                 "F%d:\n",
                 entry->flabel);
+        }else{
+        
+        Memberfunclist *mentry=Class_Mlookup(Ccurr,name);
+        fprintf(fptr,
+                "F%d:\n",
+                mentry->flabel);
+        }
     }else{
         fprintf(fptr,
                 "MAIN:\n");

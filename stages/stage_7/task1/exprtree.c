@@ -19,6 +19,7 @@ struct tnode* makeConstantLeafNode(int n)
     temp->mid = NULL;
     temp->varname=NULL;
     temp->type= inttype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->nodetype=CONSTNUM;
@@ -37,6 +38,7 @@ struct tnode* makeConstantStringNode(char *s,int len)
     temp->mid = NULL;
     temp->varname=NULL;
     temp->type= strtype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=(char *) malloc(sizeof(char)*(len-1));     //reserve space for null terminator
     strncpy(temp->strval,s+1,len-2);    //remove the " at beginning and end
@@ -59,6 +61,7 @@ struct tnode* makeNullNode()
     temp->mid = NULL;
     temp->varname=NULL;
     temp->type= nulltype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->nodetype=NUL;
@@ -77,6 +80,7 @@ struct tnode* makeVariableLeafNode(char *s,int len)
     temp->right = NULL;
     temp->mid = NULL;
     temp->type= voidtype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->nodetype=VAR;
@@ -180,6 +184,7 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     temp->val=NIL;
     temp->arglist=NULL;
     temp->Lentry=NULL;
+    temp->ctype=NULL;
 
     
     if(c==PLUS || c==MINUS || c==MUL ||  c==DIV || c==MOD)
@@ -205,6 +210,7 @@ struct tnode* makeConnectorNode(struct tnode *l,struct tnode *r){
     temp->mid = NULL;
     temp->varname=NULL;
     temp->type=voidtype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->val=NIL;
@@ -251,6 +257,7 @@ struct tnode* makeSingleNode(int c,struct tnode* node){
     temp->right = NULL;
     temp->mid = NULL;
     temp->varname = NULL;
+    temp->ctype=NULL;
     if(c==MINUS){
         temp->type=inttype;    
     }else {
@@ -286,6 +293,7 @@ struct tnode* makeTriplets(int c,struct tnode* l,struct tnode* r,struct tnode* m
     temp->mid=m;
     temp->varname=NULL;
     temp->type=voidtype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->val=NIL;
@@ -307,6 +315,7 @@ struct tnode* makeNoChildNode(int c){
     temp->mid=NULL;
     temp->varname=NULL;
     temp->type=voidtype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->val=NIL;
@@ -356,6 +365,7 @@ struct tnode* makeFnNode(char *name, tnode *arglist){
     temp->nodetype=FUNCTION;
     temp->varname=name;
     temp->type=Gtemp->type;
+    temp->ctype=NULL;
     temp->strval=NULL;
     temp->left=NULL;
     temp->right=NULL;
@@ -381,6 +391,7 @@ struct tnode* makeFieldNode(int fieldIndex){
     temp->mid = NULL;
     temp->varname=NULL;
     temp->type= voidtype;
+    temp->ctype=NULL;
     temp->Gentry=NULL;
     temp->strval=NULL;
     temp->nodetype=FIELD;
@@ -542,14 +553,72 @@ void checkFn(Typetable *type,Typetable *returnType,char *name, Paramstruct *list
         }
 
 
-//        //Check whether return statement exists or not
-//        if(returnType==voidtype){
-//
-//            printf("Error: Return statement missing in function '%s'\n",name);
-//            exit(1);
-//        }
-//
+        //checking whether the value returned by the return statement is same as the return type
+        if(returnType!=type){
 
+            printf("Error: The type of value returned by the function '%s' does not match with the return type (%s : %s)\n",name,returnType->name,type->name);
+            exit(1);
+        }
+
+
+    }else{
+        
+        printf("Error : Function '%s' is not declared\n",name);
+        exit(1);
+
+    }
+
+
+}
+
+
+void checkMethod(Typetable *type,Typetable *returnType,char *name, Paramstruct *list){
+
+    Memberfunclist *entry= Class_Mlookup(Ccurr,name);
+
+
+    
+    if(entry){
+    
+
+        if(entry->defined==DEFINED){
+            printf("Error : Function '%s' is redefined\n",name);
+            exit(1);
+        }
+
+        entry->defined=DEFINED;  //Setting that the function is defined(using size attribute to store whether the function is already defined)
+        
+
+        if(entry->type!=type){
+            printf("Error: Conflicting types for function '%s' in declaration and definition (%s:%s)\n",name,entry->type->name,type->name);
+            exit(1);
+        }
+
+        Paramstruct *decl=list;
+        Paramstruct *def=entry->paramlist;
+
+        while(decl && def){
+            
+            if(strcmp(decl->name,def->name)!=0){
+                printf("Error: Parameters of function '%s' have different names in declaration and definition (%s : %s)\n",name,decl->name,def->name);
+                exit(1);
+            }
+
+            if(decl->type!=def->type){
+                printf("Error: Parameter '%s' of function '%s' have different types in declaration and definiton (%s : %s)\n",decl->name,name,decl->type->name,def->type->name);
+                exit(1);
+            }
+
+            decl=decl->next;
+            def=def->next;
+
+        }
+
+        if(decl!=NULL || def!=NULL){
+
+            printf("Error: Number of parameters of function '%s' does not match in declaration and definiton.\n",name);
+            exit(1);
+        }
 
 
         //checking whether the value returned by the return statement is same as the return type
@@ -562,29 +631,13 @@ void checkFn(Typetable *type,Typetable *returnType,char *name, Paramstruct *list
 
     }else{
         
-        printf("Function '%s' is not declared\n",name);
+        printf("Error : Method '%s' is not declared in class '%s'\n",name,Ccurr->name);
         exit(1);
 
     }
 
-//    returnType=voidtype;
 
 }
-
-
-//void checkReturnType(int type){
-//    
-//    if(returnType==voidtype)
-//        returnType=type;
-//    else if(type!=returnType){
-//        
-//        printf("Error : Multiple return types within a single function\n");
-//        exit(1);
-//        
-//    }
-//
-//
-//}
 
 void deallocateAST(tnode *node){
     
@@ -601,27 +654,23 @@ void deallocateAST(tnode *node){
 void setField(tnode *var,tnode *id){
     
     //setting gentry and/or lentry if not set
-    if(!(var->Lentry || var->Gentry))
+    if(!(var->Lentry || var->Gentry || Ccurr))  //Ccurr for fields inside class
         setEntry(var);
     
-    Typetable *type=var->type;
-
-    if(type==selftype){
-
-        ClassFieldlist *field=Class_Flookup(Ccurr,id->varname);
-
-        if(field==NULL){
-            printf("Error : '%s' is not a field in class '%s'used with self.\n",id->varname,Ccurr->name);
+    if(var->type==NULL){
+        
+        ClassFieldlist *temp=Class_Flookup(Ccurr, var->varname);
+        if(temp==NULL){
+            printf("Error : Class %s does not have the field %s\n",Ccurr->name,var->varname);
             exit(1);
         }
 
-        //setting the type
-        var->type=field->type;
+        var->type=temp->type;
+        var->val=temp->fieldindex;
+    }
 
+    Typetable *type=var->type;
 
-
-
-    }else{
 
         Fieldlist *field=FLookup(type,id->varname);
 
@@ -638,7 +687,6 @@ void setField(tnode *var,tnode *id){
             var=var->left;
 
         var->left=makeFieldNode(field->fieldIndex);
-    }
 
     
     //freeing the unwanted id node
@@ -654,3 +702,125 @@ void checkInvalidTypes(tnode* type){
         exit(1);
     }
 }
+
+
+struct tnode* makeMethodNode(char *name, tnode *arglist, Classtable *class){
+
+
+    Memberfunclist *Mtemp=Class_Mlookup(class,name);
+
+    //existence
+    if(Mtemp==NULL){
+        printf("Error : Method %s is not defined in class %s.\n",name,class->name);
+        exit(1);
+    }
+
+    //Type Check parameters
+    Paramstruct *Plist=Mtemp->paramlist;
+    tnode *Alist=arglist;
+
+    while(Plist && Alist){
+
+        if(Plist->type!=Alist->type){
+            printf("Error: Type mismatch of argument ('%s') in the function call of '%s'  with arguments in function definition (%s : %s).\n",Alist->varname?Alist->varname:"constant",name,Alist->type->name,Plist->type->name);
+            exit(1);
+        }
+
+        Plist=Plist->next;
+        Alist=Alist->mid;
+    }
+
+    //Count check parameters
+    if(Plist!=NULL || Alist!=NULL){
+        printf("Error : Unequal number of arguments in function call and function definition.\n");
+        exit(1);
+    }
+
+
+    
+    struct tnode* temp;
+    temp=(struct tnode*) malloc (sizeof(struct tnode));
+    temp->nodetype=FUNCTION;
+    temp->varname=name;
+    temp->type=Mtemp->type;
+    temp->ctype=NULL;
+    temp->strval=NULL;
+    temp->left=NULL;
+    temp->right=NULL;
+    temp->mid=NULL;
+    temp->arglist=arglist;
+    temp->Gentry=NULL;
+    temp->Lentry=NULL;
+    temp->val=Mtemp->funcposition;   //temp->val contains the func position in the virtual function table
+    return temp;
+
+}
+
+
+tnode* makeClassMembersNode(tnode *self, tnode *id1, tnode *id2, tnode *arglist){
+
+    if(Ccurr==NULL){
+        printf("Error : 'self' keyword can only be used inside the class\n");
+        exit(1);
+    }
+
+    setEntry(self);
+    
+    if(arglist==NULL && id1->type==NULL){   //self.id
+        
+        ClassFieldlist *temp=Class_Flookup(Ccurr,id1->varname);
+
+        if(temp){
+            self->left=id1;
+            self->type=temp->type;
+            self->ctype=temp->ctype;
+            id1->nodetype=FIELD;  //converting the node to a field node
+            id1->val=temp->fieldindex;
+
+        }else{
+            printf("Error : %s is not a field of class %s\n",id1->varname,Ccurr->name);
+            exit(1);
+        }
+
+
+    }else if(arglist==NULL && id1->type!=NULL){   //self.field
+
+        self->left=id1;
+        self->type=id1->type;
+        id1->nodetype=FIELD;   //converting the node to a field node
+        //field index  is set from the setfield function itself
+
+    }else if(id2==NULL){       //self.id(arglist)
+        
+        tnode *method= makeMethodNode(id1->varname, arglist,Ccurr);
+        self->left=method;
+        self->type=method->type;
+    }
+    else{                           //self.id.id(arglist)
+
+        ClassFieldlist *temp=Class_Flookup(Ccurr,id1->varname);
+
+        if(temp==NULL){
+            printf("Error : %s is not a field of class %s\n",id1->varname,Ccurr->name);
+            exit(1);
+        }
+
+        if(temp->ctype==NULL){
+            printf("Error : %s is of type %s which has no methods.\n",id1->varname,temp->type->name);
+            exit(1);            
+        }
+
+
+        self->left=id1;
+        id1->nodetype=FIELD;  //converting the node to a field node
+        id1->val=temp->fieldindex;
+
+
+        tnode *method= makeMethodNode(id2->varname, arglist,temp->ctype);
+        id1->left=method;
+        self->type=method->type;
+
+    }
+    
+}
+

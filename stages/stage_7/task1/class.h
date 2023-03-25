@@ -24,6 +24,7 @@ typedef struct Memberfunclist {
  struct Paramstruct *paramlist;   //pointer to the head of the formal parameter list
  int funcposition;                //position of the function in the class table
  int flabel;                      //A label for identifying the starting address of the function's code in the memory
+ int defined;
  struct Memberfunclist *next;     //pointer to next Memberfunclist entry
 }Memberfunclist;
 

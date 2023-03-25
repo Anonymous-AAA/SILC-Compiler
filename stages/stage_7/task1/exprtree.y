@@ -25,7 +25,7 @@
 %type <lsym> IdList
 %type <type> Type
 %type <flist> FieldDeclList FieldDecl
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt SELF
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt SELF ClassMembers ClassFields ClassMethods
 %type <param> ParamList Param
 %type <class> Cname
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL BRKP CLASS ENDCLASS EXTENDS NEW DELETE SELF
@@ -65,8 +65,11 @@ ClassDefList : ClassDefList ClassDef
              | ClassDef
              ;
 
-ClassDef : Cname '{' DECL Fieldlists MethodDecl ENDDECL MethodDefns '}'
+ClassDef : Cname '{' ClassDecl MethodDefns '}'
          ;
+
+ClassDecl : DECL Fieldlists MethodDecl ENDDECL { printClassTable();}
+          ;
 
 Cname : ID  {$$ = CInstall($1->varname,NULL);}
       | ID EXTENDS ID
@@ -168,7 +171,12 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
         checkType($1);
 
         $9 = makeConnectorNode($9,$10);  //Attaching the return statement
+        
+        if(Ccurr)  //if inside class checkMethod
+        checkMethod($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
+        else
         checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
+
         codeFunction($9,$2->varname);       //Generating code
         printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
@@ -268,7 +276,8 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
 
         | ID EQUAL NEW '(' ID ')' ';'
 
-        | Field EQUAL NEW '(' ID ')' ';'
+        | ClassFields EQUAL expr ';' //{ $$ = makeOperatorNode(EQUAL,$1,$3);}
+
         ;
 
 IfStmt : IF '(' expr ')' THEN Body ELSE Body ENDIF ';' {$$ = makeTriplets(IF,$3,$6,$8);}
@@ -314,9 +323,10 @@ expr : expr PLUS expr  {$$ = makeOperatorNode(PLUS,$1,$3);}
   | ID '[' expr ']'{setArrayNode($1,$3);$$=$1;}
   | ID '('')' {$$=makeFnNode($1->varname,NULL);}
   | ID '(' ArgList ')' {$$=makeFnNode($1->varname,$3);}
-  | Field {$$ = $1;}
+  | Field {if(Ccurr){printf("Error : Fields of class %s should not be referenced without 'self' keyword (%s).\n",Ccurr->name,$1->varname);exit(1);} $$ = $1;}
   | NUL {$$ = makeNullNode();}
   | FieldFunction
+  | ClassMembers {$$ = $1;}
   ;
 
 ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
@@ -324,13 +334,22 @@ ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
 
 Field : ID '.' ID {setField($1,$3); $$=$1;}  //will not occur inside class
       | Field '.' ID {setField($1,$3); $$=$1;}  
-      | SELF '.' ID  {setField($1,$3); $$=$1;}
       ;
 
-FieldFunction : SELF '.' ID '(' ArgList ')'
-              | ID '.' ID '(' ArgList ')' //will not occur inside class
-              | Field '.' ID '(' ArgList ')'
+FieldFunction : ID '.' ID '(' ArgList ')' //will not occur inside class
+              ;
 
+ClassMembers    : ClassFields {$$ = $1;}
+                | ClassMethods {$$ = $1;}
+                ;
+
+ClassFields     : SELF '.' ID {$$ = makeClassMembersNode($1,$3,NULL,NULL);} 
+                | SELF '.' Field {$$ = makeClassMembersNode($1,$3,NULL,NULL);}
+                ;
+
+ClassMethods    : SELF '.' ID '(' ArgList ')' {$$ = makeClassMembersNode($1,$3,NULL,$5);}
+                | SELF '.' ID '.' ID '(' ArgList ')' {$$ = makeClassMembersNode($1,$3,$5,$7);}
+                ;
 
 
 %%
