@@ -410,8 +410,17 @@ struct tnode* makeFieldNode(int fieldIndex){
 //set the Gentry and Lentry for local and global variables
 void setEntry(tnode* node){
 
-    Gsymbol *Gentry= GLookup(node->varname);
-    Lsymbol *Lentry= LLookup(node->varname);
+    Gsymbol *Gentry=NULL;
+    Lsymbol *Lentry=NULL;
+
+    if(node->nodetype==SELF){
+        Lentry=LLookup("self");
+    }else{
+
+        Gentry= GLookup(node->varname);
+        Lentry= LLookup(node->varname);
+    }
+
     if(Lentry==NULL && Gentry==NULL){
         printf("Error: '%s' not declared\n",node->varname);
         exit(1);
@@ -420,10 +429,15 @@ void setEntry(tnode* node){
     node->Lentry=Lentry;
 
     //Type priority is given to local var
-    if(Lentry)
+    if(Lentry){
         node->type=Lentry->type;
-    else 
+        if(Lentry->type==selftype)
+            node->ctype=Ccurr;
+    }
+    else {
         node->type=Gentry->type;
+        node->ctype=Gentry->ctype;
+        }
 
 }
 
@@ -654,22 +668,39 @@ void deallocateAST(tnode *node){
 void setField(tnode *var,tnode *id){
     
     //setting gentry and/or lentry if not set
-    if(!(var->Lentry || var->Gentry || Ccurr))  //Ccurr for fields inside class
+    if(!(var->Lentry || var->Gentry))  
         setEntry(var);
     
-    if(var->type==NULL){
-        
-        ClassFieldlist *temp=Class_Flookup(Ccurr, var->varname);
-        if(temp==NULL){
-            printf("Error : Class %s does not have the field %s\n",Ccurr->name,var->varname);
+
+
+    if(var->ctype){
+
+        Classtable *ctype=var->ctype;
+        ClassFieldlist *cfield=Class_Flookup(ctype, id->varname);
+
+
+        if(cfield==NULL){
+            printf("Error : '%s' is not a field in class '%s' of variable '%s'\n",id->varname,ctype->name,var->varname?var->varname:"self");
             exit(1);
         }
 
-        var->type=temp->type;
-        var->val=temp->fieldindex;
-    }
+        var->ctype=cfield->ctype;
+        var->type=cfield->type;
 
-    Typetable *type=var->type;
+    
+        //setting the field node at the end of the field node chain
+        while(var->left)
+            var=var->left;
+
+        var->left=makeFieldNode(cfield->fieldindex);
+
+    
+        //freeing the unwanted id node
+        free(id);
+
+    }else{
+
+        Typetable *type=var->type;
 
 
         Fieldlist *field=FLookup(type,id->varname);
@@ -688,9 +719,12 @@ void setField(tnode *var,tnode *id){
 
         var->left=makeFieldNode(field->fieldIndex);
 
-    
-    //freeing the unwanted id node
-    free(id);
+        
+        //freeing the unwanted id node
+        free(id);
+    } 
+
+
     
 
 }
@@ -704,14 +738,31 @@ void checkInvalidTypes(tnode* type){
 }
 
 
-struct tnode* makeMethodNode(char *name, tnode *arglist, Classtable *class){
+void setMethodNode(tnode *obj,char *name, tnode *arglist){
+
+    if(obj->nodetype==SELF)
+        obj->ctype=Ccurr;
+    else if(obj->nodetype==VAR)
+        obj->ctype=CLookup(obj->varname);
+    else{
+            if(!obj->ctype){
+                printf("DevError: ctype not set on field\n");
+                exit(1);
+            }
+
+    }
+
+    if(obj->ctype==NULL){
+        printf("Error : Class %s is not defined\n",obj->varname);
+        exit(1);
+    }
 
 
-    Memberfunclist *Mtemp=Class_Mlookup(class,name);
+    Memberfunclist *Mtemp=Class_Mlookup(obj->ctype,name);
 
     //existence
     if(Mtemp==NULL){
-        printf("Error : Method %s is not defined in class %s.\n",name,class->name);
+        printf("Error : Method %s is not defined in class %s.\n",name,obj->ctype->name);
         exit(1);
     }
 
@@ -752,75 +803,76 @@ struct tnode* makeMethodNode(char *name, tnode *arglist, Classtable *class){
     temp->Gentry=NULL;
     temp->Lentry=NULL;
     temp->val=Mtemp->funcposition;   //temp->val contains the func position in the virtual function table
-    return temp;
+
+    obj->type=temp->type;
 
 }
 
 
-tnode* makeClassMembersNode(tnode *self, tnode *id1, tnode *id2, tnode *arglist){
-
-    if(Ccurr==NULL){
-        printf("Error : 'self' keyword can only be used inside the class\n");
-        exit(1);
-    }
-
-    setEntry(self);
-    
-    if(arglist==NULL && id1->type==NULL){   //self.id
-        
-        ClassFieldlist *temp=Class_Flookup(Ccurr,id1->varname);
-
-        if(temp){
-            self->left=id1;
-            self->type=temp->type;
-            self->ctype=temp->ctype;
-            id1->nodetype=FIELD;  //converting the node to a field node
-            id1->val=temp->fieldindex;
-
-        }else{
-            printf("Error : %s is not a field of class %s\n",id1->varname,Ccurr->name);
-            exit(1);
-        }
-
-
-    }else if(arglist==NULL && id1->type!=NULL){   //self.field
-
-        self->left=id1;
-        self->type=id1->type;
-        id1->nodetype=FIELD;   //converting the node to a field node
-        //field index  is set from the setfield function itself
-
-    }else if(id2==NULL){       //self.id(arglist)
-        
-        tnode *method= makeMethodNode(id1->varname, arglist,Ccurr);
-        self->left=method;
-        self->type=method->type;
-    }
-    else{                           //self.id.id(arglist)
-
-        ClassFieldlist *temp=Class_Flookup(Ccurr,id1->varname);
-
-        if(temp==NULL){
-            printf("Error : %s is not a field of class %s\n",id1->varname,Ccurr->name);
-            exit(1);
-        }
-
-        if(temp->ctype==NULL){
-            printf("Error : %s is of type %s which has no methods.\n",id1->varname,temp->type->name);
-            exit(1);            
-        }
-
-
-        self->left=id1;
-        id1->nodetype=FIELD;  //converting the node to a field node
-        id1->val=temp->fieldindex;
-
-
-        tnode *method= makeMethodNode(id2->varname, arglist,temp->ctype);
-        id1->left=method;
-        self->type=method->type;
-
-    }
-    
-}
+//void makeClassMembersNode(tnode *self, tnode *id1, tnode *id2, tnode *arglist){
+//
+//    if(Ccurr==NULL){
+//        printf("Error : 'self' keyword can only be used inside the class\n");
+//        exit(1);
+//    }
+//
+//    setEntry(self);
+//    
+//    if(arglist==NULL && id1->type==voidtype){   //self.id
+//        
+//        ClassFieldlist *temp=Class_Flookup(Ccurr,id1->varname);
+//
+//        if(temp){
+//            self->left=id1;
+//            self->type=temp->type;
+//            self->ctype=temp->ctype;
+//            id1->nodetype=FIELD;  //converting the node to a field node
+//            id1->val=temp->fieldindex;
+//
+//        }else{
+//            printf("Error : %s is not a field of class %s\n",id1->varname,Ccurr->name);
+//            exit(1);
+//        }
+//
+//
+//    }else if(arglist==NULL && id1->type!=voidtype){   //self.field
+//
+//        self->left=id1;
+//        self->type=id1->type;
+//        id1->nodetype=FIELD;   //converting the node to a field node
+//        //field index  is set from the setfield function itself
+//
+//    }else if(id2==NULL){       //self.id(arglist)
+//        
+//        tnode *method= makeMethodNode(id1->varname, arglist,Ccurr);
+//        self->left=method;
+//        self->type=method->type;
+//    }
+//    else{                           //self.id.id(arglist)
+//
+//        ClassFieldlist *temp=Class_Flookup(Ccurr,id1->varname);
+//
+//        if(temp==NULL){
+//            printf("Error : %s is not a field of class %s\n",id1->varname,Ccurr->name);
+//            exit(1);
+//        }
+//
+//        if(temp->ctype==NULL){
+//            printf("Error : %s is of type %s which has no methods.\n",id1->varname,temp->type->name);
+//            exit(1);            
+//        }
+//
+//
+//        self->left=id1;
+//        id1->nodetype=FIELD;  //converting the node to a field node
+//        id1->val=temp->fieldindex;
+//
+//
+//        tnode *method= makeMethodNode(id2->varname, arglist,temp->ctype);
+//        id1->left=method;
+//        self->type=method->type;
+//
+//    }
+//    
+//}
 

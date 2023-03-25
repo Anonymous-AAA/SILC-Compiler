@@ -66,6 +66,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             return r;
             break;
 
+        case SELF:  //self is same as var
         case VAR:   //returns register containing address of the var
             if(t->left && t->left->nodetype!=FIELD){    //It is an array  variable
                 r1=codeGen(t->left,while_label_1,while_label_2);

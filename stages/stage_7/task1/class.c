@@ -27,7 +27,12 @@ Classtable *CInstall(char *name,char *parent_class_name){
 
 
     if(CLookup(name)){
-        printf("Error : Class %s is already defined",name);
+        printf("Error : Class %s is already defined\n",name);
+        exit(1);
+    }
+
+    if(TLookup(name)->size!=UNDEFINED){
+        printf("Error : A type %s is already defined, so a class cannot have the same name\n",name);
         exit(1);
     }
 
@@ -191,6 +196,11 @@ void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *P
     if(Class_Mlookup(cptr, name)){
 
             printf("Error : Class %s cannot have multiple methods with the same name (%s).\n",cptr->name,name);
+            exit(1);
+    }
+
+    if(Class_Flookup(cptr,name)){
+            printf("Error : Class %s cannot have methods and member fields with the same name (%s).\n",cptr->name,name);
             exit(1);
     }
 
