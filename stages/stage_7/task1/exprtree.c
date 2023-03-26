@@ -104,12 +104,6 @@ int isUserDefinedType(tnode *node){
 
 struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     
-   // if(r->type!=inttype && l->type!=inttype){
-   //     yyerror("Type Mismatch");
-   //     exit(1);
-   // }
-
-
     if(l->type!=r->type){
 
         if(l->type==inttype || l->type==strtype || l->type==booltype || l->type==voidtype || l->type==nulltype){
@@ -167,6 +161,27 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
 
         printf("Error: Invalid operation (%d) on '%s' type.\n",c,l->type->name);
         exit(1);
+
+    }
+
+    if((l->type==NULL) != (r->type==NULL)){
+        printf("Error : Invalid operator (%d) on type and class variables\n",c);
+        exit(1);
+    }
+
+    //class types
+    if(l->type==NULL && r->type==NULL){
+        
+        if(l->ctype!=r->ctype){
+            printf("Error : Operands should be of the same class (%s:%s)\n",l->ctype->name,r->ctype->name);
+            exit(1);
+        }
+
+        if(c!=EQUAL && c!=EQ && c!=NE){
+            printf("Error: Invalid operation (%d) on '%s' type.\n",c,l->ctype->name);
+            exit(1);
+        }
+
 
     }
 
@@ -671,6 +686,10 @@ void setField(tnode *var,tnode *id){
     if(!(var->Lentry || var->Gentry))  
         setEntry(var);
     
+    if(var->ctype!=NULL && var->nodetype!=SELF){
+        printf("Error : Member fields are private to the class(%s.%s)\n",var->varname,id->varname);
+        exit(1);
+    }
 
 
     if(var->ctype){
@@ -745,20 +764,20 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
         setEntry(obj);
 
 
-    if(obj->nodetype==SELF)
-        obj->ctype=Ccurr;
-    else if(obj->nodetype==VAR)
-        obj->ctype=CLookup(obj->varname);
-    else{
-            if(!obj->ctype){
-                printf("DevError: ctype not set on field\n");
-                exit(1);
-            }
+   // if(obj->nodetype==SELF)
+   //     obj->ctype=Ccurr;
+   // else if(obj->nodetype==VAR)
+   //     obj->ctype=CLookup(obj->varname);
+   // else{
+   //         if(!obj->ctype){
+   //             printf("DevError: ctype not set on field\n");
+   //             exit(1);
+   //         }
 
-    }
+   // }
 
     if(obj->ctype==NULL){
-        printf("Error : Class %s is not defined\n",obj->varname);
+        printf("Error : %s is not defined in class %s\n",obj->varname,Ccurr->name);
         exit(1);
     }
 

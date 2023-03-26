@@ -775,7 +775,7 @@ static const yytype_int16 yyrline[] =
      278,   283,   284,   287,   290,   293,   296,   298,   305,   306,
      307,   308,   309,   310,   311,   312,   313,   314,   315,   316,
      317,   318,   319,   320,   321,   322,   323,   324,   325,   326,
-     327,   328,   331,   332,   334,   335,   336,   339,   340,   341
+     327,   328,   331,   332,   334,   335,   344,   352,   359,   360
 };
 #endif
 
@@ -2161,36 +2161,55 @@ yyreduce:
 
   case 115: /* Field: Field '.' ID  */
 #line 335 "exprtree.y"
-                     {setField((yyvsp[-2].no),(yyvsp[0].no)); (yyval.no)=(yyvsp[-2].no);}
-#line 2166 "y.tab.c"
+                     {
+                        if((yyvsp[-2].no)->nodetype==SELF){
+
+                         printf("Error : Member fields are private to the class (%s)\n",(yyvsp[0].no)->varname);
+                         exit(1);
+
+                        }
+                        setField((yyvsp[-2].no),(yyvsp[0].no)); 
+                        (yyval.no)=(yyvsp[-2].no);}
+#line 2174 "y.tab.c"
     break;
 
   case 116: /* Field: SELF '.' ID  */
-#line 336 "exprtree.y"
-                    {(yyvsp[-2].no)=makeNoChildNode(SELF);setField((yyvsp[-2].no),(yyvsp[0].no));(yyval.no)=(yyvsp[-2].no);}
-#line 2172 "y.tab.c"
+#line 344 "exprtree.y"
+                    {if(Ccurr==NULL){
+                        printf("Error : 'self' can only occur inside methods\n");
+                        exit(1);
+                        }
+                     (yyvsp[-2].no)=makeNoChildNode(SELF);setField((yyvsp[-2].no),(yyvsp[0].no));(yyval.no)=(yyvsp[-2].no);
+                     }
+#line 2185 "y.tab.c"
     break;
 
   case 117: /* FieldFunction: SELF '.' ID '(' ArgList ')'  */
-#line 339 "exprtree.y"
-                                            {(yyvsp[-5].no)=makeNoChildNode(SELF);setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);}
-#line 2178 "y.tab.c"
+#line 352 "exprtree.y"
+                                            {
+                        if(Ccurr==NULL){
+                                printf("Error : 'self' can only occur inside methods\n");
+                                exit(1);
+                        }
+                        (yyvsp[-5].no)=makeNoChildNode(SELF);setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);
+                }
+#line 2197 "y.tab.c"
     break;
 
   case 118: /* FieldFunction: ID '.' ID '(' ArgList ')'  */
-#line 340 "exprtree.y"
+#line 359 "exprtree.y"
                                           {setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);}
-#line 2184 "y.tab.c"
+#line 2203 "y.tab.c"
     break;
 
   case 119: /* FieldFunction: Field '.' ID '(' ArgList ')'  */
-#line 341 "exprtree.y"
+#line 360 "exprtree.y"
                                              {setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);}
-#line 2190 "y.tab.c"
+#line 2209 "y.tab.c"
     break;
 
 
-#line 2194 "y.tab.c"
+#line 2213 "y.tab.c"
 
       default: break;
     }
@@ -2383,7 +2402,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 344 "exprtree.y"
+#line 363 "exprtree.y"
 
 
 int yyerror(char const *s)

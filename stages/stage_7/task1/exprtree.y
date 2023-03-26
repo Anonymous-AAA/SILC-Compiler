@@ -332,11 +332,30 @@ ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
         | expr {$$ = $1;}
 
 Field : ID '.' ID {setField($1,$3); $$=$1;}  //will not occur inside class
-      | Field '.' ID {setField($1,$3); $$=$1;}  
-      | SELF '.' ID {$1=makeNoChildNode(SELF);setField($1,$3);$$=$1;}
+      | Field '.' ID {
+                        if($1->nodetype==SELF){
+
+                         printf("Error : Member fields are private to the class (%s)\n",$3->varname);
+                         exit(1);
+
+                        }
+                        setField($1,$3); 
+                        $$=$1;}  
+      | SELF '.' ID {if(Ccurr==NULL){
+                        printf("Error : 'self' can only occur inside methods\n");
+                        exit(1);
+                        }
+                     $1=makeNoChildNode(SELF);setField($1,$3);$$=$1;
+                     }
       ;
 
-FieldFunction : SELF '.' ID '(' ArgList ')' {$1=makeNoChildNode(SELF);setMethodNode($1,$3->varname,$5);$$=$1;} //will not occur inside class
+FieldFunction : SELF '.' ID '(' ArgList ')' {
+                        if(Ccurr==NULL){
+                                printf("Error : 'self' can only occur inside methods\n");
+                                exit(1);
+                        }
+                        $1=makeNoChildNode(SELF);setMethodNode($1,$3->varname,$5);$$=$1;
+                } //will not occur inside class
               | ID '.' ID  '(' ArgList ')'{setMethodNode($1,$3->varname,$5);$$=$1;}
               | Field '.' ID  '(' ArgList ')'{setMethodNode($1,$3->varname,$5);$$=$1;}
 
