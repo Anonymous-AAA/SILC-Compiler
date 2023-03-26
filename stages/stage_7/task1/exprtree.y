@@ -363,7 +363,7 @@ FieldFunction : SELF '.' ID '(' ArgList ')' {
                 } //will not occur inside class
               | ID '.' ID  '(' ArgList ')'{setMethodNode($1,$3->varname,$5);$$=$1;}
               | Field '.' ID  '(' ArgList ')'{setMethodNode($1,$3->varname,$5);$$=$1;}
-              |SELF '.' ID '(' ')' {
+              | SELF '.' ID '(' ')' {
                         if(Ccurr==NULL){
                                 printf("Error : 'self' can only occur inside methods\n");
                                 exit(1);

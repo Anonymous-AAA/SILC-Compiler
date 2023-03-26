@@ -66,6 +66,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             return r;
             break;
 
+        case FUNCVAR:
         case SELF:  //self is same as var
         case VAR:   //returns register containing address of the var
 
@@ -700,7 +701,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                     r2);
 
 
-            if(t->left->nodetype==VAR)
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF)
                 fprintf(fptr,
                         "MOV [R%d], [R%d]\n",
                         r2,r1);

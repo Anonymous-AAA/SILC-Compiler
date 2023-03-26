@@ -818,6 +818,8 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
     }
 
 
+    //setting object to funcvar type
+    obj->nodetype=FUNCVAR;
     
     struct tnode* temp;
     temp=(struct tnode*) malloc (sizeof(struct tnode));

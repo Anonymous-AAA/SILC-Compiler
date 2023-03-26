@@ -2224,7 +2224,7 @@ yyreduce:
 
   case 119: /* FieldFunction: SELF '.' ID '(' ')'  */
 #line 366 "exprtree.y"
-                                   {
+                                    {
                         if(Ccurr==NULL){
                                 printf("Error : 'self' can only occur inside methods\n");
                                 exit(1);
