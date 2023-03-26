@@ -25,7 +25,7 @@
 %type <lsym> IdList
 %type <type> Type
 %type <flist> FieldDeclList FieldDecl
-%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt SELF FieldFunction
+%type <no> expr NUM STRCON ID Stmt InputStmt OutputStmt AsgStmt IfStmt WhileStmt BreakStmt ContinueStmt Body ArgList ReturnStmt FreeStmt Field ALLOC INIT NUL BreakPointStmt SELF FieldFunction NEW
 %type <param> ParamList Param
 %type <class> Cname
 %token NUM PLUS MINUS MUL DIV MOD END BEG READ WRITE ID EQUAL IF THEN ELSE ENDIF WHILE DO ENDWHILE LT GT LE GE NE EQ BREAK CONTINUE DECL ENDDECL INT STR STRCON MAIN RET AND OR FREE ALLOC TYPE ENDTYPE INIT NUL BRKP CLASS ENDCLASS EXTENDS NEW DELETE SELF
@@ -68,11 +68,11 @@ ClassDefList : ClassDefList ClassDef
 ClassDef : Cname '{' ClassDecl MethodDefns '}'
          ;
 
-ClassDecl : DECL Fieldlists MethodDecl ENDDECL { printClassTable();}
+ClassDecl : DECL Fieldlists MethodDecl ENDDECL //{ printClassTable();}
           ;
 
 Cname : ID  {$$ = CInstall($1->varname,NULL);}
-      | ID EXTENDS ID
+//      | ID EXTENDS ID
       ;
 
 Fieldlists : Fieldlists Fld
@@ -130,7 +130,7 @@ GDeclList : GDeclList GDecl
           | GDecl 
           ;
 
-GDecl : Type GidList ';' {checkType($1);setGType($2,$1);}
+GDecl : Type GidList ';' {checkTypeAndCtype($1);setGType($2,$1);}
       ;
 
 
@@ -177,7 +177,7 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
         else
         checkFn($1,$10->left->type,$2->varname,$4);  //to check definition with declaration
 
-        test($9);
+        //test($9);
         codeFunction($9,$2->varname);       //Generating code
         printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
@@ -275,7 +275,12 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
                                         }
         | Field EQUAL expr ';' { $$ = makeOperatorNode(EQUAL,$1,$3);}
 
-        | ID EQUAL NEW '(' ID ')' ';'
+        | ID EQUAL NEW '(' ID ')' ';'{
+                                        setEntry($1);
+                                        $3=makeNoChildNode(NEW);
+                                        $3->type=nulltype;
+                                        $$ = makeOperatorNode(EQUAL,$1,$3);
+                                        }
 
 
         ;
@@ -358,6 +363,17 @@ FieldFunction : SELF '.' ID '(' ArgList ')' {
                 } //will not occur inside class
               | ID '.' ID  '(' ArgList ')'{setMethodNode($1,$3->varname,$5);$$=$1;}
               | Field '.' ID  '(' ArgList ')'{setMethodNode($1,$3->varname,$5);$$=$1;}
+              |SELF '.' ID '(' ')' {
+                        if(Ccurr==NULL){
+                                printf("Error : 'self' can only occur inside methods\n");
+                                exit(1);
+                        }
+                        $1=makeNoChildNode(SELF);setMethodNode($1,$3->varname,NULL);$$=$1;
+                } //will not occur inside class
+              | ID '.' ID  '(' ')'{setMethodNode($1,$3->varname,NULL);$$=$1;}
+              | Field '.' ID  '(' ')'{setMethodNode($1,$3->varname,NULL);$$=$1;}
+
+
 
 
 %%

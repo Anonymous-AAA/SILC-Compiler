@@ -35,11 +35,24 @@ int getLocLBinding(){   //Get binding for local variables of the function
 
 void setGType(Gsymbol* node, Typetable *type){
     
-    Gsymbol* temp=node;
+    Gsymbol *temp=node;
 
-    while(temp){
-        temp->type=type;
-        temp=temp->next;
+    if(type->size!=UNDEFINED){    //normal type
+
+        while(temp){
+            temp->type=type;
+            temp=temp->next;
+        }
+    }
+    else{                       //normal ctype
+        
+        Classtable *ctype=CLookup(type->name);
+
+        while(temp){
+            temp->ctype=ctype;
+            temp=temp->next;
+        }
+
     }
 
 }
@@ -291,10 +304,10 @@ void printGSymbolTable(){
     Gsymbol *temp=Gstart;
 
     printf("Global:\n");
-    printf("Name Type Size Binding Flabel\n");
+    printf("Name Type CType Size Binding Flabel\n");
 
     while(temp){
-        printf("%s %s %d %d %d  ",temp->name,temp->type->name,temp->size,temp->binding,temp->flabel);
+        printf("%s %s %s %d %d %d  ",temp->name,temp->type->name,temp->ctype?temp->ctype->name:"No ctype",temp->size,temp->binding,temp->flabel);
         if(temp->paramlist){
             printf("ParamList : ");
             Paramstruct *p=temp->paramlist;

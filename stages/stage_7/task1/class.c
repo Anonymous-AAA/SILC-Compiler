@@ -251,7 +251,7 @@ void printClassTable(){
                 param=param->next;
             }
             printf("    Funcposition : %d\n",method->funcposition);
-            printf("    Flabel : %d\n",method->flabel);
+            printf("    Flabel : %d\n\n",method->flabel);
             method=method->next;
         }
 

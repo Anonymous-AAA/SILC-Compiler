@@ -93,18 +93,21 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
                 //fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
 
-                tnode *temp=t->left;
+                tnode *fieldtemp=t->left;
 
-                r1=getReg();
 
-                while(temp){
+                while(fieldtemp){
                     
-                    if(temp->nodetype==FUNCFIELD){
+                    if(fieldtemp->nodetype==FUNCFIELD){
                         //do something here
                         //Allot register for storing the  return value
                         //r1=getReg(); already done before
 
                         fprintf(fptr,"MOV R%d, [R%d]\n",GARBAGE_REG,r);
+                        freeReg();
+
+                        r1=getReg();
+
                         usedReg=regInUse();
 
                         //Push registers in use to the stack
@@ -149,7 +152,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                         //Generate Call instruction to the binding of the function
                         fprintf(fptr,
                                 "CALL F%d\n",
-                                t->val);  //t->val stores flabel in setMethodNode
+                                fieldtemp->val);  //t->val stores flabel in setMethodNode
 
 
                         //After return from the callee
@@ -185,6 +188,10 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                         
                         //r2 should be equal to r1
                         r2=getReg();    //to reserve back r1
+                        if(r1!=r2){
+                            printf("DevError : r1,r2 not same in FUNCFIELD\n");
+                            exit(1);
+                        }
 
 
                         //Decrement SP by 1 to remove context of register alloted for return value
@@ -195,15 +202,17 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
                     }
                 else{
+                    r1=getReg();
                     fprintf(fptr,"MOV R%1$d, [R%1$d]\n",r);
-                    fprintf(fptr,"MOV R%d, %d\n",r1,temp->val);
+                    fprintf(fptr,"MOV R%d, %d\n",r1,fieldtemp->val);
                     fprintf(fptr,"ADD R%d, R%d\n",r,r1);
+                    freeReg();
                     }
                 
-                    temp=temp->left;
+                    fieldtemp=fieldtemp->left;
                 }
 
-                freeReg();
+                //freeReg();
                 return r;
             }
 
@@ -781,6 +790,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             break;
         
 
+        case NEW:
         case ALLOC:
             //Allot register for storing the  return value
             r1=getReg();

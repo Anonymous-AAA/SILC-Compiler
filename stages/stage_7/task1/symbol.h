@@ -49,4 +49,4 @@ int nextLocLBinding = 1;    //Stores next binding for local variables
 
 //For storing types in return statements
 //int returnType=voidtype;
-
+struct Classtable *CLookup(char *name);

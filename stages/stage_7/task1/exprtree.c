@@ -106,7 +106,7 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     
     if(l->type!=r->type){
 
-        if(l->type==inttype || l->type==strtype || l->type==booltype || l->type==voidtype || l->type==nulltype){
+        if(l->type==inttype || l->type==strtype || l->type==booltype || (l->type==voidtype && l->ctype==NULL) || l->type==nulltype){
 
             printf("Error : Type Mismatch (%s : %s) , Operator: %d \n",l->type->name,r->type->name,c);
             exit(1);
@@ -130,10 +130,10 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     
    
     //check for void type (impossible)
-    if(r->type==voidtype || l->type==voidtype){
-        printf("DevError: voidtype detected\n");
-        exit(1);
-    }
+   // if(r->type==voidtype || l->type==voidtype){
+   //     printf("DevError: voidtype detected\n");
+   //     exit(1);
+   // }
 
 
     //Checking invalid operations on strings
@@ -164,13 +164,19 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
 
     }
 
-    if((l->type==NULL) != (r->type==NULL)){
+    if((l->type==voidtype) != (r->type==voidtype)){
+
+        if(!(l->ctype && r->type==nulltype)){
+
         printf("Error : Invalid operator (%d) on type and class variables\n",c);
         exit(1);
+
+        }
+
     }
 
     //class types
-    if(l->type==NULL && r->type==NULL){
+    if(l->type==voidtype && r->type==voidtype){
         
         if(l->ctype!=r->ctype){
             printf("Error : Operands should be of the same class (%s:%s)\n",l->ctype->name,r->ctype->name);

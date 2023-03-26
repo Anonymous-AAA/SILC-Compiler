@@ -260,3 +260,15 @@ void checkType(Typetable *temp){
 
     }
 }
+
+
+void checkTypeAndCtype(Typetable *temp){
+    
+    if(temp->size==UNDEFINED){
+        
+        if(CLookup(temp->name)==NULL){
+            printf("Error : Type '%s' is not defined\n",temp->name);
+            exit(1);
+        }
+    }
+}
