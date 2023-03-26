@@ -26,6 +26,7 @@
 #define VAR -4
 #define FUNCTION -5
 #define FIELD -6
+#define FUNCFIELD -7
 
 
 typedef struct tnode{

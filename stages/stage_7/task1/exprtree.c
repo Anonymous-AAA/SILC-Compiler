@@ -740,6 +740,11 @@ void checkInvalidTypes(tnode* type){
 
 void setMethodNode(tnode *obj,char *name, tnode *arglist){
 
+
+    if(!(obj->Lentry || obj->Gentry))  
+        setEntry(obj);
+
+
     if(obj->nodetype==SELF)
         obj->ctype=Ccurr;
     else if(obj->nodetype==VAR)
@@ -791,7 +796,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
     
     struct tnode* temp;
     temp=(struct tnode*) malloc (sizeof(struct tnode));
-    temp->nodetype=FUNCTION;
+    temp->nodetype=FUNCFIELD;
     temp->varname=name;
     temp->type=Mtemp->type;
     temp->ctype=NULL;
@@ -802,7 +807,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
     temp->arglist=arglist;
     temp->Gentry=NULL;
     temp->Lentry=NULL;
-    temp->val=Mtemp->funcposition;   //temp->val contains the func position in the virtual function table
+    temp->val=Mtemp->flabel;   //temp->val contains the func position in the virtual function table
 
     obj->type=temp->type;
 
