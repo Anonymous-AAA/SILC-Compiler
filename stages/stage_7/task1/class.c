@@ -108,10 +108,10 @@ ClassFieldlist *createClassField(char *name, char *typename){
     if(type->size!=UNDEFINED){
         temp->type=type;
     }else{
-        temp->type=NULL;
+        temp->type=voidtype;
     }
 
-    Classtable *ctype=CLookup(name);
+    Classtable *ctype=CLookup(typename);
 
     if(ctype){
         temp->ctype=ctype;
@@ -120,7 +120,7 @@ ClassFieldlist *createClassField(char *name, char *typename){
     }
 
     if(type->size==UNDEFINED && ctype==NULL){
-        printf("Error : Type %s is not defined\n",typename);
+        printf("Error : Type %1$s is not defined (%1$s %2$s)\n",typename,name);
         exit(1);
     }
 

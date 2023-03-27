@@ -281,6 +281,11 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
                                         $3->type=nulltype;
                                         $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
+        | Field EQUAL NEW '(' ID ')' ';'{
+                                        $3=makeNoChildNode(NEW);
+                                        $3->type=nulltype;
+                                        $$ = makeOperatorNode(EQUAL,$1,$3);
+                                        }
 
 
         ;
@@ -338,12 +343,12 @@ ArgList : ArgList ',' expr {attachArg($$,$3);$$=$3;}
 
 Field : ID '.' ID {setField($1,$3); $$=$1;}  //will not occur inside class
       | Field '.' ID {
-                        if($1->nodetype==SELF){
+                       // if($1->nodetype==SELF){
 
-                         printf("Error : Member fields are private to the class (%s)\n",$3->varname);
-                         exit(1);
+                       //  printf("Error : Member fields are private to the class (%s)\n",$3->varname);
+                       //  exit(1);
 
-                        }
+                       // }
                         setField($1,$3); 
                         $$=$1;}  
       | SELF '.' ID {if(Ccurr==NULL){

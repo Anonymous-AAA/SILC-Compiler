@@ -231,11 +231,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case PLUS:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"ADD R%d, R%d\n",r1,r2);
@@ -248,11 +248,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                 r1=codeGen(t->left,while_label_1,while_label_2);
                 r2=codeGen(t->right,while_label_1,while_label_2);
 
-                if(t->left->nodetype==VAR){
+                if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                     fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
                 }
 
-                if(t->right->nodetype==VAR){  
+                if(t->right->nodetype==VAR || t->right->nodetype==SELF){  
                     fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
                 }
             }   
@@ -261,7 +261,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                 fprintf(fptr,"MOV R%d, 0\n",r1);
                 r2=codeGen(t->left,while_label_1,while_label_2);
 
-                if(t->left->nodetype==VAR){
+                if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                     fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
                 }
             }
@@ -275,11 +275,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case MUL:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"MUL R%d, R%d\n",r1,r2);
@@ -289,11 +289,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case DIV:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"DIV R%d, R%d\n",r1,r2);
@@ -303,11 +303,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case MOD:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"MOD R%d, R%d\n",r1,r2);
@@ -340,7 +340,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case WRITE:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r=getReg();
-            if(t->left->nodetype==VAR){   //allocate register if writing a variable
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){   //allocate register if writing a variable
             fprintf(fptr,
                     "MOV R%1$d, \"Write\"\n"
                     "PUSH R%1$d\n"
@@ -386,7 +386,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case EQUAL:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,
                         "MOV R%d, [R%d]\n",
                         r2,r2);
@@ -409,11 +409,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"LT R%d, R%d\n",r1,r2);
@@ -424,11 +424,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"GT R%d, R%d\n",r1,r2);
@@ -439,11 +439,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"LE R%d, R%d\n",r1,r2);
@@ -454,11 +454,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"GE R%d, R%d\n",r1,r2);
@@ -469,11 +469,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"EQ R%d, R%d\n",r1,r2);
@@ -486,11 +486,11 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
-            if(t->left->nodetype==VAR){
+            if(t->left->nodetype==VAR || t->left->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r1,r1);
             }
 
-            if(t->right->nodetype==VAR){
+            if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,"MOV R%d, [R%d]\n",r2,r2);
             }
             fprintf(fptr,"NE R%d, R%d\n",r1,r2);
