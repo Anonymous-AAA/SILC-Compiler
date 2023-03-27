@@ -235,9 +235,12 @@ FreeStmt : FREE '(' ID ')' ';' { setEntry($3);
                                  }
         | FREE '(' Field ')' ';' { $$=makeSingleNode(FREE,$3);}
 
-        | DELETE '(' Field ')' ';'
+        | DELETE '(' Field ')' ';'{ $$=makeSingleNode(DELETE,$3);}
 
-        | DELETE '(' ID ')' ';'
+        | DELETE '(' ID ')' ';'{ setEntry($3); 
+                                 $$=makeSingleNode(DELETE,$3);
+
+                                 }
         ;
 
 

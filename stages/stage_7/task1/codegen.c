@@ -862,6 +862,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             break;
 
 
+        case DELETE:
         case FREE:
             //Allot register for storing the  return value
             r1=getReg();
