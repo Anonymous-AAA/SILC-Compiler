@@ -129,7 +129,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
 
                          //Evaluate args and push to the stack
-                        tnode *temp=t->arglist;
+                        tnode *temp=fieldtemp->arglist;
                         while(temp){
                             r2=codeGen(temp,while_label_1,while_label_2);
 
@@ -164,7 +164,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                                 r1);
                         
                         //Pop out arguments from the stack.
-                        temp=t->arglist;
+                        temp=fieldtemp->arglist;
                         r2=GARBAGE_REG;   //GARBAGE_REG is used because value is discarded
                         while(temp){
                             fprintf(fptr,
