@@ -589,7 +589,7 @@ void checkFn(Typetable *type,Typetable *returnType,char *name, Paramstruct *list
 
 
         //checking whether the value returned by the return statement is same as the return type
-        if(returnType!=type){
+        if(returnType!=type && !(isUserType(type) && returnType==nulltype)){
 
             printf("Error: The type of value returned by the function '%s' does not match with the return type (%s : %s)\n",name,returnType->name,type->name);
             exit(1);
@@ -617,7 +617,7 @@ void checkMethod(Typetable *type,Typetable *returnType,char *name, Paramstruct *
     
 
         if(entry->defined==DEFINED){
-            printf("Error : Function '%s' is redefined\n",name);
+            printf("Error : Method '%s' is redefined in class %s\n",name,Ccurr->name);
             exit(1);
         }
 
@@ -625,7 +625,7 @@ void checkMethod(Typetable *type,Typetable *returnType,char *name, Paramstruct *
         
 
         if(entry->type!=type){
-            printf("Error: Conflicting types for function '%s' in declaration and definition (%s:%s)\n",name,entry->type->name,type->name);
+            printf("Error: Conflicting types for method '%s' in declaration and definition in class %s (%s:%s)\n",name,Ccurr->name,entry->type->name,type->name);
             exit(1);
         }
 
@@ -635,12 +635,12 @@ void checkMethod(Typetable *type,Typetable *returnType,char *name, Paramstruct *
         while(decl && def){
             
             if(strcmp(decl->name,def->name)!=0){
-                printf("Error: Parameters of function '%s' have different names in declaration and definition (%s : %s)\n",name,decl->name,def->name);
+                printf("Error: Parameters of method '%s' have different names in declaration and definition in class %s (%s : %s)\n",name,Ccurr->name,decl->name,def->name);
                 exit(1);
             }
 
             if(decl->type!=def->type){
-                printf("Error: Parameter '%s' of function '%s' have different types in declaration and definiton (%s : %s)\n",decl->name,name,decl->type->name,def->type->name);
+                printf("Error: Parameter '%s' of method '%s' have different types in declaration and definiton in class %s (%s : %s)\n",decl->name,name,Ccurr->name,decl->type->name,def->type->name);
                 exit(1);
             }
 
@@ -651,15 +651,15 @@ void checkMethod(Typetable *type,Typetable *returnType,char *name, Paramstruct *
 
         if(decl!=NULL || def!=NULL){
 
-            printf("Error: Number of parameters of function '%s' does not match in declaration and definiton.\n",name);
+            printf("Error: Number of parameters of method '%s' does not match in declaration and definiton in class %s.\n",name,Ccurr->name);
             exit(1);
         }
 
 
         //checking whether the value returned by the return statement is same as the return type
-        if(returnType!=type){
+        if(returnType!=type && !(isUserType(type) && returnType==nulltype)){
 
-            printf("Error: The type of value returned by the function '%s' does not match with the return type (%s : %s)\n",name,returnType->name,type->name);
+            printf("Error: The type of value returned by the method '%s' does not match with the return type in class %s (%s : %s)\n",name,Ccurr->name,returnType->name,type->name);
             exit(1);
         }
 

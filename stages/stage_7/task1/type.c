@@ -272,3 +272,15 @@ void checkTypeAndCtype(Typetable *temp){
         }
     }
 }
+
+
+int isUserType(Typetable *type){
+
+
+    if(type==inttype || type==strtype || type==booltype || type==voidtype || type==nulltype)
+        return FALSE;
+    else
+        return TRUE;
+
+
+}

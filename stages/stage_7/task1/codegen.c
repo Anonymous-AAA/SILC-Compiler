@@ -960,7 +960,8 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 void genHeader(){
 
     fprintf(fptr,"0\n2056\n0\n0\n0\n0\n0\n0\n");
-    fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
+//    fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
+    fprintf(fptr,"MOV SP\n");  //Will be replaced after main
     fprintf(fptr,"PUSH R0\n");  //Empty space in stack to store return value
     fprintf(fptr,"CALL MAIN\n");    //Calling main function
     
@@ -1002,6 +1003,10 @@ void codeFunction(struct tnode* body, char *name){
                 mentry->flabel);
         }
     }else{
+        
+        printf("%d\n",fseek(fptr,19,SEEK_SET));
+        fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
+        fseek(fptr, 0, SEEK_END);
         fprintf(fptr,
                 "MAIN:\n");
     }
