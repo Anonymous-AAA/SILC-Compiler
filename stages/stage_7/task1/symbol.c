@@ -88,6 +88,7 @@ Gsymbol *GInstallVar (char *name, Typetable *type, int size){
     Gsymbol *temp= (Gsymbol*) malloc(sizeof(Gsymbol));
     temp->name=name;
     temp->type=type;
+    temp->ctype=NULL;
     temp->size=size;
     temp->binding=getGBinding(size);
     temp->flabel=NIL;
@@ -142,6 +143,7 @@ Gsymbol *GInstallFn(char *name,Typetable *type,Paramstruct *paramList){
     Gsymbol *temp=(Gsymbol*) malloc(sizeof(Gsymbol));
     temp->name=name;
     temp->type=type;
+    temp->ctype=NULL;
     temp->size=NIL;
     temp->binding=NIL;
     temp->paramlist=paramList;
