@@ -76,7 +76,7 @@
  #include "exprtree.c"
  #include "codegen.c"
 // #include "symbol.c"
- #include "test.c"
+// #include "test.c"
 // #include "evaluate.c"
  extern FILE *yyin;   //yyin is declared in the lex file
 
@@ -1593,9 +1593,9 @@ yyreduce:
           //code($3);
           //evaluate($3)
           //test($3)
-          printTypeTable();
-          printGSymbolTable();
-          printClassTable();
+          //printTypeTable();
+          //printGSymbolTable();
+          //printClassTable();
           exit(0);
           }
 #line 1602 "y.tab.c"
@@ -1691,7 +1691,7 @@ yyreduce:
             (yyvsp[-3].no) = makeConnectorNode((yyvsp[-3].no),(yyvsp[-2].no));  //Attaching the return statement
             checkMain((yyvsp[-2].no)->left->type);
             codeFunction((yyvsp[-3].no),NULL);       //Generating code
-            printLSymbolTable("main"); //Printing the local symbol table
+            //printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST((yyvsp[-3].no));  //deallocating the AST
           }
@@ -1713,7 +1713,7 @@ yyreduce:
 
         //test($9);
         codeFunction((yyvsp[-3].no),(yyvsp[-10].no)->varname);       //Generating code
-        printLSymbolTable((yyvsp[-10].no)->varname); //Printing the local symbol table
+        //printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST((yyvsp[-3].no));  //deallocating the AST
       }

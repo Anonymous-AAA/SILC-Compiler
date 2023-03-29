@@ -693,7 +693,7 @@ void setField(tnode *var,tnode *id){
         setEntry(var);
     
     if(var->ctype!=NULL && var->nodetype!=SELF){
-        printf("Error : Member fields are private to the class(%s.%s)\n",var->varname,id->varname);
+        printf("Error : Member fields are private to the class (%s.%s)\n",var->varname,id->varname);
         exit(1);
     }
 
@@ -783,7 +783,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
    // }
 
     if(obj->ctype==NULL){
-        printf("Error : %s is not defined in class %s\n",obj->varname,Ccurr->name);
+        printf("Error : %s is not a class type\n",obj->varname);
         exit(1);
     }
 
@@ -803,7 +803,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
     while(Plist && Alist){
 
         if(Plist->type!=Alist->type){
-            printf("Error: Type mismatch of argument ('%s') in the function call of '%s'  with arguments in function definition (%s : %s).\n",Alist->varname?Alist->varname:"constant",name,Alist->type->name,Plist->type->name);
+            printf("Error: Type mismatch of argument ('%s') in the method call of '%s'  with arguments in method definition (%s : %s).\n",Alist->varname?Alist->varname:"constant",name,Alist->type->name,Plist->type->name);
             exit(1);
         }
 
@@ -813,7 +813,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
 
     //Count check parameters
     if(Plist!=NULL || Alist!=NULL){
-        printf("Error : Unequal number of arguments in function call and function definition.\n");
+        printf("Error : Unequal number of arguments in method call and method definition.\n");
         exit(1);
     }
 
