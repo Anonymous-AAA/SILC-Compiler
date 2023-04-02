@@ -57,7 +57,9 @@ Program : TypeDefBlock ClassDefBlock GDeclBlock FDefBlock MainBlock {
 
 //Classdef block
 
-ClassDefBlock : CLASS ClassDefList ENDCLASS {Ccurr=NULL;}  //if Ccurr=NULL it indicates class definitions are over
+ClassDefBlock : CLASS ClassDefList ENDCLASS {Ccurr=NULL; //if Ccurr=NULL it indicates class definitions are over
+                                             nextGBinding=4096+getClassIndex()*8; //allocating space virtual function table
+                                             } 
               |
               ;
 
