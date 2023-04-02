@@ -183,14 +183,14 @@ void Class_Finstall(Classtable *cptr,char *typename,char *name){
 }
 
 
-Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paramlist){
+Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paramlist, int flabel){
 
     Memberfunclist *temp=(Memberfunclist*)malloc(sizeof(Memberfunclist));
 
     temp->name=name;
     temp->type=type;
     temp->paramlist=Paramlist;
-    temp->flabel=getFlabel();
+    temp->flabel=(flabel==NIL)?getFlabel():flabel;
     temp->defined=NIL;
     temp->next=NULL;
     
@@ -199,7 +199,7 @@ Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paraml
 }
 
 
-void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *Paramlist){
+void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *Paramlist, int flabel){
 
     deallocateLST();    //creation of ParamList leads to filling of LST, this deallocates that.
 
@@ -226,7 +226,7 @@ void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *P
             exit(1);
     }
 
-    Memberfunclist *method=createMemberFunc(name, type, Paramlist);
+    Memberfunclist *method=createMemberFunc(name, type, Paramlist,flabel);
 
     
     if(cptr->vfuncptr==NULL){
@@ -293,7 +293,7 @@ void addInheritedMethods(){
 
         }else{
             //no overriding
-            Class_Minstall(Ccurr, method->name, method->type, method->paramlist);
+            Class_Minstall(Ccurr, method->name, method->type, method->paramlist,method->flabel);
         }
     
         method=method->next;

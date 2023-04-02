@@ -89,7 +89,7 @@ MethodDecl : MethodDecl MDecl
            | MDecl
            ;
 
-MDecl : Type ID '(' ParamList ')' ';' {Class_Minstall(Ccurr,$2->varname,$1,$4);}
+MDecl : Type ID '(' ParamList ')' ';' {Class_Minstall(Ccurr,$2->varname,$1,$4,NIL);}
       ;
 
 
@@ -282,22 +282,12 @@ AsgStmt : ID EQUAL expr ';' {setEntry($1);
         | Field EQUAL expr ';' { $$ = makeOperatorNode(EQUAL,$1,$3);}
 
         | ID EQUAL NEW '(' ID ')' ';'{
-                                        if(CLookup($5->varname)==NULL){
-                                                printf("Error : Undefined class '%s' in new statement\n",$5->varname);
-                                                exit(1);
-                                        }
                                         setEntry($1);
-                                        $3=makeNoChildNode(NEW);
-                                        $3->type=nulltype;
+                                        $3=makeNewNode($5->varname);
                                         $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
         | Field EQUAL NEW '(' ID ')' ';'{
-                                        if(CLookup($5->varname)==NULL){
-                                                printf("Error : Undefined class '%s' in new statement\n",$5->varname);
-                                                exit(1);
-                                        }
-                                        $3=makeNoChildNode(NEW);
-                                        $3->type=nulltype;
+                                        $3=makeNewNode($5->varname);
                                         $$ = makeOperatorNode(EQUAL,$1,$3);
                                         }
 

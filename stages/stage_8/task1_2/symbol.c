@@ -41,6 +41,7 @@ void setGType(Gsymbol* node, Typetable *type){
 
         while(temp){
             temp->type=type;
+            temp->binding=getGBinding(temp->size);
             temp=temp->next;
         }
     }
@@ -50,6 +51,8 @@ void setGType(Gsymbol* node, Typetable *type){
 
         while(temp){
             temp->ctype=ctype;
+            temp->size=2;
+            temp->binding=getGBinding(2);
             temp=temp->next;
         }
 
@@ -90,7 +93,8 @@ Gsymbol *GInstallVar (char *name, Typetable *type, int size){
     temp->type=type;
     temp->ctype=NULL;
     temp->size=size;
-    temp->binding=getGBinding(size);
+    //temp->binding=getGBinding(size);
+    temp->binding=NIL;  //binding will be set at setGType()
     temp->flabel=NIL;
     temp->next=NULL;
     temp->paramlist=NULL;

@@ -178,12 +178,30 @@ struct tnode* makeOperatorNode(int c,struct tnode *l,struct tnode *r){
     //class types
     if(l->type==voidtype && r->type==voidtype){
         
-        if(l->ctype!=r->ctype){
-            printf("Error : Operands should be of the same class (%s:%s)\n",l->ctype->name,r->ctype->name);
-            exit(1);
-        }
+        
+        if(c==EQUAL){
 
-        if(c!=EQUAL && c!=EQ && c!=NE){
+            Classtable *temp=r->ctype;
+
+
+            //checking parent child relationship
+            while(temp && temp!=l->ctype){
+                temp=temp->parentptr;
+            }
+
+            if(temp==NULL){
+                printf("Error : Objects should be of the same class or the child object should be assigned to the parent object reference for assignment operation (%s:%s)\n",l->ctype->name,r->ctype->name);
+                exit(1);
+            }
+
+        }else if(c==EQ || c==NE){
+
+            if(l->ctype!=r->ctype){
+                printf("Error : Operands should be of the same class (%s:%s) for equality checking.\n",l->ctype->name,r->ctype->name);
+                exit(1);
+            }
+
+        }else{
             printf("Error: Invalid operation (%d) on '%s' type.\n",c,l->ctype->name);
             exit(1);
         }
@@ -346,6 +364,33 @@ struct tnode* makeNoChildNode(int c){
 
 }
 
+struct tnode* makeNewNode(char* className){
+
+    Classtable *class=CLookup(className);
+
+
+    if(class==NULL){
+        printf("Error : Undefined class '%s' in new statement\n",className);
+        exit(1);
+    }
+
+    struct tnode* temp;
+    temp=(struct tnode*) malloc (sizeof(struct tnode));
+    temp->nodetype=NEW;
+    temp->left=NULL;
+    temp->right=NULL;
+    temp->mid=NULL;
+    temp->varname=NULL;
+    temp->type=voidtype;
+    temp->ctype=class;
+    temp->Gentry=NULL;
+    temp->strval=NULL;
+    temp->val=NIL;
+    temp->arglist=NULL;
+    temp->Lentry=NULL;
+    return temp;
+
+}
 
 struct tnode* makeFnNode(char *name, tnode *arglist){
 
