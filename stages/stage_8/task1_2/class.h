@@ -25,6 +25,7 @@ typedef struct Memberfunclist {
  int funcposition;                //position of the function in the class table
  int flabel;                      //A label for identifying the starting address of the function's code in the memory
  int defined;
+ int inherited;                   //whether the method is inherited or not
  struct Memberfunclist *next;     //pointer to next Memberfunclist entry
 }Memberfunclist;
 
@@ -46,3 +47,4 @@ int classIndex=-1;
 
 
 void Class_Finstall(Classtable *cptr,char *typename,char *name);
+//void Class_Minstall(Classtable *cptr,char *name, Typetable *type,Paramstruct *Paramlist, int inherited){

@@ -23,63 +23,6 @@ int getClassIndex(){
     return classIndex;
 }
 
-Classtable *CInstall(char *name,char *parent_class_name){
-
-
-    if(CLookup(name)){
-        printf("Error : Class %s is already defined\n",name);
-        exit(1);
-    }
-
-    if(TLookup(name)->size!=UNDEFINED){
-        printf("Error : A type %s is already defined, so a class cannot have the same name\n",name);
-        exit(1);
-    }
-
-    Classtable *parent=NULL;
-
-    if(parent_class_name){
-
-        parent=CLookup(parent_class_name);
-        
-        if(parent==NULL){
-            printf("Error : Class '%s' cannot inherit from an undefined class '%s'",name,parent_class_name);
-            exit(1);
-        }
-
-    }
-
-
-    Classtable *temp=(Classtable *) malloc(sizeof(Classtable));
-
-    temp->name=name;
-    temp->parentptr=parent;
-    temp->class_index=getClassIndex();
-    temp->memberfield=NULL;
-    temp->vfuncptr=NULL;
-    temp->fieldcount=0;
-    temp->methodcount=0;
-    temp->next=NULL;
-
-    if(Cstart==NULL){
-        Cstart=temp;
-    }else{
-        Ccurr->next=temp;
-    }
-
-    Ccurr=temp;
-
-    //adding parent class fields to child class
-    ClassFieldlist *field=parent?parent->memberfield:NULL;
-    
-    while(field){
-        Class_Finstall(Ccurr,field->ctype?field->ctype->name:field->type->name,field->name);
-        field=field->next;
-    }
-
-
-    return temp;
-}
 
 
 
@@ -183,7 +126,7 @@ void Class_Finstall(Classtable *cptr,char *typename,char *name){
 }
 
 
-Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paramlist, int flabel){
+Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paramlist,int flabel){
 
     Memberfunclist *temp=(Memberfunclist*)malloc(sizeof(Memberfunclist));
 
@@ -199,7 +142,7 @@ Memberfunclist *createMemberFunc(char *name,Typetable *type, Paramstruct *Paraml
 }
 
 
-void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *Paramlist, int flabel){
+void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *Paramlist, int inherited){
 
     deallocateLST();    //creation of ParamList leads to filling of LST, this deallocates that.
 
@@ -214,19 +157,72 @@ void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *P
         printf("Error : Class %s cannot have more than %d methods\n",cptr->name,HB_SIZE);
         exit(1);
     }
-
-    if(Class_Mlookup(cptr, name)){
-
-            printf("Error : Class %s cannot have multiple methods with the same name (%s).\n",cptr->name,name);
-            exit(1);
-    }
-
+    
     if(Class_Flookup(cptr,name)){
             printf("Error : Class %s cannot have methods and member fields with the same name (%s).\n",cptr->name,name);
             exit(1);
     }
 
+    Memberfunclist *mfunc=Class_Mlookup(cptr, name);
+
+    if(mfunc){
+            if(mfunc->inherited==FALSE){
+                printf("Error : Class %s cannot have multiple methods with the same name (%s).\n",cptr->name,name);
+                exit(1);
+            }
+
+            Classtable *parent=cptr->parentptr;
+
+            if(mfunc->type!=type){
+
+                printf("Error : The overriding method '%s' in child class '%s' must have the same return type as in parent class '%s' (%s:%s)\n",name,Ccurr->name,parent->name,type->name,mfunc->type->name);
+                exit(1);
+            }
+
+            Paramstruct *parParam=mfunc->paramlist;
+            Paramstruct *childParam=Paramlist;
+
+            //checking each parameter
+            while(parParam && childParam){
+
+                
+                if(strcmp(parParam->name,childParam->name)!=0){
+                    printf("Error: Parameters of method '%s' have different names in parent ('%s') and child ('%s') classes (%s : %s)\n",name,parent->name,Ccurr->name,parParam->name,childParam->name);
+                    exit(1);
+                }
+
+                if(parParam->type!=childParam->type){
+                    printf("Error: Parameter '%s' of method '%s' have different types in parent ('%s') and child ('%s') classes (%s : %s)\n",parParam->name,name,parent->name,Ccurr->name,parParam->type->name,childParam->type->name);
+                    exit(1);
+                }
+                parParam=parParam->next;
+                childParam=childParam->next;
+            }
+
+            //number of parameters
+            if(parParam!=NULL || childParam!=NULL){
+
+                printf("Error: Number of parameters of method '%s' does not match in parent (%s) and child (%s) classes.\n",name,parent->name,Ccurr->name);
+                exit(1);
+            }
+
+            //overrided function gets a new flabel
+            mfunc->flabel=getFlabel();
+            mfunc->inherited=inherited;
+            return;
+            
+
+    }
+
+    int flabel=NIL;
+
+    if(inherited==TRUE){
+        flabel=Class_Mlookup(Ccurr->parentptr,name)->flabel;
+    }
+
+
     Memberfunclist *method=createMemberFunc(name, type, Paramlist,flabel);
+    method->inherited=inherited;
 
     
     if(cptr->vfuncptr==NULL){
@@ -241,63 +237,147 @@ void Class_Minstall(Classtable *cptr,char *name, Typetable *type, Paramstruct *P
 
 }
 
-void addInheritedMethods(){
+//void addInheritedMethods(){
+//
+//    Classtable *parent=Ccurr->parentptr;
+//    
+//    //no inheritence
+//    if(parent==NULL)
+//        return;
+//
+//    Memberfunclist *method=parent->vfuncptr;
+//
+//
+//    while(method){
+//
+//        Memberfunclist *inhMethod;
+//        if(inhMethod=Class_Mlookup(Ccurr, method->name)){    //this should work ig
+//            
+//            if(method->type!=inhMethod->type){
+//
+//                printf("Error : The overriding method '%s' in child class '%s' must have the same return type as in parent class '%s' (%s:%s)\n",method->name,Ccurr->name,parent->name,inhMethod->type->name,method->type->name);
+//                exit(1);
+//            }
+//
+//            Paramstruct *parParam=method->paramlist;
+//            Paramstruct *childParam=inhMethod->paramlist;
+//
+//            //checking each parameter
+//            while(parParam && childParam){
+//
+//                
+//                if(strcmp(parParam->name,childParam->name)!=0){
+//                    printf("Error: Parameters of method '%s' have different names in parent ('%s') and child ('%s') classes (%s : %s)\n",method->name,parent->name,Ccurr->name,parParam->name,childParam->name);
+//                    exit(1);
+//                }
+//
+//                if(parParam->type!=childParam->type){
+//                    printf("Error: Parameter '%s' of method '%s' have different types in parent ('%s') and child ('%s') classes (%s : %s)\n",parParam->name,method->name,parent->name,Ccurr->name,parParam->type->name,childParam->type->name);
+//                    exit(1);
+//                }
+//                parParam=parParam->next;
+//                childParam=childParam->next;
+//            }
+//
+//            //number of parameters
+//            if(parParam!=NULL || childParam!=NULL){
+//
+//                printf("Error: Number of parameters of method '%s' does not match in parent (%s) and child (%s) classes.\n",method->name,parent->name,Ccurr->name);
+//                exit(1);
+//            }
+//            
+//
+//        }else{
+//            //no overriding
+//            Class_Minstall(Ccurr, method->name, method->type, method->paramlist,method->flabel);
+//        }
+//    
+//        method=method->next;
+//    }
+//}
 
-    Classtable *parent=Ccurr->parentptr;
-    
-    //no inheritence
-    if(parent==NULL)
-        return;
-
-    Memberfunclist *method=parent->vfuncptr;
+Classtable *CInstall(char *name,char *parent_class_name){
 
 
-    while(method){
+    if(CLookup(name)){
+        printf("Error : Class %s is already defined\n",name);
+        exit(1);
+    }
 
-        Memberfunclist *inhMethod;
-        if(inhMethod=Class_Mlookup(Ccurr, method->name)){    //this should work ig
-            
-            if(method->type!=inhMethod->type){
+    if(TLookup(name)->size!=UNDEFINED){
+        printf("Error : A type %s is already defined, so a class cannot have the same name\n",name);
+        exit(1);
+    }
 
-                printf("Error : The overriding method '%s' in child class '%s' must have the same return type as in parent class '%s' (%s:%s)\n",method->name,Ccurr->name,parent->name,inhMethod->type->name,method->type->name);
-                exit(1);
-            }
+    Classtable *parent=NULL;
 
-            Paramstruct *parParam=method->paramlist;
-            Paramstruct *childParam=inhMethod->paramlist;
+    if(parent_class_name){
 
-            //checking each parameter
-            while(parParam && childParam){
-
-                
-                if(strcmp(parParam->name,childParam->name)!=0){
-                    printf("Error: Parameters of method '%s' have different names in parent ('%s') and child ('%s') classes (%s : %s)\n",method->name,parent->name,Ccurr->name,parParam->name,childParam->name);
-                    exit(1);
-                }
-
-                if(parParam->type!=childParam->type){
-                    printf("Error: Parameter '%s' of method '%s' have different types in parent ('%s') and child ('%s') classes (%s : %s)\n",parParam->name,method->name,parent->name,Ccurr->name,parParam->type->name,childParam->type->name);
-                    exit(1);
-                }
-                parParam=parParam->next;
-                childParam=childParam->next;
-            }
-
-            //number of parameters
-            if(parParam!=NULL || childParam!=NULL){
-
-                printf("Error: Number of parameters of method '%s' does not match in parent (%s) and child (%s) classes.\n",method->name,parent->name,Ccurr->name);
-                exit(1);
-            }
-            
-
-        }else{
-            //no overriding
-            Class_Minstall(Ccurr, method->name, method->type, method->paramlist,method->flabel);
+        parent=CLookup(parent_class_name);
+        
+        if(parent==NULL){
+            printf("Error : Class '%s' cannot inherit from an undefined class '%s'",name,parent_class_name);
+            exit(1);
         }
+
+    }
+
+
+    Classtable *temp=(Classtable *) malloc(sizeof(Classtable));
+
+    temp->name=name;
+    temp->parentptr=parent;
+    temp->class_index=getClassIndex();
+    temp->memberfield=NULL;
+    temp->vfuncptr=NULL;
+    temp->fieldcount=0;
+    temp->methodcount=0;
+    temp->next=NULL;
+
+    if(Cstart==NULL){
+        Cstart=temp;
+    }else{
+        Ccurr->next=temp;
+    }
+
+    Ccurr=temp;
+
+    //adding parent class fields to child class
+    ClassFieldlist *field=parent?parent->memberfield:NULL;
     
+    while(field){
+        Class_Finstall(Ccurr,field->ctype?field->ctype->name:field->type->name,field->name);
+        field=field->next;
+    }
+
+
+    //adding parent class methods to child class
+    Memberfunclist *method=parent?parent->vfuncptr:NULL;
+    
+    while(method){
+        Class_Minstall(Ccurr,method->name,method->type,method->paramlist,TRUE);
         method=method->next;
     }
+
+    return temp;
+}
+
+
+void checkAllMethodsDefined(){
+
+    Memberfunclist *temp=Ccurr->vfuncptr;
+
+    while(temp){
+
+        if(temp->defined==NIL && temp->inherited==FALSE){
+            printf("Error : Method '%s' of class '%s' is declared but not defined.\n",temp->name,Ccurr->name);
+            exit(1);
+        }
+
+        temp=temp->next;
+    }
+
+
 }
 
 void printClassTable(){
@@ -325,6 +405,8 @@ void printClassTable(){
         while(method){
             printf("    Name : %s\n",method->name);
             printf("    Type : %s\n",method->type->name);
+            printf("    Inherited : %s\n",method->inherited==TRUE?"True":"False");
+            printf("    Defined : %s\n",method->defined==DEFINED?"Yes":"No");
             Paramstruct *param=method->paramlist;
             printf("    Parameters:\n");
             while(param){

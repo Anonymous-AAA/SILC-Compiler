@@ -65,11 +65,11 @@ ClassDefList : ClassDefList ClassDef
              | ClassDef
              ;
 
-ClassDef : Cname '{' ClassDecl MethodDefns '}'
+ClassDef : Cname '{' ClassDecl MethodDefns '}' {checkAllMethodsDefined();}
          ;
 
 ClassDecl : DECL Fieldlists MethodDecl ENDDECL {
-                        addInheritedMethods();
+                        //addInheritedMethods();
                         //printClassTable();
                 }
           ;
@@ -89,7 +89,7 @@ MethodDecl : MethodDecl MDecl
            | MDecl
            ;
 
-MDecl : Type ID '(' ParamList ')' ';' {Class_Minstall(Ccurr,$2->varname,$1,$4,NIL);}
+MDecl : Type ID '(' ParamList ')' ';' {Class_Minstall(Ccurr,$2->varname,$1,$4,FALSE);}
       ;
 
 

@@ -1613,97 +1613,103 @@ yyreduce:
 #line 1614 "y.tab.c"
     break;
 
+  case 7: /* ClassDef: Cname '{' ClassDecl MethodDefns '}'  */
+#line 68 "exprtree.y"
+                                               {checkAllMethodsDefined();}
+#line 1620 "y.tab.c"
+    break;
+
   case 8: /* ClassDecl: DECL Fieldlists MethodDecl ENDDECL  */
 #line 71 "exprtree.y"
                                                {
-                        addInheritedMethods();
+                        //addInheritedMethods();
                         //printClassTable();
                 }
-#line 1623 "y.tab.c"
+#line 1629 "y.tab.c"
     break;
 
   case 9: /* Cname: ID  */
 #line 77 "exprtree.y"
             {(yyval.class) = CInstall((yyvsp[0].no)->varname,NULL);}
-#line 1629 "y.tab.c"
+#line 1635 "y.tab.c"
     break;
 
   case 10: /* Cname: ID EXTENDS ID  */
 #line 78 "exprtree.y"
                       {(yyval.class) = CInstall((yyvsp[-2].no)->varname,(yyvsp[0].no)->varname);}
-#line 1635 "y.tab.c"
+#line 1641 "y.tab.c"
     break;
 
   case 13: /* Fld: Type ID ';'  */
 #line 85 "exprtree.y"
                   {Class_Finstall(Ccurr,(yyvsp[-2].type)->name,(yyvsp[-1].no)->varname);}
-#line 1641 "y.tab.c"
+#line 1647 "y.tab.c"
     break;
 
   case 16: /* MDecl: Type ID '(' ParamList ')' ';'  */
 #line 92 "exprtree.y"
-                                      {Class_Minstall(Ccurr,(yyvsp[-4].no)->varname,(yyvsp[-5].type),(yyvsp[-2].param),NIL);}
-#line 1647 "y.tab.c"
+                                      {Class_Minstall(Ccurr,(yyvsp[-4].no)->varname,(yyvsp[-5].type),(yyvsp[-2].param),FALSE);}
+#line 1653 "y.tab.c"
     break;
 
   case 23: /* TypeDef: ID '{' FieldDeclList '}'  */
 #line 112 "exprtree.y"
                                    {TInstall((yyvsp[-3].no)->varname,(yyvsp[-1].flist));}
-#line 1653 "y.tab.c"
+#line 1659 "y.tab.c"
     break;
 
   case 24: /* FieldDeclList: FieldDeclList FieldDecl  */
 #line 115 "exprtree.y"
                                         {(yyval.flist) = (yyvsp[-1].flist); attachField((yyvsp[0].flist));}
-#line 1659 "y.tab.c"
+#line 1665 "y.tab.c"
     break;
 
   case 25: /* FieldDeclList: FieldDecl  */
 #line 116 "exprtree.y"
                           {(yyval.flist) = (yyvsp[0].flist); Fcurr=(yyvsp[0].flist);Fstart=(yyvsp[0].flist);}
-#line 1665 "y.tab.c"
+#line 1671 "y.tab.c"
     break;
 
   case 26: /* FieldDecl: Type ID ';'  */
 #line 119 "exprtree.y"
                         {(yyval.flist) = createField((yyvsp[-1].no)->varname,(yyvsp[-2].type));}
-#line 1671 "y.tab.c"
+#line 1677 "y.tab.c"
     break;
 
   case 31: /* GDecl: Type GidList ';'  */
 #line 136 "exprtree.y"
                          {checkTypeAndCtype((yyvsp[-2].type));setGType((yyvsp[-1].gsym),(yyvsp[-2].type));}
-#line 1677 "y.tab.c"
+#line 1683 "y.tab.c"
     break;
 
   case 32: /* GidList: GidList ',' Gid  */
 #line 141 "exprtree.y"
                           {(yyval.gsym)=(yyvsp[-2].gsym);}
-#line 1683 "y.tab.c"
+#line 1689 "y.tab.c"
     break;
 
   case 33: /* GidList: Gid  */
 #line 142 "exprtree.y"
               {(yyval.gsym)=(yyvsp[0].gsym);}
-#line 1689 "y.tab.c"
+#line 1695 "y.tab.c"
     break;
 
   case 34: /* Gid: ID  */
 #line 146 "exprtree.y"
          {(yyval.gsym)=GInstallVar((yyvsp[0].no)->varname,voidtype,1);}
-#line 1695 "y.tab.c"
+#line 1701 "y.tab.c"
     break;
 
   case 35: /* Gid: ID '[' NUM ']'  */
 #line 147 "exprtree.y"
                      {(yyval.gsym)=GInstallVar((yyvsp[-3].no)->varname,voidtype,(yyvsp[-1].no)->val);}
-#line 1701 "y.tab.c"
+#line 1707 "y.tab.c"
     break;
 
   case 36: /* Gid: ID '(' ParamList ')'  */
 #line 148 "exprtree.y"
                            {(yyval.gsym)=GInstallFn((yyvsp[-3].no)->varname,voidtype,(yyvsp[-1].param));}
-#line 1707 "y.tab.c"
+#line 1713 "y.tab.c"
     break;
 
   case 37: /* MainBlock: INT MAIN '(' ')' '{' LDeclBlock BEG Body ReturnStmt END '}'  */
@@ -1716,7 +1722,7 @@ yyreduce:
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST((yyvsp[-3].no));  //deallocating the AST
           }
-#line 1720 "y.tab.c"
+#line 1726 "y.tab.c"
     break;
 
   case 40: /* Fdef: Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}'  */
@@ -1738,145 +1744,145 @@ yyreduce:
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST((yyvsp[-3].no));  //deallocating the AST
       }
-#line 1742 "y.tab.c"
+#line 1748 "y.tab.c"
     break;
 
   case 41: /* ParamList: ParamList ',' Param  */
 #line 191 "exprtree.y"
                                 {(yyval.param)=(yyvsp[0].param); createParamList((yyvsp[-2].param),(yyvsp[0].param));}
-#line 1748 "y.tab.c"
+#line 1754 "y.tab.c"
     break;
 
   case 42: /* ParamList: Param  */
 #line 192 "exprtree.y"
                   {(yyval.param)=(yyvsp[0].param);}
-#line 1754 "y.tab.c"
+#line 1760 "y.tab.c"
     break;
 
   case 43: /* ParamList: %empty  */
 #line 193 "exprtree.y"
             {(yyval.param)=NULL;}
-#line 1760 "y.tab.c"
+#line 1766 "y.tab.c"
     break;
 
   case 44: /* Param: Type ID  */
 #line 196 "exprtree.y"
                 {checkType((yyvsp[-1].type));(yyval.param)=createParams((yyvsp[-1].type),(yyvsp[0].no)->varname);}
-#line 1766 "y.tab.c"
+#line 1772 "y.tab.c"
     break;
 
   case 45: /* Type: INT  */
 #line 200 "exprtree.y"
            {(yyval.type) = inttype;}
-#line 1772 "y.tab.c"
+#line 1778 "y.tab.c"
     break;
 
   case 46: /* Type: STR  */
 #line 201 "exprtree.y"
            {(yyval.type) = strtype;}
-#line 1778 "y.tab.c"
+#line 1784 "y.tab.c"
     break;
 
   case 47: /* Type: ID  */
 #line 202 "exprtree.y"
            {checkInvalidTypes((yyvsp[0].no));(yyval.type) = TLookup((yyvsp[0].no)->varname);}
-#line 1784 "y.tab.c"
+#line 1790 "y.tab.c"
     break;
 
   case 48: /* LDeclBlock: DECL LDecList ENDDECL  */
 #line 206 "exprtree.y"
                                     {if(Ccurr){LInstallSelf(Ccurr);}}
-#line 1790 "y.tab.c"
+#line 1796 "y.tab.c"
     break;
 
   case 49: /* LDeclBlock: %empty  */
 #line 207 "exprtree.y"
               {if(Ccurr){LInstallSelf(Ccurr);}}
-#line 1796 "y.tab.c"
+#line 1802 "y.tab.c"
     break;
 
   case 52: /* LDecl: Type IdList ';'  */
 #line 214 "exprtree.y"
                        {checkType((yyvsp[-2].type));setLType((yyvsp[-1].lsym),(yyvsp[-2].type));}
-#line 1802 "y.tab.c"
+#line 1808 "y.tab.c"
     break;
 
   case 53: /* IdList: IdList ',' ID  */
 #line 217 "exprtree.y"
                         {(yyval.lsym)=(yyvsp[-2].lsym); LInstallVar((yyvsp[0].no)->varname,voidtype,FALSE);}
-#line 1808 "y.tab.c"
+#line 1814 "y.tab.c"
     break;
 
   case 54: /* IdList: ID  */
 #line 218 "exprtree.y"
              {(yyval.lsym)=LInstallVar((yyvsp[0].no)->varname,voidtype,FALSE);}
-#line 1814 "y.tab.c"
+#line 1820 "y.tab.c"
     break;
 
   case 55: /* Body: Body Stmt  */
 #line 221 "exprtree.y"
                     {(yyval.no) = makeConnectorNode((yyvsp[-1].no),(yyvsp[0].no));}
-#line 1820 "y.tab.c"
+#line 1826 "y.tab.c"
     break;
 
   case 56: /* Body: %empty  */
 #line 222 "exprtree.y"
            {(yyval.no) = NULL;}
-#line 1826 "y.tab.c"
+#line 1832 "y.tab.c"
     break;
 
   case 57: /* Stmt: InputStmt  */
 #line 225 "exprtree.y"
                  {(yyval.no) = (yyvsp[0].no);}
-#line 1832 "y.tab.c"
+#line 1838 "y.tab.c"
     break;
 
   case 58: /* Stmt: OutputStmt  */
 #line 226 "exprtree.y"
                   {(yyval.no) = (yyvsp[0].no);}
-#line 1838 "y.tab.c"
+#line 1844 "y.tab.c"
     break;
 
   case 59: /* Stmt: AsgStmt  */
 #line 227 "exprtree.y"
                {(yyval.no) = (yyvsp[0].no);}
-#line 1844 "y.tab.c"
+#line 1850 "y.tab.c"
     break;
 
   case 60: /* Stmt: IfStmt  */
 #line 228 "exprtree.y"
               {(yyval.no) = (yyvsp[0].no);}
-#line 1850 "y.tab.c"
+#line 1856 "y.tab.c"
     break;
 
   case 61: /* Stmt: WhileStmt  */
 #line 229 "exprtree.y"
                  {(yyval.no) = (yyvsp[0].no);}
-#line 1856 "y.tab.c"
+#line 1862 "y.tab.c"
     break;
 
   case 62: /* Stmt: BreakStmt  */
 #line 230 "exprtree.y"
                  {(yyval.no) = (yyvsp[0].no);}
-#line 1862 "y.tab.c"
+#line 1868 "y.tab.c"
     break;
 
   case 63: /* Stmt: ContinueStmt  */
 #line 231 "exprtree.y"
                     {(yyval.no) = (yyvsp[0].no);}
-#line 1868 "y.tab.c"
+#line 1874 "y.tab.c"
     break;
 
   case 64: /* Stmt: BreakPointStmt  */
 #line 232 "exprtree.y"
                       {(yyval.no) = (yyvsp[0].no);}
-#line 1874 "y.tab.c"
+#line 1880 "y.tab.c"
     break;
 
   case 65: /* Stmt: FreeStmt  */
 #line 233 "exprtree.y"
                 {(yyval.no) = (yyvsp[0].no);}
-#line 1880 "y.tab.c"
+#line 1886 "y.tab.c"
     break;
 
   case 66: /* FreeStmt: FREE '(' ID ')' ';'  */
@@ -1884,19 +1890,19 @@ yyreduce:
                                { setEntry((yyvsp[-2].no)); 
                                  (yyval.no)=makeSingleNode(FREE,(yyvsp[-2].no));
                                  }
-#line 1888 "y.tab.c"
+#line 1894 "y.tab.c"
     break;
 
   case 67: /* FreeStmt: FREE '(' Field ')' ';'  */
 #line 239 "exprtree.y"
                                  { (yyval.no)=makeSingleNode(FREE,(yyvsp[-2].no));}
-#line 1894 "y.tab.c"
+#line 1900 "y.tab.c"
     break;
 
   case 68: /* FreeStmt: DELETE '(' Field ')' ';'  */
 #line 241 "exprtree.y"
                                   { (yyval.no)=makeSingleNode(DELETE,(yyvsp[-2].no));}
-#line 1900 "y.tab.c"
+#line 1906 "y.tab.c"
     break;
 
   case 69: /* FreeStmt: DELETE '(' ID ')' ';'  */
@@ -1905,7 +1911,7 @@ yyreduce:
                                  (yyval.no)=makeSingleNode(DELETE,(yyvsp[-2].no));
 
                                  }
-#line 1909 "y.tab.c"
+#line 1915 "y.tab.c"
     break;
 
   case 70: /* InputStmt: READ '(' ID ')' ';'  */
@@ -1913,7 +1919,7 @@ yyreduce:
                                 {setEntry((yyvsp[-2].no));
                                 (yyval.no) = makeSingleNode(READ,(yyvsp[-2].no));
                                 }
-#line 1917 "y.tab.c"
+#line 1923 "y.tab.c"
     break;
 
   case 71: /* InputStmt: READ '(' ID '[' expr ']' ')' ';'  */
@@ -1921,19 +1927,19 @@ yyreduce:
                                              { setArrayNode((yyvsp[-5].no),(yyvsp[-3].no));
                                             (yyval.no) = makeSingleNode(READ,(yyvsp[-5].no));
                                             }
-#line 1925 "y.tab.c"
+#line 1931 "y.tab.c"
     break;
 
   case 72: /* InputStmt: READ '(' Field ')' ';'  */
 #line 256 "exprtree.y"
                                     { (yyval.no)=makeSingleNode(READ,(yyvsp[-2].no));}
-#line 1931 "y.tab.c"
+#line 1937 "y.tab.c"
     break;
 
   case 73: /* OutputStmt: WRITE '(' expr ')' ';'  */
 #line 259 "exprtree.y"
                                     {(yyval.no) = makeSingleNode(WRITE,(yyvsp[-2].no));}
-#line 1937 "y.tab.c"
+#line 1943 "y.tab.c"
     break;
 
   case 74: /* AsgStmt: ID EQUAL expr ';'  */
@@ -1941,7 +1947,7 @@ yyreduce:
                             {setEntry((yyvsp[-3].no)); 
                               (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-3].no),(yyvsp[-1].no));
                               }
-#line 1945 "y.tab.c"
+#line 1951 "y.tab.c"
     break;
 
   case 75: /* AsgStmt: ID '[' expr ']' EQUAL expr ';'  */
@@ -1949,7 +1955,7 @@ yyreduce:
                                          { setArrayNode((yyvsp[-6].no),(yyvsp[-4].no));
                                           (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-6].no),(yyvsp[-1].no));
                                         }
-#line 1953 "y.tab.c"
+#line 1959 "y.tab.c"
     break;
 
   case 76: /* AsgStmt: ID EQUAL ALLOC '(' ')' ';'  */
@@ -1959,7 +1965,7 @@ yyreduce:
                                         (yyvsp[-3].no)->type=nulltype;
                                         (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-5].no),(yyvsp[-3].no));
                                         }
-#line 1963 "y.tab.c"
+#line 1969 "y.tab.c"
     break;
 
   case 77: /* AsgStmt: Field EQUAL ALLOC '(' ')' ';'  */
@@ -1968,7 +1974,7 @@ yyreduce:
                                                 (yyvsp[-3].no)->type=nulltype;
                                                 (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-5].no),(yyvsp[-3].no));
                                         }
-#line 1972 "y.tab.c"
+#line 1978 "y.tab.c"
     break;
 
   case 78: /* AsgStmt: ID EQUAL INIT '(' ')' ';'  */
@@ -1978,13 +1984,13 @@ yyreduce:
                                         (yyvsp[-3].no)->type=inttype;   //initialize returns integer value
                                         (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-5].no),(yyvsp[-3].no));
                                         }
-#line 1982 "y.tab.c"
+#line 1988 "y.tab.c"
     break;
 
   case 79: /* AsgStmt: Field EQUAL expr ';'  */
 #line 282 "exprtree.y"
                                { (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-3].no),(yyvsp[-1].no));}
-#line 1988 "y.tab.c"
+#line 1994 "y.tab.c"
     break;
 
   case 80: /* AsgStmt: ID EQUAL NEW '(' ID ')' ';'  */
@@ -1994,7 +2000,7 @@ yyreduce:
                                         (yyvsp[-4].no)=makeNewNode((yyvsp[-2].no)->varname);
                                         (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-6].no),(yyvsp[-4].no));
                                         }
-#line 1998 "y.tab.c"
+#line 2004 "y.tab.c"
     break;
 
   case 81: /* AsgStmt: Field EQUAL NEW '(' ID ')' ';'  */
@@ -2003,43 +2009,43 @@ yyreduce:
                                         (yyvsp[-4].no)=makeNewNode((yyvsp[-2].no)->varname);
                                         (yyval.no) = makeOperatorNode(EQUAL,(yyvsp[-6].no),(yyvsp[-4].no));
                                         }
-#line 2007 "y.tab.c"
+#line 2013 "y.tab.c"
     break;
 
   case 82: /* IfStmt: IF '(' expr ')' THEN Body ELSE Body ENDIF ';'  */
 #line 297 "exprtree.y"
                                                        {(yyval.no) = makeTriplets(IF,(yyvsp[-7].no),(yyvsp[-4].no),(yyvsp[-2].no));}
-#line 2013 "y.tab.c"
+#line 2019 "y.tab.c"
     break;
 
   case 83: /* IfStmt: IF '(' expr ')' THEN Body ENDIF ';'  */
 #line 298 "exprtree.y"
                                             {(yyval.no) = makeTriplets(IF,(yyvsp[-5].no),(yyvsp[-2].no),NULL);}
-#line 2019 "y.tab.c"
+#line 2025 "y.tab.c"
     break;
 
   case 84: /* WhileStmt: WHILE '(' expr ')' DO Body ENDWHILE ';'  */
 #line 301 "exprtree.y"
                                                     {(yyval.no) = makeTriplets(WHILE,(yyvsp[-5].no),(yyvsp[-2].no),NULL);}
-#line 2025 "y.tab.c"
+#line 2031 "y.tab.c"
     break;
 
   case 85: /* BreakStmt: BREAK ';'  */
 #line 304 "exprtree.y"
                       {(yyval.no) = makeNoChildNode(BREAK);}
-#line 2031 "y.tab.c"
+#line 2037 "y.tab.c"
     break;
 
   case 86: /* ContinueStmt: CONTINUE ';'  */
 #line 307 "exprtree.y"
                             {(yyval.no) = makeNoChildNode(CONTINUE);}
-#line 2037 "y.tab.c"
+#line 2043 "y.tab.c"
     break;
 
   case 87: /* BreakPointStmt: BRKP ';'  */
 #line 310 "exprtree.y"
                           {(yyval.no) = makeNoChildNode(BRKP);}
-#line 2043 "y.tab.c"
+#line 2049 "y.tab.c"
     break;
 
   case 88: /* ReturnStmt: RET expr ';'  */
@@ -2047,169 +2053,169 @@ yyreduce:
                           {
                             (yyval.no) = makeSingleNode(RET,(yyvsp[-1].no));
                         }
-#line 2051 "y.tab.c"
+#line 2057 "y.tab.c"
     break;
 
   case 89: /* expr: expr PLUS expr  */
 #line 319 "exprtree.y"
                        {(yyval.no) = makeOperatorNode(PLUS,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2057 "y.tab.c"
+#line 2063 "y.tab.c"
     break;
 
   case 90: /* expr: expr MINUS expr  */
 #line 320 "exprtree.y"
                       {(yyval.no) = makeOperatorNode(MINUS,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2063 "y.tab.c"
+#line 2069 "y.tab.c"
     break;
 
   case 91: /* expr: expr MUL expr  */
 #line 321 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(MUL,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2069 "y.tab.c"
+#line 2075 "y.tab.c"
     break;
 
   case 92: /* expr: expr DIV expr  */
 #line 322 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(DIV,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2075 "y.tab.c"
+#line 2081 "y.tab.c"
     break;
 
   case 93: /* expr: expr MOD expr  */
 #line 323 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(MOD,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2081 "y.tab.c"
+#line 2087 "y.tab.c"
     break;
 
   case 94: /* expr: expr LT expr  */
 #line 324 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(LT,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2087 "y.tab.c"
+#line 2093 "y.tab.c"
     break;
 
   case 95: /* expr: expr GT expr  */
 #line 325 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(GT,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2093 "y.tab.c"
+#line 2099 "y.tab.c"
     break;
 
   case 96: /* expr: expr LE expr  */
 #line 326 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(LE,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2099 "y.tab.c"
+#line 2105 "y.tab.c"
     break;
 
   case 97: /* expr: expr GE expr  */
 #line 327 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(GE,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2105 "y.tab.c"
+#line 2111 "y.tab.c"
     break;
 
   case 98: /* expr: expr NE expr  */
 #line 328 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(NE,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2111 "y.tab.c"
+#line 2117 "y.tab.c"
     break;
 
   case 99: /* expr: expr EQ expr  */
 #line 329 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(EQ,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2117 "y.tab.c"
+#line 2123 "y.tab.c"
     break;
 
   case 100: /* expr: expr OR expr  */
 #line 330 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(OR,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2123 "y.tab.c"
+#line 2129 "y.tab.c"
     break;
 
   case 101: /* expr: expr AND expr  */
 #line 331 "exprtree.y"
                   {(yyval.no) = makeOperatorNode(AND,(yyvsp[-2].no),(yyvsp[0].no));}
-#line 2129 "y.tab.c"
+#line 2135 "y.tab.c"
     break;
 
   case 102: /* expr: MINUS expr  */
 #line 332 "exprtree.y"
                {(yyval.no) = makeSingleNode(MINUS,(yyvsp[0].no));}
-#line 2135 "y.tab.c"
+#line 2141 "y.tab.c"
     break;
 
   case 103: /* expr: '(' expr ')'  */
 #line 333 "exprtree.y"
                   {(yyval.no) = (yyvsp[-1].no);}
-#line 2141 "y.tab.c"
+#line 2147 "y.tab.c"
     break;
 
   case 104: /* expr: NUM  */
 #line 334 "exprtree.y"
           {(yyval.no) = (yyvsp[0].no);}
-#line 2147 "y.tab.c"
+#line 2153 "y.tab.c"
     break;
 
   case 105: /* expr: STRCON  */
 #line 335 "exprtree.y"
            {(yyval.no) = (yyvsp[0].no);}
-#line 2153 "y.tab.c"
+#line 2159 "y.tab.c"
     break;
 
   case 106: /* expr: ID  */
 #line 336 "exprtree.y"
        {setEntry((yyvsp[0].no));(yyval.no) = (yyvsp[0].no);}
-#line 2159 "y.tab.c"
+#line 2165 "y.tab.c"
     break;
 
   case 107: /* expr: ID '[' expr ']'  */
 #line 337 "exprtree.y"
                    {setArrayNode((yyvsp[-3].no),(yyvsp[-1].no));(yyval.no)=(yyvsp[-3].no);}
-#line 2165 "y.tab.c"
+#line 2171 "y.tab.c"
     break;
 
   case 108: /* expr: ID '(' ')'  */
 #line 338 "exprtree.y"
               {(yyval.no)=makeFnNode((yyvsp[-2].no)->varname,NULL);}
-#line 2171 "y.tab.c"
+#line 2177 "y.tab.c"
     break;
 
   case 109: /* expr: ID '(' ArgList ')'  */
 #line 339 "exprtree.y"
                        {(yyval.no)=makeFnNode((yyvsp[-3].no)->varname,(yyvsp[-1].no));}
-#line 2177 "y.tab.c"
+#line 2183 "y.tab.c"
     break;
 
   case 110: /* expr: Field  */
 #line 340 "exprtree.y"
           {(yyval.no) = (yyvsp[0].no);}
-#line 2183 "y.tab.c"
+#line 2189 "y.tab.c"
     break;
 
   case 111: /* expr: NUL  */
 #line 341 "exprtree.y"
         {(yyval.no) = makeNullNode();}
-#line 2189 "y.tab.c"
+#line 2195 "y.tab.c"
     break;
 
   case 112: /* expr: FieldFunction  */
 #line 342 "exprtree.y"
                   {(yyval.no) = (yyvsp[0].no);}
-#line 2195 "y.tab.c"
+#line 2201 "y.tab.c"
     break;
 
   case 113: /* ArgList: ArgList ',' expr  */
 #line 345 "exprtree.y"
                            {attachArg((yyval.no),(yyvsp[0].no));(yyval.no)=(yyvsp[0].no);}
-#line 2201 "y.tab.c"
+#line 2207 "y.tab.c"
     break;
 
   case 114: /* ArgList: expr  */
 #line 346 "exprtree.y"
                {(yyval.no) = (yyvsp[0].no);}
-#line 2207 "y.tab.c"
+#line 2213 "y.tab.c"
     break;
 
   case 115: /* Field: ID '.' ID  */
 #line 348 "exprtree.y"
                   {setField((yyvsp[-2].no),(yyvsp[0].no)); (yyval.no)=(yyvsp[-2].no);}
-#line 2213 "y.tab.c"
+#line 2219 "y.tab.c"
     break;
 
   case 116: /* Field: Field '.' ID  */
@@ -2223,7 +2229,7 @@ yyreduce:
                        // }
                         setField((yyvsp[-2].no),(yyvsp[0].no)); 
                         (yyval.no)=(yyvsp[-2].no);}
-#line 2227 "y.tab.c"
+#line 2233 "y.tab.c"
     break;
 
   case 117: /* Field: SELF '.' ID  */
@@ -2234,7 +2240,7 @@ yyreduce:
                         }
                      (yyvsp[-2].no)=makeNoChildNode(SELF);setField((yyvsp[-2].no),(yyvsp[0].no));(yyval.no)=(yyvsp[-2].no);
                      }
-#line 2238 "y.tab.c"
+#line 2244 "y.tab.c"
     break;
 
   case 118: /* FieldFunction: SELF '.' ID '(' ArgList ')'  */
@@ -2246,19 +2252,19 @@ yyreduce:
                         }
                         (yyvsp[-5].no)=makeNoChildNode(SELF);setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);
                 }
-#line 2250 "y.tab.c"
+#line 2256 "y.tab.c"
     break;
 
   case 119: /* FieldFunction: ID '.' ID '(' ArgList ')'  */
 #line 373 "exprtree.y"
                                           {setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);}
-#line 2256 "y.tab.c"
+#line 2262 "y.tab.c"
     break;
 
   case 120: /* FieldFunction: Field '.' ID '(' ArgList ')'  */
 #line 374 "exprtree.y"
                                              {setMethodNode((yyvsp[-5].no),(yyvsp[-3].no)->varname,(yyvsp[-1].no));(yyval.no)=(yyvsp[-5].no);}
-#line 2262 "y.tab.c"
+#line 2268 "y.tab.c"
     break;
 
   case 121: /* FieldFunction: SELF '.' ID '(' ')'  */
@@ -2270,23 +2276,23 @@ yyreduce:
                         }
                         (yyvsp[-4].no)=makeNoChildNode(SELF);setMethodNode((yyvsp[-4].no),(yyvsp[-2].no)->varname,NULL);(yyval.no)=(yyvsp[-4].no);
                 }
-#line 2274 "y.tab.c"
+#line 2280 "y.tab.c"
     break;
 
   case 122: /* FieldFunction: ID '.' ID '(' ')'  */
 #line 382 "exprtree.y"
                                   {setMethodNode((yyvsp[-4].no),(yyvsp[-2].no)->varname,NULL);(yyval.no)=(yyvsp[-4].no);}
-#line 2280 "y.tab.c"
+#line 2286 "y.tab.c"
     break;
 
   case 123: /* FieldFunction: Field '.' ID '(' ')'  */
 #line 383 "exprtree.y"
                                      {setMethodNode((yyvsp[-4].no),(yyvsp[-2].no)->varname,NULL);(yyval.no)=(yyvsp[-4].no);}
-#line 2286 "y.tab.c"
+#line 2292 "y.tab.c"
     break;
 
 
-#line 2290 "y.tab.c"
+#line 2296 "y.tab.c"
 
       default: break;
     }
