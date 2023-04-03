@@ -166,12 +166,13 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
                         //find the flabel from virtual function table by adding the field index
                         fprintf(fptr,
-                                "ADD R%d, %d",
+                                "ADD R%d, %d\n",
                                 r3,fieldtemp->val);
 
                         //Generate Call instruction to flabel in virtual function table
                         fprintf(fptr,
-                                "CALL [R%d]\n",
+                                "MOV R%1$d, [R%1$d]\n"
+                                "CALL R%1$d\n",
                                 r3);  
 
                         freeReg();  //releasing r3
