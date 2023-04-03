@@ -45,7 +45,7 @@ int regInUse(){  //returns highest register number in use
 
 int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
-    int r,r1,r2,label_1,label_2,usedReg;
+    int r,r1,r2,r3,label_1,label_2,usedReg;
     
 
     switch(t->nodetype) {
@@ -105,7 +105,7 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                         //Allot register for storing the  return value
                         //r1=getReg(); already done before
 
-                        fprintf(fptr,"MOV R%d, [R%d]\n",GARBAGE_REG,r);
+                        fprintf(fptr,"MOV R%d, R%d\n",GARBAGE_REG,r);
                         freeReg();
 
                         r1=getReg();
@@ -123,9 +123,22 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 
                         //push address of self/var to stack
                         fprintf(fptr,
-                                "PUSH R%d\n",
+                                "MOV R0, [R%d]\n"
+                                "PUSH R0\n",
+                                GARBAGE_REG);
+                        //virtual function pointer pushed
+                        fprintf(fptr,
+                                "MOV R0, R%d\n"
+                                "INR R0\n"
+                                "MOV R0, [R0]\n"
+                                "PUSH R0\n",
                                 GARBAGE_REG);
 
+                        //r3 contains virtual function pointer
+                        r3=getReg();
+                        fprintf(fptr,
+                                "MOV R%d, R0\n",
+                                r3);
 
 
 
@@ -151,11 +164,17 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                         //Push one empty space for callee to store the return value(no getreg() used as register values are not overwritten)
                         fprintf(fptr,"PUSH R0\n");
 
-                        //Generate Call instruction to the binding of the function
+                        //find the flabel from virtual function table by adding the field index
                         fprintf(fptr,
-                                "CALL F%d\n",
-                                fieldtemp->val);  //t->val stores flabel in setMethodNode
+                                "ADD R%d, %d",
+                                r3,fieldtemp->val);
 
+                        //Generate Call instruction to flabel in virtual function table
+                        fprintf(fptr,
+                                "CALL [R%d]\n",
+                                r3);  
+
+                        freeReg();  //releasing r3
 
                         //After return from the callee
 
@@ -174,9 +193,10 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                             temp=temp->mid;
                         }
                         
-                        //pop out the object reference
+                        //pop out the object reference and virtual fptr
                         fprintf(fptr,
-                                "POP R%d\n",
+                                "POP R%1$d\n"
+                                "POP R%1$d\n",
                                 r2);
 
 

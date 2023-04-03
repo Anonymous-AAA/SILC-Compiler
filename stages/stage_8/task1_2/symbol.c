@@ -230,7 +230,8 @@ void LInstallSelf(Classtable *ctype){
     temp->name=(char *) malloc(sizeof(char)*5);
     strcpy(temp->name,"self");
     temp->type=selftype;
-    temp->binding=getArgLBinding();    //need to change this
+    getArgLBinding();  //calling twice to allocate twice the memory
+    temp->binding=getArgLBinding();
     temp->next=NULL;
 
     if(Lstart==NULL){

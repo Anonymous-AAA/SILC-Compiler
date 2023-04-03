@@ -1720,7 +1720,7 @@ yyreduce:
             (yyvsp[-3].no) = makeConnectorNode((yyvsp[-3].no),(yyvsp[-2].no));  //Attaching the return statement
             checkMain((yyvsp[-2].no)->left->type);
             codeFunction((yyvsp[-3].no),NULL);       //Generating code
-            //printLSymbolTable("main"); //Printing the local symbol table
+            printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST((yyvsp[-3].no));  //deallocating the AST
           }
@@ -1742,7 +1742,7 @@ yyreduce:
 
         //test($9);
         codeFunction((yyvsp[-3].no),(yyvsp[-10].no)->varname);       //Generating code
-        //printLSymbolTable($2->varname); //Printing the local symbol table
+        printLSymbolTable((yyvsp[-10].no)->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST((yyvsp[-3].no));  //deallocating the AST
       }

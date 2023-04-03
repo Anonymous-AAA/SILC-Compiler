@@ -879,7 +879,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
     temp->arglist=arglist;
     temp->Gentry=NULL;
     temp->Lentry=NULL;
-    temp->val=Mtemp->flabel;   //temp->val contains the func position in the virtual function table
+    temp->val=Mtemp->funcposition;   //temp->val contains the func position in the virtual function table
 
     obj->type=temp->type;
 

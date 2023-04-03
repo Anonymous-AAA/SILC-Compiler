@@ -54,7 +54,7 @@
 "type" {return TYPE;}
 "endtype" {return ENDTYPE;}
 "null" {return NUL;}
-"breakpoint" {return BRKP;}
+"brkp" {return BRKP;}
 "class" {return CLASS;}
 "endclass" {return ENDCLASS;}
 "extends" {return EXTENDS;}
