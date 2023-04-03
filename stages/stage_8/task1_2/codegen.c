@@ -4,6 +4,7 @@ int reg=0;
 int label=0;
 FILE *fptr;
 int codeBeg=TRUE;
+char *currFile="raw.xsm";
 
 
 int getReg(){
@@ -386,6 +387,13 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
         case EQUAL:
             r1=codeGen(t->left,while_label_1,while_label_2);
             r2=codeGen(t->right,while_label_1,while_label_2);
+            if(t->right->nodetype!=NEW && t->right->ctype){
+                r=getReg();
+                fprintf(fptr,
+                        "MOV R%d, R%d\n",
+                        r,r2);
+            }
+
             if(t->right->nodetype==VAR || t->right->nodetype==SELF){
                 fprintf(fptr,
                         "MOV R%d, [R%d]\n",
@@ -394,6 +402,34 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
             fprintf(fptr,
                     "MOV [R%d], R%d\n",
                     r1,r2);
+
+            //copying virtual function pointer
+            if(t->right->nodetype==NEW){
+
+                int vft=4096+(t->right->ctype->class_index)*8;
+                fprintf(fptr,
+                        "INR R%d\n",
+                        r1);
+                fprintf(fptr,
+                        "MOV [R%d], %d\n",
+                        r1,vft);
+            }else if(t->right->ctype){
+
+                //r contains the reg which contains address of rhs
+                fprintf(fptr,
+                        "INR R%d\n",
+                        r);
+                
+                fprintf(fptr,
+                        "INR R%d\n",
+                        r1);
+
+                fprintf(fptr,
+                        "MOV [R%d], [R%d]\n",
+                        r1,r);
+                freeReg();
+            }
+
             freeReg();
             freeReg();
             break;
@@ -956,12 +992,46 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
 }
 
 
+void genVirtualft(){
+
+    Classtable *temp=Cstart;
+
+    while(temp){
+
+        Memberfunclist *method=temp->vfuncptr;
+
+        while(method){
+            
+            fprintf(fptr,"MOV R0, F%d\n",method->flabel);
+            fprintf(fptr,"PUSH R0\n");
+            method=method->next;
+        }
+
+        int ctemp=temp->methodcount;
+
+        fprintf(fptr,"MOV R0, -1\n");
+
+        while(ctemp<HB_SIZE){       //filling empty spaces with -1
+            fprintf(fptr,"PUSH R0\n");
+            ctemp++;
+        }
+
+
+        temp=temp->next;
+    }
+
+
+}
+
 
 void genHeader(){
 
     fprintf(fptr,"0\n2056\n0\n0\n0\n0\n0\n0\n");
 //    fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
-    fprintf(fptr,"MOV SP, 4096\n");  //Will be replaced during main
+    fprintf(fptr,"MOV SP, 4096\n");  
+
+    genVirtualft();
+
     fprintf(fptr,"PUSH R0\n");  //Empty space in stack to store return value
     fprintf(fptr,"CALL MAIN\n");    //Calling main function
     
@@ -972,29 +1042,52 @@ void genHeader(){
 }
 
 
+void copyFromRaw(){
+
+    FILE *raw=fopen("raw.xsm","r");
+
+    char c = fgetc(raw);
+    while (c != EOF)
+    {
+        fputc(c, fptr);
+        c = fgetc(raw);
+    }
+
+    fclose(raw);
+
+}
+
 
 void codeFunction(struct tnode* body, char *name){
     
-    if(codeBeg==TRUE){
+//    if(codeBeg==TRUE){
+//        //open file in write mode
+//        fptr=fopen("target_label.xsm","w");
+//        genHeader();
+//        codeBeg=FALSE;
+//    }else{
+//    
+//        if(name){
+//            //open file in append mode
+//            fptr=fopen("target_label.xsm","a");
+//        }else{
+//
+//            fptr=fopen("target_label.xsm","r+");
+//        }
+//
+//    }
+     if(codeBeg==TRUE){
         //open file in write mode
-        fptr=fopen("target_label.xsm","w");
-        genHeader();
+        fptr=fopen(currFile,"w");
         codeBeg=FALSE;
     }else{
-    
-        if(name){
-            //open file in append mode
-            fptr=fopen("target_label.xsm","a");
-        }else{
-
-            fptr=fopen("target_label.xsm","r+");
-        }
-
+        //open file in append mode
+        fptr=fopen(currFile,"a");
     }
 
 
 
-    if(name){
+    if(name){       //functions or methods
         Gsymbol *entry=GLookup(name);
         if(entry){
         fprintf(fptr,
@@ -1007,14 +1100,13 @@ void codeFunction(struct tnode* body, char *name){
                 "F%d:\n",
                 mentry->flabel);
         }
-    }else{
-
-        fseek(fptr,19,SEEK_SET);
-        fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
-        //close the file
+    }else{          //main function
+        
         fclose(fptr);
-        //open file in append mode
-        fptr=fopen("target_label.xsm","a");
+        currFile="target_label.xsm";
+        fptr=fopen(currFile,"w");
+        genHeader();
+        copyFromRaw();
         fprintf(fptr,
                 "MAIN:\n");
     }

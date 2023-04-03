@@ -398,19 +398,25 @@ int yyerror(char const *s)
 
 int main(int argc, char* argv[]) {
 
-  if(argc>1){
+        if(argc>1){
     
-    FILE *fp = fopen(argv[1], "r");
-    if(fp)
-      yyin = fp;
+                FILE *fp = fopen(argv[1], "r");
+                if(fp){
+                        yyin = fp;
+                }
+                else{
+                        printf("Error : Filename not found\n");
+                        return 1;
+                } 
     
-  }   
+                //Creating type table with default entries
+                TypeTableCreate();
+                yyparse();
 
-  //Creating type table with default entries
-  TypeTableCreate();
+                return 0;
+        }   
 
-  yyparse();
-
- return 0;
+        printf("Error : Filename not found\n");
+        return 1;
 }
 
