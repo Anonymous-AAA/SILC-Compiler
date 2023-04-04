@@ -882,6 +882,7 @@ void setMethodNode(tnode *obj,char *name, tnode *arglist){
     temp->val=Mtemp->funcposition;   //temp->val contains the func position in the virtual function table
 
     obj->type=temp->type;
+    obj->ctype=NULL;
 
     while(obj->left)
         obj=obj->left;
