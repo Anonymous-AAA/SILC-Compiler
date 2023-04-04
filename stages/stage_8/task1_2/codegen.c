@@ -121,24 +121,23 @@ int codeGen(struct tnode *t,int while_label_1,int while_label_2){
                             freeReg();   //freeReg() happens in reverse order
                         }
 
+                        
+                        r3=getReg();
+
                         //push address of self/var to stack
                         fprintf(fptr,
-                                "MOV R0, [R%d]\n"
-                                "PUSH R0\n",
-                                GARBAGE_REG);
+                                "MOV R%2$d, [R%1$d]\n"
+                                "PUSH R%2$d\n",
+                                GARBAGE_REG,r3);
                         //virtual function pointer pushed
                         fprintf(fptr,
-                                "MOV R0, R%d\n"
-                                "INR R0\n"
-                                "MOV R0, [R0]\n"
-                                "PUSH R0\n",
-                                GARBAGE_REG);
+                                "MOV R%2$d, R%1$d\n"
+                                "INR R%2$d\n"
+                                "MOV R%2$d, [R%2$d]\n"
+                                "PUSH R%2$d\n",
+                                GARBAGE_REG,r3);
 
-                        //r3 contains virtual function pointer
-                        r3=getReg();
-                        fprintf(fptr,
-                                "MOV R%d, R0\n",
-                                r3);
+                        //r3 contains base of corresponding virtual function table
 
 
 
@@ -1049,9 +1048,11 @@ void genHeader(){
 
     fprintf(fptr,"0\n2056\n0\n0\n0\n0\n0\n0\n");
 //    fprintf(fptr,"MOV SP, %d\n",getGBinding(0));  //Initializing SP after a-z allocation
-    fprintf(fptr,"MOV SP, 4096\n");  
+    fprintf(fptr,"MOV SP, 4095\n");    //SP is incremented first and then pushed
 
     genVirtualft();
+
+    fprintf(fptr,"MOV SP, %d\n",getGBinding(0));
 
     fprintf(fptr,"PUSH R0\n");  //Empty space in stack to store return value
     fprintf(fptr,"CALL MAIN\n");    //Calling main function
