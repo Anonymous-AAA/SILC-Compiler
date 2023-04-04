@@ -41,7 +41,8 @@ void setGType(Gsymbol* node, Typetable *type){
 
         while(temp){
             temp->type=type;
-            temp->binding=getGBinding(temp->size);
+            if(temp->flabel==NIL)   //binding is only set for global variables not functions
+                temp->binding=getGBinding(temp->size);
             temp=temp->next;
         }
     }
@@ -288,6 +289,23 @@ void createParamList(Paramstruct *plist,Paramstruct *param){
 //    }
 //
 //}
+
+
+void checkAllFnDefined(){
+
+    Gsymbol *temp=Gstart;
+
+    while(temp){
+        
+        if(temp->flabel!=NIL && temp->size!=DEFINED){
+            printf("Error : Function '%s' is declared but not defined.\n",temp->name);
+            exit(1);
+        }
+
+        temp=temp->next;
+    }
+}
+
 
 
 void printLSymbolTable(char *fname){

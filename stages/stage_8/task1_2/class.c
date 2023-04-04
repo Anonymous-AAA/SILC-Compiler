@@ -100,8 +100,8 @@ ClassFieldlist *createClassField(char *name, char *typename){
 
 void Class_Finstall(Classtable *cptr,char *typename,char *name){
 
-    if(cptr->fieldcount==HB_SIZE){
-        printf("Error : Class %s cannot have more than %d fields\n",cptr->name,HB_SIZE);
+    if(cptr->fieldcount>=HB_SIZE){
+        printf("Error : Memory used by the fields of class '%s' exceeds %d words\n",cptr->name,HB_SIZE);
         exit(1);
     }
 
@@ -121,7 +121,18 @@ void Class_Finstall(Classtable *cptr,char *typename,char *name){
     Cfcurr=field;
 
     field->fieldindex=cptr->fieldcount;
-    cptr->fieldcount++;
+
+    if(field->ctype){   //for holding class memberfields
+
+        if((cptr->fieldcount+2)>HB_SIZE){
+            printf("Error : Memory used by the fields of class '%s' exceeds %d words\n",cptr->name,HB_SIZE);
+            exit(1);
+        }
+
+        (cptr->fieldcount)+=2;
+    }  
+    else
+        cptr->fieldcount++;
     
 }
 

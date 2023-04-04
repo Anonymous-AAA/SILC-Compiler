@@ -46,10 +46,11 @@ Program : TypeDefBlock ClassDefBlock GDeclBlock FDefBlock MainBlock {
           //code($3);
           //evaluate($3)
           //test($3)
-          printTypeTable();
-          printGSymbolTable();
-          printClassTable();
-          exit(0);
+          //printTypeTable();
+          //printGSymbolTable();
+          //printClassTable();
+          checkAllFnDefined();
+ //         exit(0);
           }
         ;
 
@@ -158,7 +159,7 @@ MainBlock : INT MAIN '(' ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
             $8 = makeConnectorNode($8,$9);  //Attaching the return statement
             checkMain($9->left->type);
             codeFunction($8,NULL);       //Generating code
-            printLSymbolTable("main"); //Printing the local symbol table
+            //printLSymbolTable("main"); //Printing the local symbol table
             deallocateLST();     //deallocating the Local Symbol Table
             deallocateAST($8);  //deallocating the AST
           }
@@ -184,7 +185,7 @@ Fdef  : Type ID '(' ParamList ')' '{' LDeclBlock BEG Body ReturnStmt END '}' {
 
         //test($9);
         codeFunction($9,$2->varname);       //Generating code
-        printLSymbolTable($2->varname); //Printing the local symbol table
+        //printLSymbolTable($2->varname); //Printing the local symbol table
         deallocateLST();     //deallocating the Local Symbol Table
         deallocateAST($9);  //deallocating the AST
       }
