@@ -36,10 +36,17 @@ int getLocLBinding(){   //Get binding for local variables of the function
 void setGType(Gsymbol* node, Typetable *type){
     
     Gsymbol *temp=node;
+    int isUserDefined=isUserType(type);
 
     if(type->size!=UNDEFINED){    //normal type
 
         while(temp){
+
+            if(temp->size>1 && isUserDefined==TRUE){
+                printf("Error : Arrays cannot be of user defined types (%s %s)\n",type->name,temp->name);
+                exit(1);
+            }
+
             temp->type=type;
             if(temp->flabel==NIL)   //binding is only set for global variables not functions
                 temp->binding=getGBinding(temp->size);
@@ -51,6 +58,17 @@ void setGType(Gsymbol* node, Typetable *type){
         Classtable *ctype=CLookup(type->name);
 
         while(temp){
+
+            if(temp->size>1){
+                printf("Error : Arrays cannot be instances of a class (%s %s)\n",ctype->name,temp->name);
+                exit(1);
+            }
+
+            if(temp->flabel!=NIL){
+                printf("Error : Functions cannot return instances of a class (%s %s)\n",ctype->name,temp->name);
+                exit(1);
+            }
+
             temp->ctype=ctype;
             temp->size=2;
             temp->binding=getGBinding(2);
