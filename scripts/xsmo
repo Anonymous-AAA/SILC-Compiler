@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# exit on error
+set -e
+
+xfs="$HOME/Projects/OS_LAB/myexpos/xfs-interface"
+
+#xfs interface requires relative path
+path=$(realpath --relative-to=$xfs $(pwd))
+
+cd $xfs
+
+if [ "$1" == "-l" ]; then
+  ./xfs-interface load --library "$path/$2"
+  ./xfs-interface load --init "$path/$4"
+else
+	./xfs-interface load --init	"$path/$2"
+fi
+
+cd "$HOME/Projects/OS_LAB/myexpos/xsm"
+
+if [ "$5" == "--debug" ] || [ "$3" == "--debug" ]; then
+	./xsm --debug
+else
+	./xsm
+fi

@@ -1,0 +1,3 @@
+#!/usr/bin/fish
+
+cat *.h | grep -i $argv[1]

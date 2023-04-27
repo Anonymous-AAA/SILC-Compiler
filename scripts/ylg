@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#exit on error
+set -e
+GREEN='\033[0;32m'
+NC='\033[0m'
+#lex and yacc file should have the same name and it should be given as the first argument
+
+# frontend
+yacc -d "$1.y"
+echo -e "${GREEN}Yacc Successful${NC}"
+lex  "$1.l"
+echo -e "${GREEN}Lex Successful${NC}"
+gcc -g lex.yy.c y.tab.c -o frontend
+echo -e "${GREEN}Compile Successful${NC}"
+
+#linker
+lex linker.l
+echo -e "${GREEN}Linker Lex Successful${NC}"
+gcc -g lex.yy.c -o linker
+echo -e "${GREEN}Linker Compile Successful${NC}"
+
+

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#stop on errors
+set -e
+
+./frontend "$1"
+./linker
+
+
+

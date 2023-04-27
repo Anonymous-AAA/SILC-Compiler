@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+xfs="$HOME/compiler/xsm_expl/xfs-interface"
+#xfs interface requires relative path
+path=$(realpath --relative-to=$xfs $(pwd))
+
+cd $xfs
+
+if [ "$1" == "-l" ]; then
+  ./xfs-interface load --library "$path/$2"
+  ./xfs-interface load --init "$path/$4"
+else
+	./xfs-interface load --init	"$path/$2"
+fi
+
+cd "$HOME/compiler/xsm_expl/xsm_dev"
+
+if [ "$5" == "--debug" ] || [ "$3" == "--debug" ]; then
+	./xsm --debug
+else
+	./xsm
+fi
